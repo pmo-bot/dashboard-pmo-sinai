@@ -396,24 +396,52 @@
         let MATRIX_DATA = {};
         let evolutionChart = null;
 
+        // Sistema de observações (salvo localmente no navegador)
+        function saveClientNote(clientId, note) {
+            localStorage.setItem('client_note_' + clientId, note);
+        }
+
+        function getClientNote(clientId) {
+            return localStorage.getItem('client_note_' + clientId) || '';
+        }
+
         // Função para carregar dados da planilha
         async function loadSheetData() {
             try {
                 const response = await fetch(SHEET_URL);
                 const csvText = await response.text();
                 
-                // Parse CSV
+                // Parse CSV mais robusto
                 const rows = csvText.split('\n').map(row => {
-                    const regex = /(".*?"|[^",\s]+)(?=\s*,|\s*$)/g;
-                    return (row.match(regex) || []).map(cell => cell.replace(/^"|"$/g, '').trim());
+                    // Divide por vírgula, mas respeita conteúdo entre aspas
+                    const result = [];
+                    let current = '';
+                    let inQuotes = false;
+                    
+                    for (let i = 0; i < row.length; i++) {
+                        const char = row[i];
+                        
+                        if (char === '"') {
+                            inQuotes = !inQuotes;
+                        } else if (char === ',' && !inQuotes) {
+                            result.push(current.trim());
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    result.push(current.trim());
+                    return result;
                 });
 
-                // LINHA 2 (índice 1) = unidades/clientes
+                // LINHA 2 (índice 1) = nomes COMPLETOS dos clientes
                 const headerRow = rows[1];
-                UNIDADES_DATA = headerRow.slice(1).filter(label => label).map((label, idx) => ({
+                UNIDADES_DATA = headerRow.slice(1).filter(label => label && label.length > 0).map((label, idx) => ({
                     id: `unidade_${idx}`,
-                    label: label
+                    label: label // Nome completo da planilha
                 }));
+
+                console.log('Clientes carregados:', UNIDADES_DATA); // Debug
 
                 // Demais linhas (a partir da linha 3) = módulos e seus status
                 MODULOS = [];
@@ -518,12 +546,16 @@
                             Módulos Sinai
                         </div>
                     </th>
-                    ${UNIDADES_DATA.map(u => `
-                        <th class="label-style text-slate-600 client-header border-l border-slate-200" 
+                    ${UNIDADES_DATA.map(u => {
+                        const hasNote = getClientNote(u.id);
+                        return `
+                        <th class="label-style text-slate-600 client-header border-l border-slate-200 relative" 
                             onclick="showUnitDetails('${u.label.replace(/'/g, "\\'")}')">
+                            ${hasNote ? '<div class="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full pulse-dot"></div>' : ''}
                             <div class="font-bold whitespace-nowrap">${u.label}</div>
                         </th>
-                    `).join('')}
+                    `;
+                    }).join('')}
                 </tr>
             `;
 
@@ -695,10 +727,40 @@
             const title = document.getElementById('modalTitle');
             const content = document.getElementById('modalContent');
             
+            const unit = UNIDADES_DATA.find(u => u.label === unitName);
+            const unitId = unit ? unit.id : '';
+            const savedNote = getClientNote(unitId);
+            
             title.innerHTML = `<i data-lucide="building-2" class="inline" style="width: 20px; height: 20px;"></i> ${unitName}`;
             
             const unitIndex = UNIDADES_DATA.findIndex(u => u.label === unitName);
-            let html = '<div class="space-y-2">';
+            
+            // Seção de Observações
+            let html = `
+                <div class="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="info" class="text-indigo-600" style="width: 18px; height: 18px;"></i>
+                        <span class="text-sm font-bold text-indigo-900 uppercase">Observações de Implantação</span>
+                    </div>
+                    <textarea 
+                        id="unitNoteTextarea" 
+                        class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        rows="4"
+                        placeholder="Insira o resumo do andamento geral para esta unidade..."
+                    >${savedNote}</textarea>
+                    <div class="flex justify-end gap-2 mt-3">
+                        <button 
+                            onclick="saveUnitNote('${unitId}', '${unitName.replace(/'/g, "\\'")}')"
+                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition text-sm flex items-center gap-2">
+                            <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+                            Salvar Status
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase mb-2">Status dos Módulos</h4>
+            `;
             
             MODULOS.forEach(mod => {
                 const status = MATRIX_DATA[mod][unitIndex] || "NI";
@@ -740,6 +802,31 @@
             
             modal.style.display = 'flex';
             lucide.createIcons();
+        }
+
+        function saveUnitNote(unitId, unitName) {
+            const textarea = document.getElementById('unitNoteTextarea');
+            const note = textarea.value;
+            
+            saveClientNote(unitId, note);
+            
+            // Feedback visual
+            const btn = event.target.closest('button');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="check" style="width: 16px; height: 16px;"></i> Salvo!';
+            btn.classList.add('bg-green-600', 'hover:bg-green-700');
+            btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                lucide.createIcons();
+            }, 2000);
+            
+            // Atualizar indicador visual de nota no header
+            renderMatrix();
         }
 
         function showCellDetails(module, unit, status, date) {
