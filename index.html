@@ -360,18 +360,18 @@
                     return (row.match(regex) || []).map(cell => cell.replace(/^"|"$/g, '').trim());
                 });
 
-                // Primeira linha = unidades (ignorando primeira coluna que é "Módulos")
-                const headerRow = rows[0];
+                // LINHA 2 (índice 1) = unidades/clientes (ignorando primeira coluna que é "Módulos")
+                const headerRow = rows[1]; // Mudou de rows[0] para rows[1]
                 UNIDADES_DATA = headerRow.slice(1).map((label, idx) => ({
                     id: `unidade_${idx}`,
                     label: label
                 }));
 
-                // Demais linhas = módulos e seus status
+                // Demais linhas (a partir da linha 3) = módulos e seus status
                 MODULOS = [];
                 MATRIX_DATA = {};
 
-                for (let i = 1; i < rows.length; i++) {
+                for (let i = 2; i < rows.length; i++) { // Mudou de i = 1 para i = 2
                     const row = rows[i];
                     if (row.length > 1 && row[0]) {
                         const moduleName = row[0];
