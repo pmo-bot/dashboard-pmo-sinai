@@ -6,31 +6,31 @@
     <title>Dashboard PMO Sinai 3.0 - Controle de Implantação</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
             -webkit-font-smoothing: antialiased;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8fafc;
         }
         
         .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: white;
+            border: 1px solid #e2e8f0;
         }
         
         .label-style { 
-            font-size: 10px; 
+            font-size: 9px; 
             font-weight: 700; 
             text-transform: uppercase; 
-            letter-spacing: 0.1em; 
+            letter-spacing: 0.05em; 
             color: #64748b;
         }
         
         .value-style { 
-            font-weight: 900; 
+            font-weight: 800; 
             color: #0f172a; 
         }
 
@@ -45,7 +45,6 @@
             background-color: white; 
             z-index: 10; 
             border-right: 2px solid #e2e8f0;
-            box-shadow: 2px 0 4px rgba(0,0,0,0.05);
         }
         
         .status-cell { 
@@ -54,80 +53,83 @@
             align-items: center; 
             justify-content: center;
             padding: 8px; 
-            border-radius: 10px; 
-            font-size: 10px; 
-            font-weight: 800;
+            border-radius: 8px; 
+            font-size: 11px; 
+            font-weight: 700;
             text-align: center; 
             line-height: 1.2; 
-            min-height: 48px;
+            min-height: 44px;
             transition: all 0.2s;
             cursor: default;
         }
         
         .status-cell:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .client-header {
             cursor: pointer; 
-            transition: all 0.3s;
+            transition: all 0.2s;
             position: relative;
             user-select: none;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            padding: 16px 8px !important;
+            min-width: 60px !important;
         }
         
         .client-header:hover { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background-color: #f1f5f9;
+            color: #4f46e5;
         }
 
+        /* Cores suaves e pastéis */
         .badge-success { 
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
         }
         
         .badge-info { 
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
         }
         
         .badge-warning { 
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
         }
         
         .badge-danger { 
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
         }
         
         .badge-none { 
             background: #f1f5f9; 
             color: #64748b;
+            border: 1px solid #e2e8f0;
         }
 
         .stat-card {
-            transition: all 0.3s;
-            cursor: pointer;
+            transition: all 0.2s;
         }
         
         .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
             z-index: 50;
             align-items: center;
             justify-content: center;
@@ -139,18 +141,18 @@
             to { opacity: 1; }
         }
 
+        .modal-content {
+            animation: slideUp 0.3s;
+        }
+
         @keyframes slideUp {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
-        .modal-content {
-            animation: slideUp 0.3s;
-        }
-
         .loading-spinner {
             border: 3px solid #f3f4f6;
-            border-top: 3px solid #667eea;
+            border-top: 3px solid #4f46e5;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -174,12 +176,33 @@
         .progress-bar-fill {
             transition: width 0.5s ease-in-out;
         }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .legend-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 10px;
+        }
     </style>
 </head>
 <body class="min-h-screen p-6">
     
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-gradient-to-br from-slate-900 to-slate-800 z-50 flex items-center justify-center">
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
         <div class="text-center">
             <div class="loading-spinner mx-auto mb-4"></div>
             <p class="text-white text-lg font-semibold">Carregando dados da planilha...</p>
@@ -187,26 +210,26 @@
         </div>
     </div>
 
-    <div class="max-w-[1600px] mx-auto">
+    <div class="max-w-[1800px] mx-auto">
         
         <!-- Header -->
-        <div class="glass-card rounded-2xl shadow-2xl p-8 mb-6">
+        <div class="glass-card rounded-xl shadow-sm p-6 mb-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <i data-lucide="activity" class="text-white" style="width: 28px; height: 28px;"></i>
+                    <div class="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center shadow-sm">
+                        <i data-lucide="activity" class="text-white" style="width: 24px; height: 24px;"></i>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-black text-slate-800">Dashboard PMO Sinai 3.0</h1>
-                        <p class="text-slate-500 font-medium mt-1">Controle de Implantação de Módulos</p>
+                        <h1 class="text-2xl font-black text-slate-800">Projetos Sinai</h1>
+                        <p class="text-slate-500 text-sm font-medium">Dashboard PMO - Controle de Implantação</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
-                        <div class="w-2 h-2 bg-green-500 rounded-full pulse-dot"></div>
-                        <span class="text-sm font-semibold text-green-700">Conectado</span>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500 uppercase font-semibold">Atualizado em</p>
+                        <p class="text-sm font-bold text-slate-700" id="lastUpdate">--</p>
                     </div>
-                    <button onclick="reloadData()" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+                    <button onclick="reloadData()" class="px-4 py-2 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition-all flex items-center gap-2 shadow-sm">
                         <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
                         Atualizar
                     </button>
@@ -215,72 +238,124 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
             
             <!-- Cobertura Geral -->
-            <div class="glass-card rounded-xl shadow-lg p-6 stat-card">
-                <div class="flex items-center justify-between mb-3">
+            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
+                <div class="flex flex-col gap-2">
                     <span class="label-style text-slate-500">Cobertura Geral</span>
-                    <i data-lucide="pie-chart" class="text-indigo-500" style="width: 20px; height: 20px;"></i>
-                </div>
-                <div class="text-4xl font-black text-slate-800 mb-3" id="statCoverage">0%</div>
-                <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-                    <div id="barCoverage" class="progress-bar-fill h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full" style="width: 0%"></div>
+                    <div class="text-3xl font-black text-indigo-600" id="statCoverage">0%</div>
+                    <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                        <div id="barCoverage" class="progress-bar-fill h-full bg-indigo-500 rounded-full" style="width: 0%"></div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Clientes -->
+            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
+                <span class="label-style text-slate-500 block mb-1">Clientes</span>
+                <div class="text-3xl font-black text-slate-700" id="statClientes">0</div>
+                <span class="text-xs text-slate-500 font-semibold">ATIVOS</span>
+            </div>
+
             <!-- Implantado -->
-            <div class="glass-card rounded-xl shadow-lg p-6 stat-card">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="label-style text-slate-500">Implantado</span>
-                    <i data-lucide="check-circle" class="text-green-500" style="width: 20px; height: 20px;"></i>
-                </div>
+            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
+                <span class="label-style text-slate-500 block mb-1">Implantados</span>
                 <div class="flex items-baseline gap-2">
-                    <span class="text-4xl font-black text-green-600" id="statIDCount">0</span>
-                    <span class="text-lg font-bold text-slate-400" id="statIDPerc">0%</span>
+                    <span class="text-3xl font-black text-blue-600" id="statIDCount">0</span>
+                    <span class="text-sm font-bold text-slate-400" id="statIDPerc">0%</span>
                 </div>
             </div>
 
             <!-- Em Implantação -->
-            <div class="glass-card rounded-xl shadow-lg p-6 stat-card">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="label-style text-slate-500">Em Implantação</span>
-                    <i data-lucide="clock" class="text-amber-500" style="width: 20px; height: 20px;"></i>
-                </div>
+            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
+                <span class="label-style text-slate-500 block mb-1">Em Implantação</span>
                 <div class="flex items-baseline gap-2">
-                    <span class="text-4xl font-black text-amber-600" id="statEICount">0</span>
-                    <span class="text-lg font-bold text-slate-400" id="statEIPerc">0%</span>
+                    <span class="text-3xl font-black text-amber-600" id="statEICount">0</span>
+                    <span class="text-sm font-bold text-slate-400" id="statEIPerc">0%</span>
                 </div>
             </div>
 
-            <!-- Uso Simples -->
-            <div class="glass-card rounded-xl shadow-lg p-6 stat-card">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="label-style text-slate-500">Uso Simples</span>
-                    <i data-lucide="zap" class="text-blue-500" style="width: 20px; height: 20px;"></i>
-                </div>
+            <!-- Fomentar Usabilidade -->
+            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
+                <span class="label-style text-slate-500 block mb-1">Fomentar Usabilidade</span>
                 <div class="flex items-baseline gap-2">
-                    <span class="text-4xl font-black text-blue-600" id="statUSCount">0</span>
-                    <span class="text-lg font-bold text-slate-400" id="statUSPerc">0%</span>
+                    <span class="text-3xl font-black text-cyan-600" id="statUSCount">0</span>
+                    <span class="text-sm font-bold text-slate-400" id="statUSPerc">0%</span>
                 </div>
             </div>
 
             <!-- Não Implantado -->
-            <div class="glass-card rounded-xl shadow-lg p-6 stat-card">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="label-style text-slate-500">Não Implantado</span>
-                    <i data-lucide="x-circle" class="text-red-500" style="width: 20px; height: 20px;"></i>
-                </div>
+            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
+                <span class="label-style text-slate-500 block mb-1">Não Implantados</span>
                 <div class="flex items-baseline gap-2">
-                    <span class="text-4xl font-black text-red-600" id="statNICount">0</span>
-                    <span class="text-lg font-bold text-slate-400" id="statNIPerc">0%</span>
+                    <span class="text-3xl font-black text-red-600" id="statNICount">0</span>
+                    <span class="text-sm font-bold text-slate-400" id="statNIPerc">0%</span>
                 </div>
             </div>
 
         </div>
 
+        <!-- Gráfico de Evolução por Cliente -->
+        <div class="glass-card rounded-xl shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="trending-up" style="width: 20px; height: 20px;"></i>
+                    Evolução por Cliente
+                </h2>
+            </div>
+            <div style="height: 300px;">
+                <canvas id="evolutionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Legenda -->
+        <div class="glass-card rounded-xl shadow-sm p-6 mb-6">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="info" class="text-slate-600" style="width: 18px; height: 18px;"></i>
+                <h3 class="text-sm font-bold text-slate-700 uppercase">Legenda de Status</h3>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div class="legend-item">
+                    <div class="legend-badge badge-success">ID</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-700">Implantado</p>
+                        <p class="text-[10px] text-slate-500">100% concluído</p>
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-badge badge-warning">EI</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-700">Em Implantação</p>
+                        <p class="text-[10px] text-slate-500">Em andamento</p>
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-badge badge-info">US</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-700">Fomentar Usabilidade</p>
+                        <p class="text-[10px] text-slate-500">Já implantado</p>
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-badge badge-danger">NI</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-700">Não Implantado</p>
+                        <p class="text-[10px] text-slate-500">Não iniciado</p>
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-badge badge-none">N/A</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-700">Não Possui</p>
+                        <p class="text-[10px] text-slate-500">Não aplicável</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Matrix Table -->
-        <div class="glass-card rounded-2xl shadow-2xl overflow-hidden">
+        <div class="glass-card rounded-xl shadow-sm overflow-hidden">
             
             <!-- Top Scroll -->
             <div id="topScrollContainer" class="overflow-x-auto custom-scrollbar" style="overflow-y: hidden;">
@@ -289,37 +364,10 @@
 
             <!-- Table Container -->
             <div id="matrixScrollContainer" class="overflow-x-auto custom-scrollbar" style="max-height: 600px;">
-                <table id="matrixTable" class="w-full">
+                <table id="matrixTable" class="w-full border-collapse">
                     <thead id="matrixHead" class="sticky top-0 z-20 bg-white"></thead>
                     <tbody id="matrixBody"></tbody>
                 </table>
-            </div>
-
-            <!-- Legend -->
-            <div class="bg-slate-50 px-8 py-5 border-t border-slate-200">
-                <div class="flex flex-wrap items-center gap-6">
-                    <span class="label-style text-slate-600 font-bold">Legenda:</span>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded badge-success"></div>
-                        <span class="text-xs font-semibold text-slate-600">ID = Implantado</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded badge-warning"></div>
-                        <span class="text-xs font-semibold text-slate-600">EI = Em Implantação</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded badge-info"></div>
-                        <span class="text-xs font-semibold text-slate-600">US = Uso Simples</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded badge-danger"></div>
-                        <span class="text-xs font-semibold text-slate-600">NI = Não Implantado</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded badge-none"></div>
-                        <span class="text-xs font-semibold text-slate-600">N/A = Não Aplicável</span>
-                    </div>
-                </div>
             </div>
 
         </div>
@@ -328,9 +376,9 @@
 
     <!-- Modal de Detalhes -->
     <div id="detailModal" class="modal" onclick="closeDetailModal(event)">
-        <div class="modal-content glass-card rounded-2xl shadow-2xl p-8 max-w-2xl w-full mx-4">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-black text-slate-800" id="modalTitle">Detalhes</h2>
+        <div class="modal-content glass-card rounded-xl shadow-xl p-6 max-w-2xl w-full mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-black text-slate-800" id="modalTitle">Detalhes</h2>
                 <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 transition">
                     <i data-lucide="x" style="width: 24px; height: 24px;"></i>
                 </button>
@@ -346,6 +394,7 @@
         let UNIDADES_DATA = [];
         let MODULOS = [];
         let MATRIX_DATA = {};
+        let evolutionChart = null;
 
         // Função para carregar dados da planilha
         async function loadSheetData() {
@@ -355,14 +404,13 @@
                 
                 // Parse CSV
                 const rows = csvText.split('\n').map(row => {
-                    // Parse CSV respeitando vírgulas dentro de aspas
                     const regex = /(".*?"|[^",\s]+)(?=\s*,|\s*$)/g;
                     return (row.match(regex) || []).map(cell => cell.replace(/^"|"$/g, '').trim());
                 });
 
-                // LINHA 2 (índice 1) = unidades/clientes (ignorando primeira coluna que é "Módulos")
-                const headerRow = rows[1]; // Mudou de rows[0] para rows[1]
-                UNIDADES_DATA = headerRow.slice(1).map((label, idx) => ({
+                // LINHA 2 (índice 1) = unidades/clientes
+                const headerRow = rows[1];
+                UNIDADES_DATA = headerRow.slice(1).filter(label => label).map((label, idx) => ({
                     id: `unidade_${idx}`,
                     label: label
                 }));
@@ -371,7 +419,7 @@
                 MODULOS = [];
                 MATRIX_DATA = {};
 
-                for (let i = 2; i < rows.length; i++) { // Mudou de i = 1 para i = 2
+                for (let i = 2; i < rows.length; i++) {
                     const row = rows[i];
                     if (row.length > 1 && row[0]) {
                         const moduleName = row[0];
@@ -381,6 +429,8 @@
                 }
 
                 renderMatrix();
+                renderEvolutionChart();
+                updateLastUpdateTime();
                 hideLoading();
                 
             } catch (error) {
@@ -394,12 +444,25 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const formatted = now.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('lastUpdate').textContent = formatted;
+        }
+
         function updateStats() {
             let totalCells = 0, totalWeight = 0;
             let counts = { ID: 0, EI: 0, US: 0, NI: 0 };
             
             Object.keys(MATRIX_DATA).forEach(mod => {
                 MATRIX_DATA[mod].forEach(cell => {
+                    if (!cell) return;
                     const statusPart = cell.split('|')[0].trim();
                     if (statusPart === "N/A" || !statusPart) return;
                     
@@ -427,6 +490,7 @@
             const coverage = totalCells > 0 ? Math.round(totalWeight / totalCells) : 0;
             document.getElementById('statCoverage').innerText = coverage + "%";
             document.getElementById('barCoverage').style.width = coverage + "%";
+            document.getElementById('statClientes').innerText = UNIDADES_DATA.length;
 
             const setCard = (id, count) => {
                 const elCount = document.getElementById('stat' + id + 'Count');
@@ -447,19 +511,17 @@
             
             // Render header
             head.innerHTML = `
-                <tr class="bg-gradient-to-r from-slate-50 to-slate-100 border-b-2 border-slate-200">
-                    <th class="sticky-col px-8 py-6 label-style border-r-2 border-slate-200 text-left font-bold text-slate-700">
+                <tr class="bg-slate-50 border-b border-slate-200">
+                    <th class="sticky-col px-6 py-4 label-style text-left font-bold text-slate-700">
                         <div class="flex items-center gap-2">
-                            <i data-lucide="layers" style="width: 16px; height: 16px;"></i>
+                            <i data-lucide="layers" style="width: 14px; height: 14px;"></i>
                             Módulos Sinai
                         </div>
                     </th>
                     ${UNIDADES_DATA.map(u => `
-                        <th class="px-4 py-6 label-style min-w-[130px] text-slate-600 client-header" onclick="showUnitDetails('${u.label}')">
-                            <div class="flex flex-col items-center gap-2">
-                                <i data-lucide="building-2" style="width: 18px; height: 18px;"></i>
-                                <span class="font-bold">${u.label}</span>
-                            </div>
+                        <th class="label-style text-slate-600 client-header border-l border-slate-200" 
+                            onclick="showUnitDetails('${u.label.replace(/'/g, "\\'")}')">
+                            <div class="font-bold whitespace-nowrap">${u.label}</div>
                         </th>
                     `).join('')}
                 </tr>
@@ -467,10 +529,10 @@
 
             // Render body
             body.innerHTML = MODULOS.map((mod, modIdx) => `
-                <tr class="group hover:bg-slate-50/80 transition-all border-b border-slate-100">
-                    <td class="sticky-col px-8 py-5 value-style text-sm border-r-2 border-slate-200 text-left font-extrabold text-slate-700">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-indigo-600 font-black text-xs">
+                <tr class="group hover:bg-slate-50/50 transition-all border-b border-slate-100">
+                    <td class="sticky-col px-6 py-3 value-style text-xs text-left font-bold text-slate-700">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-md bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-[10px]">
                                 ${modIdx + 1}
                             </div>
                             ${mod}
@@ -482,34 +544,27 @@
                         const status = statusRaw.trim();
                         
                         let badgeClass = "badge-none";
-                        let statusText = status;
+                        let displayStatus = status;
                         
                         if (status === 'ID') {
                             badgeClass = "badge-success";
-                            statusText = "IMPLANTADO";
                         }
                         else if (status === 'US') {
                             badgeClass = "badge-info";
-                            statusText = "USO SIMPLES";
                         }
                         else if (status.startsWith('EI')) {
                             badgeClass = "badge-warning";
-                            statusText = status;
                         }
                         else if (status === 'NI') {
                             badgeClass = "badge-danger";
-                            statusText = "NÃO IMPL.";
-                        }
-                        else if (status === 'N/A') {
-                            statusText = "N/A";
                         }
                         
-                        const dateText = date ? `<div class="text-[8px] mt-1 opacity-75">${date.trim()}</div>` : '';
+                        const dateText = date ? `<div class="text-[9px] mt-1 opacity-70">${date.trim()}</div>` : '';
                         
                         return `
-                            <td class="px-3 py-4">
-                                <div class="status-cell ${badgeClass}" onclick="showCellDetails('${mod}', '${u.label}', '${status}', '${date || ''}')">
-                                    <div>${statusText}</div>
+                            <td class="px-2 py-3 border-l border-slate-100">
+                                <div class="status-cell ${badgeClass}" onclick="showCellDetails('${mod}', '${u.label.replace(/'/g, "\\'")}', '${status}', '${date || ''}')">
+                                    <div class="font-bold">${displayStatus}</div>
                                     ${dateText}
                                 </div>
                             </td>
@@ -521,6 +576,104 @@
             lucide.createIcons();
             updateStats();
             setTimeout(syncScrollbars, 50);
+        }
+
+        function renderEvolutionChart() {
+            const ctx = document.getElementById('evolutionChart');
+            
+            // Calcular evolução por cliente
+            const clientProgress = UNIDADES_DATA.map(client => {
+                const clientIdx = UNIDADES_DATA.findIndex(u => u.id === client.id);
+                let total = 0;
+                let weight = 0;
+                
+                MODULOS.forEach(mod => {
+                    const cell = MATRIX_DATA[mod][clientIdx];
+                    if (!cell) return;
+                    const status = cell.split('|')[0].trim();
+                    
+                    if (status === 'N/A' || !status) return;
+                    total++;
+                    
+                    if (status === 'ID') weight += 100;
+                    else if (status.startsWith('EI')) {
+                        const match = status.match(/(\d+)%/);
+                        weight += match ? parseInt(match[1]) : 50;
+                    }
+                    else if (status === 'US') weight += 80;
+                });
+                
+                return {
+                    label: client.label,
+                    progress: total > 0 ? Math.round(weight / total) : 0
+                };
+            });
+
+            // Ordenar por progresso
+            clientProgress.sort((a, b) => b.progress - a.progress);
+
+            if (evolutionChart) {
+                evolutionChart.destroy();
+            }
+
+            evolutionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: clientProgress.map(c => c.label),
+                    datasets: [{
+                        label: 'Evolução (%)',
+                        data: clientProgress.map(c => c.progress),
+                        backgroundColor: clientProgress.map(c => {
+                            if (c.progress >= 80) return '#3b82f6';
+                            if (c.progress >= 50) return '#f59e0b';
+                            return '#ef4444';
+                        }),
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            bodyFont: { size: 13 },
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Evolução: ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                },
+                                font: { size: 11 }
+                            },
+                            grid: {
+                                color: '#f1f5f9'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 10, weight: '600' },
+                                color: '#64748b'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         function syncScrollbars() {
@@ -542,11 +695,10 @@
             const title = document.getElementById('modalTitle');
             const content = document.getElementById('modalContent');
             
-            title.innerHTML = `<i data-lucide="building-2" class="inline" style="width: 24px; height: 24px;"></i> ${unitName}`;
+            title.innerHTML = `<i data-lucide="building-2" class="inline" style="width: 20px; height: 20px;"></i> ${unitName}`;
             
-            // Coletar todos os módulos desta unidade
             const unitIndex = UNIDADES_DATA.findIndex(u => u.label === unitName);
-            let html = '<div class="space-y-3">';
+            let html = '<div class="space-y-2">';
             
             MODULOS.forEach(mod => {
                 const status = MATRIX_DATA[mod][unitIndex] || "NI";
@@ -572,8 +724,8 @@
                 html += `
                     <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition">
                         <div class="flex items-center gap-3">
-                            <i data-lucide="${icon}" class="text-slate-400" style="width: 20px; height: 20px;"></i>
-                            <span class="font-semibold text-slate-700">${mod}</span>
+                            <i data-lucide="${icon}" class="text-slate-400" style="width: 18px; height: 18px;"></i>
+                            <span class="font-semibold text-slate-700 text-sm">${mod}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="status-cell ${badgeClass} text-xs px-3 py-1 min-h-0">${statusPart.trim()}</span>
@@ -600,23 +752,33 @@
             let statusText = status;
             let statusColor = 'text-slate-600';
             let statusIcon = 'info';
+            let statusDesc = '';
             
             if (status === 'ID') {
                 statusText = 'Implantado';
-                statusColor = 'text-green-600';
-                statusIcon = 'check-circle';
-            } else if (status === 'US') {
-                statusText = 'Uso Simples';
                 statusColor = 'text-blue-600';
+                statusIcon = 'check-circle';
+                statusDesc = 'Módulo 100% implantado e operacional';
+            } else if (status === 'US') {
+                statusText = 'Fomentar Usabilidade';
+                statusColor = 'text-cyan-600';
                 statusIcon = 'zap';
+                statusDesc = 'Módulo implantado, em fase de adoção pelos usuários';
             } else if (status.startsWith('EI')) {
                 statusText = 'Em Implantação';
                 statusColor = 'text-amber-600';
                 statusIcon = 'clock';
+                statusDesc = 'Módulo em processo de implantação';
             } else if (status === 'NI') {
                 statusText = 'Não Implantado';
                 statusColor = 'text-red-600';
                 statusIcon = 'x-circle';
+                statusDesc = 'Módulo ainda não iniciado';
+            } else if (status === 'N/A') {
+                statusText = 'Não Aplicável';
+                statusColor = 'text-slate-500';
+                statusIcon = 'minus-circle';
+                statusDesc = 'Cliente não possui este módulo';
             }
             
             content.innerHTML = `
@@ -624,10 +786,11 @@
                     <div class="p-4 bg-slate-50 rounded-lg">
                         <div class="flex items-center gap-3 mb-2">
                             <i data-lucide="${statusIcon}" class="${statusColor}" style="width: 24px; height: 24px;"></i>
-                            <span class="label-style">Status</span>
+                            <span class="label-style">Status Atual</span>
                         </div>
-                        <div class="text-2xl font-black ${statusColor}">${statusText}</div>
-                        <div class="text-sm text-slate-500 mt-1">${status}</div>
+                        <div class="text-2xl font-black ${statusColor} mb-1">${statusText}</div>
+                        <div class="text-sm text-slate-600">${statusDesc}</div>
+                        <div class="text-xs text-slate-500 mt-2 font-mono">${status}</div>
                     </div>
                     ${date ? `
                         <div class="p-4 bg-slate-50 rounded-lg">
