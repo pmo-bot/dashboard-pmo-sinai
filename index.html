@@ -68,15 +68,24 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
+        /* AJUSTE 2: Nomes dos clientes na horizontal */
         .client-header {
             cursor: pointer; 
             transition: all 0.2s;
             position: relative;
             user-select: none;
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            padding: 16px 8px !important;
-            min-width: 60px !important;
+            padding: 12px 8px !important;
+            min-width: 120px !important;
+            max-width: 140px !important;
+            text-align: center;
+            font-size: 11px;
+            line-height: 1.3;
+            font-weight: 600;
+            white-space: normal;
+            word-wrap: break-word;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .client-header:hover { 
@@ -84,7 +93,7 @@
             color: #4f46e5;
         }
 
-        /* Cores suaves e pastéis */
+        /* Cores suaves e pastéis - MANTIDAS DO ORIGINAL */
         .badge-success { 
             background: #dbeafe;
             color: #1e40af;
@@ -124,16 +133,19 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
+        /* AJUSTE 1: Modal corrigido */
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(3px);
-            z-index: 50;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
             align-items: center;
             justify-content: center;
             animation: fadeIn 0.2s;
+            padding: 20px;
+            overflow-y: auto;
         }
 
         @keyframes fadeIn {
@@ -142,7 +154,16 @@
         }
 
         .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             animation: slideUp 0.3s;
+            position: relative;
         }
 
         @keyframes slideUp {
@@ -197,6 +218,15 @@
             font-weight: 700;
             font-size: 10px;
         }
+
+        /* AJUSTE 3: Gráfico mais compacto */
+        #chartSection {
+            max-height: 350px;
+        }
+        
+        #evolutionChart {
+            max-height: 280px !important;
+        }
     </style>
 </head>
 <body class="min-h-screen p-6">
@@ -213,23 +243,18 @@
     <div class="max-w-[1800px] mx-auto">
         
         <!-- Header -->
-        <div class="glass-card rounded-xl shadow-sm p-6 mb-6">
+        <div class="mb-6">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center shadow-sm">
-                        <i data-lucide="activity" class="text-white" style="width: 24px; height: 24px;"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-black text-slate-800">Projetos Sinai</h1>
-                        <p class="text-slate-500 text-sm font-medium">Dashboard PMO - Controle de Implantação</p>
-                    </div>
+                <div>
+                    <h1 class="text-3xl font-black text-slate-900">Projetos Sinai</h1>
+                    <p class="text-slate-500 text-sm mt-1 font-semibold">Dashboard PMO - Controle de Implantação</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-4">
                     <div class="text-right">
-                        <p class="text-xs text-slate-500 uppercase font-semibold">Atualizado em</p>
-                        <p class="text-sm font-bold text-slate-700" id="lastUpdate">--</p>
+                        <div class="label-style mb-1">Atualizado em</div>
+                        <div id="lastUpdate" class="text-sm font-bold text-slate-700">--</div>
                     </div>
-                    <button onclick="reloadData()" class="px-4 py-2 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition-all flex items-center gap-2 shadow-sm">
+                    <button onclick="reloadData()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition flex items-center gap-2">
                         <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
                         Atualizar
                     </button>
@@ -237,427 +262,426 @@
             </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-            
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             <!-- Cobertura Geral -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <div class="flex flex-col gap-2">
-                    <span class="label-style text-slate-500">Cobertura Geral</span>
-                    <div class="text-3xl font-black text-indigo-600" id="statCoverage">0%</div>
-                    <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                        <div id="barCoverage" class="progress-bar-fill h-full bg-indigo-500 rounded-full" style="width: 0%"></div>
-                    </div>
+            <div class="glass-card rounded-xl p-5 stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="label-style">Cobertura Geral</span>
+                    <i data-lucide="pie-chart" class="text-indigo-500" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div id="coverageValue" class="text-4xl value-style mb-2">0%</div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                    <div id="coverageBar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full progress-bar-fill" style="width: 0%"></div>
                 </div>
             </div>
 
-            <!-- Clientes -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <span class="label-style text-slate-500 block mb-1">Clientes</span>
-                <div class="text-3xl font-black text-slate-700" id="statClientes">0</div>
-                <span class="text-xs text-slate-500 font-semibold">ATIVOS</span>
+            <!-- Total de Clientes -->
+            <div class="glass-card rounded-xl p-5 stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="label-style">Clientes</span>
+                    <i data-lucide="users" class="text-slate-500" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div id="clientsValue" class="text-4xl value-style">0</div>
+                <div class="text-xs text-slate-500 mt-2 font-semibold uppercase">ATIVOS</div>
             </div>
 
-            <!-- Implantado -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <span class="label-style text-slate-500 block mb-1">Implantados</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-black text-blue-600" id="statIDCount">0</span>
-                    <span class="text-sm font-bold text-slate-400" id="statIDPerc">0%</span>
+            <!-- Implantados -->
+            <div class="glass-card rounded-xl p-5 stat-card border-l-4 border-blue-500">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="label-style">Implantados</span>
+                    <i data-lucide="check-circle-2" class="text-blue-500" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div class="flex items-end gap-2">
+                    <div id="implantadosValue" class="text-4xl value-style text-blue-700">0</div>
+                    <div id="implantadosPercent" class="text-lg font-bold text-blue-500 mb-1">0%</div>
                 </div>
             </div>
 
             <!-- Em Implantação -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <span class="label-style text-slate-500 block mb-1">Em Implantação</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-black text-amber-600" id="statEICount">0</span>
-                    <span class="text-sm font-bold text-slate-400" id="statEIPerc">0%</span>
+            <div class="glass-card rounded-xl p-5 stat-card border-l-4 border-amber-500">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="label-style">Em Implantação</span>
+                    <i data-lucide="loader" class="text-amber-500 pulse-dot" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div class="flex items-end gap-2">
+                    <div id="emImplantacaoValue" class="text-4xl value-style text-amber-700">0</div>
+                    <div id="emImplantacaoPercent" class="text-lg font-bold text-amber-500 mb-1">0%</div>
                 </div>
             </div>
 
             <!-- Fomentar Usabilidade -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <span class="label-style text-slate-500 block mb-1">Fomentar Usabilidade</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-black text-cyan-600" id="statUSCount">0</span>
-                    <span class="text-sm font-bold text-slate-400" id="statUSPerc">0%</span>
+            <div class="glass-card rounded-xl p-5 stat-card border-l-4 border-cyan-500">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="label-style">Fomentar Usabilidade</span>
+                    <i data-lucide="zap" class="text-cyan-500" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div class="flex items-end gap-2">
+                    <div id="usabilidadeValue" class="text-4xl value-style text-cyan-700">0</div>
+                    <div id="usabilidadePercent" class="text-lg font-bold text-cyan-500 mb-1">0%</div>
                 </div>
             </div>
-
-            <!-- Não Implantado -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <span class="label-style text-slate-500 block mb-1">Não Implantados</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-black text-red-600" id="statNICount">0</span>
-                    <span class="text-sm font-bold text-slate-400" id="statNIPerc">0%</span>
-                </div>
-            </div>
-
         </div>
 
-        <!-- Gráfico de Evolução por Cliente -->
-        <div class="glass-card rounded-xl shadow-sm p-6 mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i data-lucide="trending-up" style="width: 20px; height: 20px;"></i>
-                    Evolução por Cliente
-                </h2>
+        <!-- Gráfico de Evolução - AJUSTE 3: Mais compacto -->
+        <div id="chartSection" class="glass-card rounded-xl p-6 mb-6">
+            <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="trending-up" class="text-slate-600" style="width: 22px; height: 22px;"></i>
+                <h2 class="text-lg font-black text-slate-900">Evolução por Cliente</h2>
             </div>
-            <div style="height: 300px;">
+            <div style="position: relative; height: 280px;">
                 <canvas id="evolutionChart"></canvas>
             </div>
         </div>
 
-        <!-- Legenda -->
-        <div class="glass-card rounded-xl shadow-sm p-6 mb-6">
-            <div class="flex items-center gap-2 mb-4">
-                <i data-lucide="info" class="text-slate-600" style="width: 18px; height: 18px;"></i>
-                <h3 class="text-sm font-bold text-slate-700 uppercase">Legenda de Status</h3>
-            </div>
+        <!-- Legenda de Status -->
+        <div class="glass-card rounded-xl p-5 mb-6">
+            <h3 class="text-sm font-black text-slate-700 mb-4 uppercase flex items-center gap-2">
+                <i data-lucide="info" style="width: 16px; height: 16px;"></i>
+                Legenda de Status
+            </h3>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
                 <div class="legend-item">
                     <div class="legend-badge badge-success">ID</div>
                     <div>
-                        <p class="text-xs font-bold text-slate-700">Implantado</p>
-                        <p class="text-[10px] text-slate-500">100% concluído</p>
+                        <div class="text-xs font-bold text-slate-700">Implantado</div>
+                        <div class="text-xs text-slate-500">100% concluído</div>
                     </div>
                 </div>
                 <div class="legend-item">
                     <div class="legend-badge badge-warning">EI</div>
                     <div>
-                        <p class="text-xs font-bold text-slate-700">Em Implantação</p>
-                        <p class="text-[10px] text-slate-500">Em andamento</p>
+                        <div class="text-xs font-bold text-slate-700">Em Implantação</div>
+                        <div class="text-xs text-slate-500">Em andamento</div>
                     </div>
                 </div>
                 <div class="legend-item">
                     <div class="legend-badge badge-info">US</div>
                     <div>
-                        <p class="text-xs font-bold text-slate-700">Fomentar Usabilidade</p>
-                        <p class="text-[10px] text-slate-500">Já implantado</p>
+                        <div class="text-xs font-bold text-slate-700">Fomentar Usabilidade</div>
+                        <div class="text-xs text-slate-500">Já implantado</div>
                     </div>
                 </div>
                 <div class="legend-item">
                     <div class="legend-badge badge-danger">NI</div>
                     <div>
-                        <p class="text-xs font-bold text-slate-700">Não Implantado</p>
-                        <p class="text-[10px] text-slate-500">Não iniciado</p>
+                        <div class="text-xs font-bold text-slate-700">Não Implantado</div>
+                        <div class="text-xs text-slate-500">Não iniciado</div>
                     </div>
                 </div>
                 <div class="legend-item">
                     <div class="legend-badge badge-none">N/A</div>
                     <div>
-                        <p class="text-xs font-bold text-slate-700">Não Possui</p>
-                        <p class="text-[10px] text-slate-500">Não aplicável</p>
+                        <div class="text-xs font-bold text-slate-700">Não Possui</div>
+                        <div class="text-xs text-slate-500">Não aplicável</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Matrix Table -->
-        <div class="glass-card rounded-xl shadow-sm overflow-hidden">
-            
-            <!-- Top Scroll -->
-            <div id="topScrollContainer" class="overflow-x-auto custom-scrollbar" style="overflow-y: hidden;">
-                <div id="topScrollContent" style="height: 1px;"></div>
-            </div>
+        <!-- Top Scrollbar (sincronizado) -->
+        <div id="topScrollContainer" class="glass-card rounded-t-xl overflow-x-auto custom-scrollbar" style="overflow-y: hidden;">
+            <div id="topScrollContent" style="height: 1px;"></div>
+        </div>
 
-            <!-- Table Container -->
-            <div id="matrixScrollContainer" class="overflow-x-auto custom-scrollbar" style="max-height: 600px;">
+        <!-- Matriz de Status -->
+        <div class="glass-card rounded-b-xl overflow-hidden">
+            <div id="matrixScrollContainer" class="overflow-x-auto custom-scrollbar" style="max-height: 600px; overflow-y: auto;">
                 <table id="matrixTable" class="w-full border-collapse">
-                    <thead id="matrixHead" class="sticky top-0 z-20 bg-white"></thead>
-                    <tbody id="matrixBody"></tbody>
+                    <thead>
+                        <tr class="bg-slate-50 border-b-2 border-slate-200">
+                            <th class="sticky-col p-4 text-left text-xs font-black text-slate-600 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="layers" style="width: 16px; height: 16px;"></i>
+                                    Módulos
+                                </div>
+                            </th>
+                            <!-- Headers dos clientes serão inseridos via JS -->
+                        </tr>
+                    </thead>
+                    <tbody id="matrixBody">
+                        <!-- Linhas da matriz serão inseridas via JS -->
+                    </tbody>
                 </table>
             </div>
+        </div>
 
+        <div class="text-center mt-6 text-xs text-slate-400">
+            <p class="font-semibold">Dashboard PMO Sinai 3.0 • Atualização automática a cada 5 minutos</p>
         </div>
 
     </div>
 
-    <!-- Modal de Detalhes -->
+    <!-- Modal de Detalhes - AJUSTE 1: Corrigido -->
     <div id="detailModal" class="modal" onclick="closeDetailModal(event)">
-        <div class="modal-content glass-card rounded-xl shadow-xl p-6 max-w-2xl w-full mx-4">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-black text-slate-800" id="modalTitle">Detalhes</h2>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
+                <h3 id="modalTitle" class="text-xl font-black text-slate-900 flex items-center gap-2"></h3>
                 <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 transition">
                     <i data-lucide="x" style="width: 24px; height: 24px;"></i>
                 </button>
             </div>
-            <div id="modalContent" class="text-slate-600"></div>
+            <div id="modalContent" class="text-slate-700"></div>
         </div>
     </div>
 
     <script>
-        // Configuração da planilha
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Luy02AEbfmV5Kpt3KgJOLVSx-zDw8JWMojWQjdlEbHI/gviz/tq?tqx=out:json';
+        
+        const MODULOS = [
+            'Secretaria',
+            'Tesouraria', 
+            'Financeiro',
+            'Comunicação',
+            'Aplicativo',
+            'Eventos',
+            'EBD',
+            'Patrimônio',
+            'Pessoas'
+        ];
         
         let UNIDADES_DATA = [];
-        let MODULOS = [];
         let MATRIX_DATA = {};
         let evolutionChart = null;
 
-        // Sistema de observações (salvo localmente no navegador)
+        // AJUSTE 1: Sistema de localStorage para persistir observações
+        const STORAGE_KEY_PREFIX = 'pmo_sinai_note_';
+
         function saveClientNote(clientId, note) {
-            localStorage.setItem('client_note_' + clientId, note);
+            try {
+                localStorage.setItem(STORAGE_KEY_PREFIX + clientId, note);
+                console.log('Nota salva com sucesso para:', clientId);
+                return true;
+            } catch (e) {
+                console.error('Erro ao salvar nota:', e);
+                alert('Erro ao salvar observação. Verifique se o armazenamento local está habilitado.');
+                return false;
+            }
         }
 
         function getClientNote(clientId) {
-            return localStorage.getItem('client_note_' + clientId) || '';
+            try {
+                return localStorage.getItem(STORAGE_KEY_PREFIX + clientId) || '';
+            } catch (e) {
+                console.error('Erro ao recuperar nota:', e);
+                return '';
+            }
         }
 
-        // Função para carregar dados da planilha
+        function hasClientNote(clientId) {
+            return getClientNote(clientId).trim().length > 0;
+        }
+
         async function loadSheetData() {
             try {
                 const response = await fetch(SHEET_URL);
-                const csvText = await response.text();
+                const text = await response.text();
+                const json = JSON.parse(text.substring(47).slice(0, -2));
                 
-                // Parse CSV mais robusto
-                const rows = csvText.split('\n').map(row => {
-                    // Divide por vírgula, mas respeita conteúdo entre aspas
-                    const result = [];
-                    let current = '';
-                    let inQuotes = false;
-                    
-                    for (let i = 0; i < row.length; i++) {
-                        const char = row[i];
-                        
-                        if (char === '"') {
-                            inQuotes = !inQuotes;
-                        } else if (char === ',' && !inQuotes) {
-                            result.push(current.trim());
-                            current = '';
-                        } else {
-                            current += char;
-                        }
-                    }
-                    result.push(current.trim());
-                    return result;
-                });
-
-                // LINHA 2 (índice 1) = nomes COMPLETOS dos clientes
-                const headerRow = rows[1];
-                UNIDADES_DATA = headerRow.slice(1).filter(label => label && label.length > 0).map((label, idx) => ({
-                    id: `unidade_${idx}`,
-                    label: label // Nome completo da planilha
-                }));
-
-                console.log('Clientes carregados:', UNIDADES_DATA); // Debug
-
-                // Demais linhas (a partir da linha 3) = módulos e seus status
-                MODULOS = [];
+                const rows = json.table.rows;
+                
+                UNIDADES_DATA = [];
                 MATRIX_DATA = {};
-
-                for (let i = 2; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (row.length > 1 && row[0]) {
-                        const moduleName = row[0];
-                        MODULOS.push(moduleName);
-                        MATRIX_DATA[moduleName] = row.slice(1);
+                MODULOS.forEach(mod => MATRIX_DATA[mod] = []);
+                
+                const headerRow = rows[0];
+                for (let i = 1; i < headerRow.c.length; i++) {
+                    if (headerRow.c[i] && headerRow.c[i].v) {
+                        UNIDADES_DATA.push({
+                            label: headerRow.c[i].v,
+                            id: 'client_' + i
+                        });
                     }
                 }
-
+                
+                for (let r = 1; r < rows.length; r++) {
+                    const row = rows[r];
+                    if (!row.c || !row.c[0]) continue;
+                    
+                    const moduleName = row.c[0].v;
+                    if (!MODULOS.includes(moduleName)) continue;
+                    
+                    for (let i = 1; i < row.c.length; i++) {
+                        const cellValue = row.c[i] && row.c[i].v ? row.c[i].v : "NI";
+                        MATRIX_DATA[moduleName].push(cellValue);
+                    }
+                }
+                
+                calculateStats();
                 renderMatrix();
-                renderEvolutionChart();
-                updateLastUpdateTime();
-                hideLoading();
+                renderChart();
+                
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
+                document.getElementById('loadingOverlay').style.display = 'none';
+                
+                lucide.createIcons();
+                syncScrollbars();
                 
             } catch (error) {
-                console.error('Erro ao carregar planilha:', error);
-                alert('Erro ao carregar dados da planilha. Verifique a conexão e tente novamente.');
-                hideLoading();
+                console.error('Erro ao carregar dados:', error);
+                document.getElementById('loadingOverlay').innerHTML = `
+                    <div class="text-center">
+                        <i data-lucide="alert-circle" class="text-red-400 mx-auto mb-4" style="width: 48px; height: 48px;"></i>
+                        <p class="text-white text-lg font-semibold">Erro ao carregar dados</p>
+                        <p class="text-slate-300 text-sm mt-2">Verifique sua conexão e tente novamente</p>
+                        <button onclick="reloadData()" class="mt-4 px-6 py-2 bg-white text-slate-900 rounded-lg font-semibold hover:bg-slate-100 transition">
+                            Tentar Novamente
+                        </button>
+                    </div>
+                `;
+                lucide.createIcons();
             }
         }
 
-        function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-
-        function updateLastUpdateTime() {
-            const now = new Date();
-            const formatted = now.toLocaleString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            document.getElementById('lastUpdate').textContent = formatted;
-        }
-
-        function updateStats() {
-            let totalCells = 0, totalWeight = 0;
-            let counts = { ID: 0, EI: 0, US: 0, NI: 0 };
+        function calculateStats() {
+            const totalUnits = UNIDADES_DATA.length;
+            const totalCells = totalUnits * MODULOS.length;
             
-            Object.keys(MATRIX_DATA).forEach(mod => {
-                MATRIX_DATA[mod].forEach(cell => {
-                    if (!cell) return;
-                    const statusPart = cell.split('|')[0].trim();
-                    if (statusPart === "N/A" || !statusPart) return;
-                    
-                    totalCells++;
-                    
-                    if (statusPart === "ID") { 
-                        counts.ID++; 
-                        totalWeight += 100; 
-                    }
-                    else if (statusPart.startsWith("EI")) { 
-                        counts.EI++; 
-                        const match = statusPart.match(/(\d+)%/);
-                        totalWeight += match ? parseInt(match[1]) : 50;
-                    }
-                    else if (statusPart === "US") { 
-                        counts.US++; 
-                        totalWeight += 80; 
-                    }
-                    else if (statusPart === "NI") { 
-                        counts.NI++; 
-                    }
+            let implantados = 0;
+            let emImplantacao = 0;
+            let usabilidade = 0;
+            let naoImplantados = 0;
+            
+            MODULOS.forEach(mod => {
+                MATRIX_DATA[mod].forEach(status => {
+                    const statusPart = status.split('|')[0].trim();
+                    if (statusPart === 'ID') implantados++;
+                    else if (statusPart.startsWith('EI')) emImplantacao++;
+                    else if (statusPart === 'US') usabilidade++;
+                    else if (statusPart === 'NI') naoImplantados++;
                 });
             });
-
-            const coverage = totalCells > 0 ? Math.round(totalWeight / totalCells) : 0;
-            document.getElementById('statCoverage').innerText = coverage + "%";
-            document.getElementById('barCoverage').style.width = coverage + "%";
-            document.getElementById('statClientes').innerText = UNIDADES_DATA.length;
-
-            const setCard = (id, count) => {
-                const elCount = document.getElementById('stat' + id + 'Count');
-                const elPerc = document.getElementById('stat' + id + 'Perc');
-                if(elCount) elCount.innerText = count;
-                if(elPerc) elPerc.innerText = totalCells > 0 ? Math.round((count/totalCells)*100) + "%" : "0%";
-            };
-
-            setCard('ID', counts.ID);
-            setCard('EI', counts.EI);
-            setCard('US', counts.US);
-            setCard('NI', counts.NI);
+            
+            const coverage = totalCells > 0 ? ((implantados / totalCells) * 100).toFixed(1) : 0;
+            
+            document.getElementById('coverageValue').textContent = coverage + '%';
+            document.getElementById('coverageBar').style.width = coverage + '%';
+            document.getElementById('clientsValue').textContent = totalUnits;
+            document.getElementById('implantadosValue').textContent = implantados;
+            document.getElementById('implantadosPercent').textContent = totalCells > 0 ? ((implantados/totalCells)*100).toFixed(0) + '%' : '0%';
+            document.getElementById('emImplantacaoValue').textContent = emImplantacao;
+            document.getElementById('emImplantacaoPercent').textContent = totalCells > 0 ? ((emImplantacao/totalCells)*100).toFixed(0) + '%' : '0%';
+            document.getElementById('usabilidadeValue').textContent = usabilidade;
+            document.getElementById('usabilidadePercent').textContent = totalCells > 0 ? ((usabilidade/totalCells)*100).toFixed(0) + '%' : '0%';
         }
 
         function renderMatrix() {
-            const head = document.getElementById('matrixHead');
-            const body = document.getElementById('matrixBody');
+            const thead = document.querySelector('#matrixTable thead tr');
+            const tbody = document.getElementById('matrixBody');
             
-            // Render header
-            head.innerHTML = `
-                <tr class="bg-slate-50 border-b border-slate-200">
-                    <th class="sticky-col px-6 py-4 label-style text-left font-bold text-slate-700">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="layers" style="width: 14px; height: 14px;"></i>
-                            Módulos Sinai
-                        </div>
-                    </th>
-                    ${UNIDADES_DATA.map(u => {
-                        const hasNote = getClientNote(u.id);
-                        return `
-                        <th class="label-style text-slate-600 client-header border-l border-slate-200 relative" 
-                            onclick="showUnitDetails('${u.label.replace(/'/g, "\\'")}')">
-                            ${hasNote ? '<div class="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full pulse-dot"></div>' : ''}
-                            <div class="font-bold whitespace-nowrap">${u.label}</div>
-                        </th>
-                    `;
-                    }).join('')}
-                </tr>
-            `;
-
-            // Render body
-            body.innerHTML = MODULOS.map((mod, modIdx) => `
-                <tr class="group hover:bg-slate-50/50 transition-all border-b border-slate-100">
-                    <td class="sticky-col px-6 py-3 value-style text-xs text-left font-bold text-slate-700">
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-md bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-[10px]">
-                                ${modIdx + 1}
-                            </div>
-                            ${mod}
-                        </div>
-                    </td>
-                    ${UNIDADES_DATA.map((u, idx) => {
-                        const cellRaw = MATRIX_DATA[mod][idx] || "NI";
-                        const [statusRaw, date] = cellRaw.split('|');
-                        const status = statusRaw.trim();
-                        
-                        let badgeClass = "badge-none";
-                        let displayStatus = status;
-                        
-                        if (status === 'ID') {
-                            badgeClass = "badge-success";
-                        }
-                        else if (status === 'US') {
-                            badgeClass = "badge-info";
-                        }
-                        else if (status.startsWith('EI')) {
-                            badgeClass = "badge-warning";
-                        }
-                        else if (status === 'NI') {
-                            badgeClass = "badge-danger";
-                        }
-                        
-                        const dateText = date ? `<div class="text-[9px] mt-1 opacity-70">${date.trim()}</div>` : '';
-                        
-                        return `
-                            <td class="px-2 py-3 border-l border-slate-100">
-                                <div class="status-cell ${badgeClass}" onclick="showCellDetails('${mod}', '${u.label.replace(/'/g, "\\'")}', '${status}', '${date || ''}')">
-                                    <div class="font-bold">${displayStatus}</div>
-                                    ${dateText}
-                                </div>
-                            </td>
-                        `;
-                    }).join('')}
-                </tr>
-            `).join('');
+            // Limpar headers anteriores
+            while (thead.children.length > 1) {
+                thead.removeChild(thead.lastChild);
+            }
             
-            lucide.createIcons();
-            updateStats();
-            setTimeout(syncScrollbars, 50);
-        }
-
-        function renderEvolutionChart() {
-            const ctx = document.getElementById('evolutionChart');
-            
-            // Calcular evolução por cliente
-            const clientProgress = UNIDADES_DATA.map(client => {
-                const clientIdx = UNIDADES_DATA.findIndex(u => u.id === client.id);
-                let total = 0;
-                let weight = 0;
+            // Adicionar headers dos clientes
+            UNIDADES_DATA.forEach(unit => {
+                const th = document.createElement('th');
+                th.className = 'client-header';
                 
-                MODULOS.forEach(mod => {
-                    const cell = MATRIX_DATA[mod][clientIdx];
-                    if (!cell) return;
-                    const status = cell.split('|')[0].trim();
+                // Adicionar indicador visual se houver nota salva
+                const hasNote = hasClientNote(unit.id);
+                th.innerHTML = `
+                    <div style="position: relative; width: 100%;">
+                        ${unit.label}
+                        ${hasNote ? '<div style="position: absolute; top: -8px; right: -8px; width: 8px; height: 8px; background: #4f46e5; border-radius: 50%; border: 2px solid white;"></div>' : ''}
+                    </div>
+                `;
+                th.onclick = () => showUnitDetails(unit.label);
+                thead.appendChild(th);
+            });
+            
+            // Limpar corpo da tabela
+            tbody.innerHTML = '';
+            
+            // Renderizar linhas dos módulos
+            MODULOS.forEach(modulo => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-100 hover:bg-slate-50 transition';
+                
+                // Coluna do módulo (sticky)
+                const tdModule = document.createElement('td');
+                tdModule.className = 'sticky-col p-4 font-bold text-slate-700 text-sm';
+                tdModule.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="box" class="text-slate-400" style="width: 16px; height: 16px;"></i>
+                        ${modulo}
+                    </div>
+                `;
+                tr.appendChild(tdModule);
+                
+                // Células de status
+                MATRIX_DATA[modulo].forEach((status, idx) => {
+                    const td = document.createElement('td');
+                    td.className = 'p-2 text-center';
                     
-                    if (status === 'N/A' || !status) return;
-                    total++;
+                    const [statusPart, date] = status.split('|');
                     
-                    if (status === 'ID') weight += 100;
-                    else if (status.startsWith('EI')) {
-                        const match = status.match(/(\d+)%/);
-                        weight += match ? parseInt(match[1]) : 50;
-                    }
-                    else if (status === 'US') weight += 80;
+                    let badgeClass = 'badge-none';
+                    if (statusPart.trim() === 'ID') badgeClass = 'badge-success';
+                    else if (statusPart.trim() === 'US') badgeClass = 'badge-info';
+                    else if (statusPart.trim().startsWith('EI')) badgeClass = 'badge-warning';
+                    else if (statusPart.trim() === 'NI') badgeClass = 'badge-danger';
+                    
+                    const unitName = UNIDADES_DATA[idx].label;
+                    
+                    td.innerHTML = `
+                        <div class="status-cell ${badgeClass}" onclick="showCellDetails('${modulo}', '${unitName}', '${statusPart.trim()}', '${date ? date.trim() : ''}')">
+                            ${statusPart.trim()}
+                            ${date ? `<span class="text-xs mt-1 opacity-70">${date.trim()}</span>` : ''}
+                        </div>
+                    `;
+                    
+                    tr.appendChild(td);
                 });
                 
-                return {
-                    label: client.label,
-                    progress: total > 0 ? Math.round(weight / total) : 0
-                };
+                tbody.appendChild(tr);
             });
+            
+            lucide.createIcons();
+        }
 
-            // Ordenar por progresso
-            clientProgress.sort((a, b) => b.progress - a.progress);
-
+        function renderChart() {
+            const labels = UNIDADES_DATA.map(u => u.label);
+            const data = UNIDADES_DATA.map((unit, idx) => {
+                let total = 0;
+                let implantados = 0;
+                
+                MODULOS.forEach(mod => {
+                    const status = MATRIX_DATA[mod][idx];
+                    if (status && status !== 'N/A') {
+                        total++;
+                        const statusPart = status.split('|')[0].trim();
+                        if (statusPart === 'ID') implantados++;
+                    }
+                });
+                
+                return total > 0 ? ((implantados / total) * 100).toFixed(1) : 0;
+            });
+            
+            // Ordenar por porcentagem (maior para menor)
+            const combined = labels.map((label, i) => ({ label, value: parseFloat(data[i]) }));
+            combined.sort((a, b) => b.value - a.value);
+            
+            const sortedLabels = combined.map(c => c.label);
+            const sortedData = combined.map(c => c.value);
+            
+            const ctx = document.getElementById('evolutionChart').getContext('2d');
+            
             if (evolutionChart) {
                 evolutionChart.destroy();
             }
-
+            
             evolutionChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: clientProgress.map(c => c.label),
+                    labels: sortedLabels,
                     datasets: [{
-                        label: 'Evolução (%)',
-                        data: clientProgress.map(c => c.progress),
-                        backgroundColor: clientProgress.map(c => {
-                            if (c.progress >= 80) return '#3b82f6';
-                            if (c.progress >= 50) return '#f59e0b';
+                        label: 'Cobertura (%)',
+                        data: sortedData,
+                        backgroundColor: sortedData.map(val => {
+                            if (val >= 90) return '#3b82f6';
+                            if (val >= 50) return '#f59e0b';
                             return '#ef4444';
                         }),
                         borderRadius: 6,
@@ -672,11 +696,10 @@
                         tooltip: {
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
                             padding: 12,
-                            bodyFont: { size: 13 },
+                            titleFont: { size: 13, weight: 'bold' },
+                            bodyFont: { size: 12 },
                             callbacks: {
-                                label: function(context) {
-                                    return 'Evolução: ' + context.parsed.y + '%';
-                                }
+                                label: (context) => `${context.parsed.y}% concluído`
                             }
                         }
                     },
@@ -685,23 +708,18 @@
                             beginAtZero: true,
                             max: 100,
                             ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                },
+                                callback: (value) => value + '%',
                                 font: { size: 11 }
                             },
-                            grid: {
-                                color: '#f1f5f9'
-                            }
+                            grid: { color: '#f1f5f9' }
                         },
                         x: {
-                            ticks: {
+                            ticks: { 
                                 font: { size: 10, weight: '600' },
-                                color: '#64748b'
+                                maxRotation: 45,
+                                minRotation: 45
                             },
-                            grid: {
-                                display: false
-                            }
+                            grid: { display: false }
                         }
                     }
                 }
@@ -735,7 +753,7 @@
             
             const unitIndex = UNIDADES_DATA.findIndex(u => u.label === unitName);
             
-            // Seção de Observações
+            // Seção de Observações com localStorage
             let html = `
                 <div class="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
                     <div class="flex items-center gap-2 mb-3">
@@ -808,25 +826,25 @@
             const textarea = document.getElementById('unitNoteTextarea');
             const note = textarea.value;
             
-            saveClientNote(unitId, note);
-            
-            // Feedback visual
-            const btn = event.target.closest('button');
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = '<i data-lucide="check" style="width: 16px; height: 16px;"></i> Salvo!';
-            btn.classList.add('bg-green-600', 'hover:bg-green-700');
-            btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-            lucide.createIcons();
-            
-            setTimeout(() => {
-                btn.innerHTML = originalContent;
-                btn.classList.remove('bg-green-600', 'hover:bg-green-700');
-                btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            if (saveClientNote(unitId, note)) {
+                // Feedback visual
+                const btn = event.target.closest('button');
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="check" style="width: 16px; height: 16px;"></i> Salvo!';
+                btn.classList.add('bg-green-600', 'hover:bg-green-700');
+                btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
                 lucide.createIcons();
-            }, 2000);
-            
-            // Atualizar indicador visual de nota no header
-            renderMatrix();
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                    btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                    lucide.createIcons();
+                }, 2000);
+                
+                // Atualizar indicador visual de nota no header
+                renderMatrix();
+            }
         }
 
         function showCellDetails(module, unit, status, date) {
