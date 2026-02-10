@@ -427,7 +427,10 @@
 
     <script>
         // URL correta da planilha publicada
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
+        const SHEET_URL_ORIGINAL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
+        
+        // Usar proxy CORS para evitar bloqueios
+        const SHEET_URL = `https://api.allorigins.win/raw?url=${encodeURIComponent(SHEET_URL_ORIGINAL)}`;
         
         const MODULOS = [
             'Secretaria',
