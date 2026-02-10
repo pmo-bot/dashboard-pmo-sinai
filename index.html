@@ -73,18 +73,10 @@
             transition: all 0.2s;
             position: relative;
             user-select: none;
-            padding: 12px 8px !important;
-            min-width: 120px !important;
-            max-width: 140px !important;
-            text-align: center;
-            font-size: 11px;
-            line-height: 1.3;
-            font-weight: 600;
-            white-space: normal;
-            word-wrap: break-word;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            padding: 16px 8px !important;
+            min-width: 60px !important;
         }
         
         .client-header:hover { 
@@ -323,7 +315,7 @@
                     Evolução por Cliente
                 </h2>
             </div>
-            <div style="height: 280px;">
+            <div style="height: 400px;">
                 <canvas id="evolutionChart"></canvas>
             </div>
         </div>
@@ -660,7 +652,7 @@
                 };
             });
 
-            // Ordenar por progresso
+            // Ordenar por progresso (decrescente)
             clientProgress.sort((a, b) => b.progress - a.progress);
 
             if (evolutionChart) {
@@ -672,55 +664,72 @@
                 data: {
                     labels: clientProgress.map(c => c.label),
                     datasets: [{
-                        label: 'Evolução (%)',
+                        label: 'Cobertura',
                         data: clientProgress.map(c => c.progress),
                         backgroundColor: clientProgress.map(c => {
-                            if (c.progress >= 80) return '#3b82f6';
-                            if (c.progress >= 50) return '#f59e0b';
-                            return '#ef4444';
+                            if (c.progress >= 90) return '#3b82f6';  // Azul
+                            if (c.progress >= 70) return '#10b981';  // Verde
+                            if (c.progress >= 50) return '#f59e0b';  // Laranja
+                            return '#ef4444';  // Vermelho
                         }),
-                        borderRadius: 6,
-                        borderSkipped: false,
+                        borderRadius: 4,
+                        barThickness: 16,
                     }]
                 },
                 options: {
+                    indexAxis: 'y',  // Barras horizontais
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            padding: 12,
-                            bodyFont: { size: 13 },
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            padding: 10,
+                            bodyFont: { size: 12, weight: '600' },
+                            titleFont: { size: 13, weight: 'bold' },
+                            cornerRadius: 6,
+                            displayColors: false,
                             callbacks: {
                                 label: function(context) {
-                                    return 'Evolução: ' + context.parsed.y + '%';
+                                    return context.parsed.x + '% concluído';
                                 }
                             }
                         }
                     },
                     scales: {
-                        y: {
+                        x: {
                             beginAtZero: true,
                             max: 100,
+                            grid: {
+                                color: '#f1f5f9',
+                                drawBorder: false
+                            },
                             ticks: {
                                 callback: function(value) {
                                     return value + '%';
                                 },
-                                font: { size: 11 }
-                            },
-                            grid: {
-                                color: '#f1f5f9'
+                                font: { size: 10 },
+                                color: '#94a3b8'
                             }
                         },
-                        x: {
-                            ticks: {
-                                font: { size: 10, weight: '600' },
-                                color: '#64748b'
-                            },
+                        y: {
                             grid: {
-                                display: false
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: { size: 11, weight: '600' },
+                                color: '#475569',
+                                crossAlign: 'far'
                             }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 20,
+                            top: 5,
+                            bottom: 5
                         }
                     }
                 }
