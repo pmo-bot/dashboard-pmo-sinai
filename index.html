@@ -51,7 +51,7 @@
             color: #64748b;
         }
         
-        /* Badges de Status - Cores Vibrantes sem Vermelho */
+        /* Badges de Status */
         .badge {
             padding: 8px 12px;
             border-radius: 8px;
@@ -144,72 +144,6 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
         }
         
-        .filter-btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: 2px solid #e2e8f0;
-            background: white;
-        }
-        
-        .filter-btn:hover {
-            border-color: #FF7A59;
-            background: #fff5f2;
-        }
-        
-        .filter-btn.active {
-            background: linear-gradient(135deg, #FF7A59 0%, #FF6B47 100%);
-            color: white;
-            border-color: transparent;
-        }
-        
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 30px;
-        }
-        
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #cbd5e1;
-            transition: 0.4s;
-            border-radius: 30px;
-        }
-        
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .toggle-slider {
-            background: linear-gradient(135deg, #FF7A59 0%, #FF6B47 100%);
-        }
-        
-        input:checked + .toggle-slider:before {
-            transform: translateX(30px);
-        }
-        
         .loading-spinner {
             border: 3px solid #f3f4f6;
             border-top: 3px solid #FF7A59;
@@ -241,8 +175,11 @@
         <div class="card p-6 mb-6">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <img src="data:image/png;base64,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" 
-                         alt="Sinai Logo" class="w-14 h-14 rounded-lg shadow-sm">
+                    <svg width="56" height="56" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="75" cy="75" r="70" fill="none" stroke="#FF7A59" stroke-width="8"/>
+                        <path d="M 40 100 L 75 40 L 110 100 Z" fill="#FF7A59"/>
+                        <path d="M 55 85 L 75 55 L 95 85 Z" fill="white"/>
+                    </svg>
                     <div>
                         <h1 class="text-2xl md:text-3xl font-black text-slate-800">Projetos Sinai</h1>
                         <p class="text-slate-500 text-sm">Dashboard PMO - Controle de Implantação</p>
@@ -261,7 +198,7 @@
             </div>
         </div>
 
-        <!-- KPIs -->
+        <!-- KPIs Linha 1 -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
             <div class="stat-card">
                 <div class="stat-label">Cobertura</div>
@@ -279,77 +216,50 @@
             
             <div class="stat-card cursor-pointer" onclick="showModuleDetails('Secretaria')">
                 <div class="stat-label">Secretaria</div>
-                <div id="statSecretaria">
-                    <div class="text-3xl font-black" style="color: #FF7A59;">0</div>
-                    <div class="text-xs text-slate-600 mt-1">clientes</div>
-                </div>
+                <div id="statSecretaria"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
             </div>
             
             <div class="stat-card cursor-pointer" onclick="showModuleDetails('Tesouraria')">
                 <div class="stat-label">Tesouraria</div>
-                <div id="statTesouraria">
-                    <div class="text-3xl font-black" style="color: #FF7A59;">0</div>
-                    <div class="text-xs text-slate-600 mt-1">clientes</div>
-                </div>
+                <div id="statTesouraria"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
             </div>
             
             <div class="stat-card cursor-pointer" onclick="showModuleDetails('Financeiro')">
                 <div class="stat-label">Financeiro</div>
-                <div id="statFinanceiro">
-                    <div class="text-3xl font-black" style="color: #FF7A59;">0</div>
-                    <div class="text-xs text-slate-600 mt-1">clientes</div>
-                </div>
+                <div id="statFinanceiro"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
             </div>
             
-            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Comunicação')">
-                <div class="stat-label">Comunicação</div>
-                <div id="statComunicacao">
-                    <div class="text-3xl font-black" style="color: #FF7A59;">0</div>
-                    <div class="text-xs text-slate-600 mt-1">clientes</div>
-                </div>
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Aplicativo')">
+                <div class="stat-label">Aplicativo</div>
+                <div id="statAplicativo"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
             </div>
         </div>
 
-        <!-- KPIs Linha 2 - Módulos restantes -->
+        <!-- KPIs Linha 2 -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Aplicativo')">
-                <div class="stat-label">Aplicativo</div>
-                <div id="statAplicativo">
-                    <div class="text-3xl font-black" style="color: #FF7A59;">0</div>
-                    <div class="text-xs text-slate-600 mt-1">clientes</div>
-                </div>
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Eventos')">
+                <div class="stat-label">Eventos</div>
+                <div id="statEventos"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
             </div>
             
             <div class="stat-card cursor-pointer" onclick="showModuleDetails('EBD')">
                 <div class="stat-label">EBD</div>
-                <div id="statEBD">
-                    <div class="text-3xl font-black" style="color: #FF7A59;">0</div>
-                    <div class="text-xs text-slate-600 mt-1">clientes</div>
-                </div>
+                <div id="statEBD"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
             </div>
             
             <div class="stat-card cursor-pointer" onclick="showModuleDetails('Patrimônio')">
                 <div class="stat-label">Patrimônio</div>
-                <div id="statPatrimonio">
-                    <div class="text-3xl font-black" style="color: #FF7A59;">0</div>
-                    <div class="text-xs text-slate-600 mt-1">clientes</div>
-                </div>
-            </div>
-            
-            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Eventos')">
-                <div class="stat-label">Eventos</div>
-                <div id="statEventos">
-                    <div class="text-3xl font-black" style="color: #FF7A59;">0</div>
-                    <div class="text-xs text-slate-600 mt-1">clientes</div>
-                </div>
+                <div id="statPatrimonio"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
             </div>
             
             <div class="stat-card cursor-pointer" onclick="showModuleDetails('Acolhimento')">
                 <div class="stat-label">Acolhimento</div>
-                <div id="statAcolhimento">
-                    <div class="text-3xl font-black" style="color: #FF7A59;">0</div>
-                    <div class="text-xs text-slate-600 mt-1">clientes</div>
-                </div>
+                <div id="statAcolhimento"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
+            </div>
+            
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Mau Departamen')">
+                <div class="stat-label">Mau Departamen</div>
+                <div id="statMauDepartamen"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
             </div>
         </div>
 
@@ -441,32 +351,37 @@
                     return result;
                 });
 
-                const headerRow = rows[1];
-                UNIDADES_DATA = headerRow.slice(1, 11).filter(label => label && label.length > 0).map((label, idx) => ({
-                    id: `unidade_${idx}`,
-                    label: label
-                }));
+                // LINHA 2 = nomes dos MÓDULOS (B2-K2)
+                const moduleRow = rows[1];
+                MODULOS = moduleRow.slice(1, 11).filter(mod => mod && mod.length > 0);
 
-                // Ler observações da coluna L (índice 11) para cada cliente
-                for (let i = 0; i < UNIDADES_DATA.length; i++) {
-                    const rowIndex = i + 2; // Linha do cliente (começando da linha 3)
-                    if (rows[rowIndex] && rows[rowIndex][11]) { // Coluna L = índice 11
-                        const observation = rows[rowIndex][11].trim();
-                        if (observation) {
-                            saveNote(UNIDADES_DATA[i].id, observation);
-                        }
-                    }
-                }
-
-                MODULOS = [];
+                // LINHAS 3+ = CLIENTES
+                UNIDADES_DATA = [];
                 MATRIX_DATA = {};
+                
+                MODULOS.forEach(mod => {
+                    MATRIX_DATA[mod] = [];
+                });
 
                 for (let i = 2; i < rows.length; i++) {
                     const row = rows[i];
                     if (row.length > 1 && row[0]) {
-                        const moduleName = row[0];
-                        MODULOS.push(moduleName);
-                        MATRIX_DATA[moduleName] = row.slice(1, 11); // Apenas colunas B-K
+                        const clientName = row[0];
+                        const clientId = `unidade_${i-2}`;
+                        
+                        UNIDADES_DATA.push({
+                            id: clientId,
+                            label: clientName
+                        });
+                        
+                        if (row[11] && row[11].trim()) {
+                            saveNote(clientId, row[11].trim());
+                        }
+                        
+                        MODULOS.forEach((mod, modIdx) => {
+                            const status = row[modIdx + 1] || 'NI';
+                            MATRIX_DATA[mod].push(status);
+                        });
                     }
                 }
 
@@ -507,16 +422,12 @@
                     
                     totalCells++;
                     
-                    if (status === "ID") { 
-                        totalWeight += 100; 
-                    }
-                    else if (status.startsWith("EI")) { 
+                    if (status === "ID") totalWeight += 100;
+                    else if (status.startsWith("EI")) {
                         const match = status.match(/(\d+)%/);
                         totalWeight += match ? parseInt(match[1]) : 50;
                     }
-                    else if (status === "US") { 
-                        totalWeight += 80; 
-                    }
+                    else if (status === "US") totalWeight += 80;
                 });
             });
 
@@ -525,17 +436,16 @@
             document.getElementById('barCoverage').style.width = coverage + "%";
             document.getElementById('statClientes').innerText = UNIDADES_DATA.length;
 
-            // Contar clientes em implantação por módulo com detalhes
             const moduleMap = {
                 'Secretaria': 'statSecretaria',
                 'Tesouraria': 'statTesouraria',
                 'Financeiro': 'statFinanceiro',
-                'Comunicação': 'statComunicacao',
                 'Aplicativo': 'statAplicativo',
+                'Eventos': 'statEventos',
                 'EBD': 'statEBD',
                 'Patrimônio': 'statPatrimonio',
-                'Eventos': 'statEventos',
-                'Acolhimento': 'statAcolhimento'
+                'Acolhimento': 'statAcolhimento',
+                'Mau Departamen': 'statMauDepartamen'
             };
             
             Object.keys(moduleMap).forEach(moduleName => {
@@ -571,7 +481,6 @@
         function renderMatrix() {
             const table = document.getElementById('matrixTable');
             
-            // Calcular evolução por cliente
             const clientProgress = UNIDADES_DATA.map((client, clientIdx) => {
                 let total = 0, weight = 0;
                 
@@ -594,39 +503,40 @@
                 return total > 0 ? Math.round(weight / total) : 0;
             });
             
-            // Módulos na VERTICAL (clientes no topo) - FIXO
-            let html = '<thead><tr class="table-header"><th class="table-header" style="min-width: 150px;">Módulos</th>';
+            let html = '<thead><tr class="table-header"><th class="table-header" style="min-width: 180px;">Clientes</th>';
             
-            UNIDADES_DATA.forEach((u, idx) => {
-                const hasNote = getNote(u.id);
-                const progress = clientProgress[idx];
-                
-                // Cor da barra baseada no progresso
-                let barColor = '#8b5cf6'; // Roxo
-                if (progress >= 90) barColor = '#10b981'; // Verde
-                else if (progress >= 70) barColor = '#06b6d4'; // Ciano
-                else if (progress >= 50) barColor = '#f59e0b'; // Laranja
-                
-                html += `<th class="table-header" style="min-width: 120px; cursor: pointer;" onclick="showDetails('${u.label.replace(/'/g, "\\'")}', 'client')">
-                    <div class="flex flex-col items-center gap-2">
-                        ${hasNote ? '<i data-lucide="message-square" style="width:14px;height:14px; color:#f59e0b;"></i>' : ''}
-                        <div class="font-bold text-sm">${u.label}</div>
-                        <div class="w-full px-2">
-                            <div class="w-full bg-white/30 rounded-full h-2">
-                                <div class="h-full rounded-full transition-all" style="width: ${progress}%; background: ${barColor};"></div>
-                            </div>
-                            <div class="text-xs mt-1 font-bold">${progress}%</div>
-                        </div>
-                    </div>
-                </th>`;
+            MODULOS.forEach(mod => {
+                html += `<th class="table-header" style="min-width: 110px;">${mod}</th>`;
             });
             
             html += '</tr></thead><tbody>';
             
-            MODULOS.forEach(mod => {
-                html += '<tr><td class="table-cell table-row-header">' + mod + '</td>';
+            UNIDADES_DATA.forEach((client, idx) => {
+                const hasNote = getNote(client.id);
+                const progress = clientProgress[idx];
                 
-                UNIDADES_DATA.forEach((u, idx) => {
+                let barColor = '#8b5cf6';
+                if (progress >= 90) barColor = '#10b981';
+                else if (progress >= 70) barColor = '#06b6d4';
+                else if (progress >= 50) barColor = '#f59e0b';
+                
+                html += `<tr>
+                    <td class="table-cell table-row-header cursor-pointer" onclick="showDetails('${client.label.replace(/'/g, "\\'")}')">
+                        <div class="flex flex-col items-start gap-2 px-2">
+                            <div class="flex items-center gap-2">
+                                ${hasNote ? '<i data-lucide="message-square" style="width:14px;height:14px; color:#f59e0b;"></i>' : ''}
+                                <span class="font-bold text-sm">${client.label}</span>
+                            </div>
+                            <div class="w-full">
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="h-full rounded-full" style="width: ${progress}%; background: ${barColor};"></div>
+                                </div>
+                                <div class="text-xs mt-1 font-bold text-slate-600">${progress}%</div>
+                            </div>
+                        </div>
+                    </td>`;
+                
+                MODULOS.forEach(mod => {
                     const cellRaw = MATRIX_DATA[mod][idx] || "NI";
                     const [status] = cellRaw.split('|');
                     html += '<td class="table-cell">' + getBadge(status.trim()) + '</td>';
@@ -650,50 +560,42 @@
             return `<span class="badge ${badgeClass}">${status}</span>`;
         }
 
-        function toggleView() {
-            currentView = document.getElementById('viewToggle').checked ? 'horizontal' : 'vertical';
-            renderMatrix();
-        }
-
-
-        function showDetails(name, type) {
+        function showDetails(clientName) {
             const modal = document.getElementById('detailModal');
             const title = document.getElementById('modalTitle');
             const content = document.getElementById('modalContent');
             
-            title.textContent = name;
+            const client = UNIDADES_DATA.find(u => u.label === clientName);
+            const clientIdx = UNIDADES_DATA.findIndex(u => u.label === clientName);
+            const savedNote = getNote(client.id);
             
-            if (type === 'client') {
-                const unit = UNIDADES_DATA.find(u => u.label === name);
-                const unitIdx = UNIDADES_DATA.findIndex(u => u.label === name);
-                const savedNote = getNote(unit.id);
-                
-                let html = `
-                    <div class="mb-6 p-4 rounded-lg" style="background: #fff5f2; border: 2px solid #FF7A59;">
-                        <label class="block text-sm font-bold mb-2" style="color: #FF7A59;">Observações</label>
-                        <textarea id="noteText" class="w-full p-3 border border-slate-300 rounded-lg text-sm" rows="4" placeholder="Adicione observações...">${savedNote}</textarea>
-                        <button onclick="saveModalNote('${unit.id}')" class="mt-3 px-4 py-2 text-white rounded-lg font-semibold hover:shadow-lg transition" style="background: linear-gradient(135deg, #FF7A59 0%, #FF6B47 100%);">Salvar</button>
-                    </div>
-                    <div class="space-y-2">
-                `;
-                
-                MODULOS.forEach(mod => {
-                    const cell = MATRIX_DATA[mod][unitIdx] || "NI";
-                    const [status, date] = cell.split('|');
-                    html += `
-                        <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50">
-                            <span class="font-semibold">${mod}</span>
-                            <div class="flex items-center gap-2">
-                                ${getBadge(status.trim())}
-                                ${date ? `<span class="text-xs text-slate-500">${date.trim()}</span>` : ''}
-                            </div>
+            title.innerHTML = `<i data-lucide="building-2" class="inline" style="width: 20px; height: 20px;"></i> ${clientName}`;
+            
+            let html = `
+                <div class="mb-6 p-4 rounded-lg" style="background: #fff5f2; border: 2px solid #FF7A59;">
+                    <label class="block text-sm font-bold mb-2" style="color: #FF7A59;">Observações</label>
+                    <textarea id="noteText" class="w-full p-3 border border-slate-300 rounded-lg text-sm" rows="4" placeholder="Adicione observações...">${savedNote}</textarea>
+                    <button onclick="saveModalNote('${client.id}')" class="mt-3 px-4 py-2 text-white rounded-lg font-semibold hover:shadow-lg transition" style="background: linear-gradient(135deg, #FF7A59 0%, #FF6B47 100%);">Salvar</button>
+                </div>
+                <div class="space-y-2">
+            `;
+            
+            MODULOS.forEach(mod => {
+                const cell = MATRIX_DATA[mod][clientIdx] || "NI";
+                const [status, date] = cell.split('|');
+                html += `
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50">
+                        <span class="font-semibold">${mod}</span>
+                        <div class="flex items-center gap-2">
+                            ${getBadge(status.trim())}
+                            ${date ? `<span class="text-xs text-slate-500">${date.trim()}</span>` : ''}
                         </div>
-                    `;
-                });
-                
-                html += '</div>';
-                content.innerHTML = html;
-            }
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            content.innerHTML = html;
             
             modal.style.display = 'flex';
             lucide.createIcons();
@@ -707,7 +609,7 @@
             title.innerHTML = `<i data-lucide="package" class="inline" style="width: 24px; height: 24px;"></i> ${moduleName}`;
             
             let html = '<div class="space-y-3">';
-            html += '<h3 class="text-sm font-bold text-slate-600 uppercase mb-3">Clientes com este módulo em implantação:</h3>';
+            html += '<h3 class="text-sm font-bold text-slate-600 uppercase mb-3">Clientes com este módulo:</h3>';
             
             const moduleData = MATRIX_DATA[moduleName];
             if (moduleData) {
@@ -716,10 +618,9 @@
                     const [status, date] = cell.split('|');
                     const statusTrim = status.trim();
                     
-                    // Mostra apenas ID, EI e US
                     if (statusTrim === 'ID' || statusTrim.startsWith('EI') || statusTrim === 'US') {
                         html += `
-                            <div class="flex items-center justify-between p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition cursor-pointer" onclick="showDetails('${client.label.replace(/'/g, "\\'")}', 'client')">
+                            <div class="flex items-center justify-between p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition cursor-pointer" onclick="showDetails('${client.label.replace(/'/g, "\\'")}')">
                                 <div class="flex items-center gap-3">
                                     <i data-lucide="building-2" class="text-slate-400" style="width: 18px; height: 18px;"></i>
                                     <span class="font-semibold text-slate-700">${client.label}</span>
@@ -741,13 +642,9 @@
             lucide.createIcons();
         }
 
-        function editNote(id, name) {
-            showDetails(name, 'client');
-        }
-
-        function saveModalNote(unitId) {
+        function saveModalNote(clientId) {
             const note = document.getElementById('noteText').value;
-            saveNote(unitId, note);
+            saveNote(clientId, note);
             closeModal();
             renderMatrix();
         }
