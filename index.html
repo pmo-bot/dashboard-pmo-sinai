@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard PMO Sinai 3.0 - Controle de Implantação</title>
+    <title>Dashboard PMO Sinai 3.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,119 +11,117 @@
     
     <style>
         body { 
-            font-family: 'Inter', sans-serif; 
-            -webkit-font-smoothing: antialiased;
-            background: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
         
-        .glass-card {
+        .card {
             background: white;
-            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
-        .label-style { 
-            font-size: 9px; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            letter-spacing: 0.05em; 
-            color: #64748b;
-        }
-        
-        .value-style { 
-            font-weight: 800; 
-            color: #0f172a; 
-        }
-
-        .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        .sticky-col { 
-            position: sticky; 
-            left: 0; 
-            background-color: white; 
-            z-index: 10; 
-            border-right: 2px solid #e2e8f0;
-        }
-        
-        .status-cell { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            padding: 8px; 
-            border-radius: 8px; 
-            font-size: 11px; 
-            font-weight: 700;
-            text-align: center; 
-            line-height: 1.2; 
-            min-height: 44px;
-            transition: all 0.2s;
-            cursor: default;
-        }
-        
-        .status-cell:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .client-header {
-            cursor: pointer; 
-            transition: all 0.2s;
-            position: relative;
-            user-select: none;
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            padding: 16px 8px !important;
-            min-width: 60px !important;
-        }
-        
-        .client-header:hover { 
-            background-color: #f1f5f9;
-            color: #4f46e5;
-        }
-
-        /* Cores suaves e pastéis */
-        .badge-success { 
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #bfdbfe;
-        }
-        
-        .badge-info { 
-            background: #e0f2fe;
-            color: #0369a1;
-            border: 1px solid #bae6fd;
-        }
-        
-        .badge-warning { 
-            background: #fef3c7;
-            color: #b45309;
-            border: 1px solid #fde68a;
-        }
-        
-        .badge-danger { 
-            background: #fee2e2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
-        }
-        
-        .badge-none { 
-            background: #f1f5f9; 
-            color: #64748b;
-            border: 1px solid #e2e8f0;
-        }
-
         .stat-card {
-            transition: all 0.2s;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
         }
         
         .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
         }
-
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin: 8px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+        }
+        
+        /* Badges de Status - Cores Vibrantes sem Vermelho */
+        .badge {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .badge-id {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .badge-ei {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .badge-us {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+        
+        .badge-ni {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        .badge-na {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 700;
+            padding: 16px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .table-cell {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background 0.2s;
+        }
+        
+        .table-cell:hover {
+            background: #f8fafc;
+        }
+        
+        .table-row-header {
+            font-weight: 700;
+            background: #f1f5f9;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -133,114 +131,131 @@
             z-index: 9999;
             align-items: center;
             justify-content: center;
-            animation: fadeIn 0.2s;
             padding: 20px;
-            overflow-y: auto;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
+        
         .modal-content {
             background: white;
             border-radius: 16px;
-            padding: 24px;
-            max-width: 600px;
+            padding: 32px;
+            max-width: 800px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            animation: slideUp 0.3s;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 2px solid #e2e8f0;
+            background: white;
+        }
+        
+        .filter-btn:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .toggle-switch {
             position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
         }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
-
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #cbd5e1;
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
         .loading-spinner {
             border: 3px solid #f3f4f6;
-            border-top: 3px solid #4f46e5;
+            border-top: 3px solid #667eea;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
         }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .pulse-dot {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .progress-bar-fill {
-            transition: width 0.5s ease-in-out;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: #f8fafc;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .legend-badge {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 10px;
-        }
     </style>
 </head>
-<body class="min-h-screen p-6">
+<body class="p-4 md:p-6">
     
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
+    <!-- Loading -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-gradient-to-br from-slate-900 to-slate-800 z-50 flex items-center justify-center">
         <div class="text-center">
             <div class="loading-spinner mx-auto mb-4"></div>
-            <p class="text-white text-lg font-semibold">Carregando dados da planilha...</p>
-            <p class="text-slate-300 text-sm mt-2">Sincronizando informações</p>
+            <p class="text-white text-lg font-semibold">Carregando dados...</p>
         </div>
     </div>
 
-    <div class="max-w-[1800px] mx-auto">
+    <div class="max-w-[1600px] mx-auto">
         
         <!-- Header -->
-        <div class="glass-card rounded-xl shadow-sm p-6 mb-6">
-            <div class="flex items-center justify-between">
+        <div class="card p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center shadow-sm">
-                        <i data-lucide="activity" class="text-white" style="width: 24px; height: 24px;"></i>
+                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <i data-lucide="activity" class="text-white" style="width: 28px; height: 28px;"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-black text-slate-800">Projetos Sinai</h1>
-                        <p class="text-slate-500 text-sm font-medium">Dashboard PMO - Controle de Implantação</p>
+                        <h1 class="text-2xl md:text-3xl font-black text-slate-800">Projetos Sinai</h1>
+                        <p class="text-slate-500 text-sm">Dashboard PMO - Controle de Implantação</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="text-right">
-                        <p class="text-xs text-slate-500 uppercase font-semibold">Atualizado em</p>
+                    <div class="text-center">
+                        <p class="text-xs text-slate-500 uppercase font-bold">Atualizado</p>
                         <p class="text-sm font-bold text-slate-700" id="lastUpdate">--</p>
                     </div>
-                    <button onclick="reloadData()" class="px-4 py-2 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition-all flex items-center gap-2 shadow-sm">
+                    <button onclick="reloadData()" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition flex items-center gap-2">
                         <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
                         Atualizar
                     </button>
@@ -248,190 +263,161 @@
             </div>
         </div>
 
-        <!-- Stats Cards -->
+        <!-- KPIs -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <div class="stat-card">
+                <div class="stat-label">Cobertura</div>
+                <div class="stat-number text-indigo-600" id="statCoverage">0%</div>
+                <div class="w-full bg-slate-200 rounded-full h-2 mt-2">
+                    <div id="barCoverage" class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full transition-all" style="width: 0%"></div>
+                </div>
+            </div>
             
-            <!-- Cobertura Geral -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <div class="flex flex-col gap-2">
-                    <span class="label-style text-slate-500">Cobertura Geral</span>
-                    <div class="text-3xl font-black text-indigo-600" id="statCoverage">0%</div>
-                    <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                        <div id="barCoverage" class="progress-bar-fill h-full bg-indigo-500 rounded-full" style="width: 0%"></div>
-                    </div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-label">Clientes</div>
+                <div class="stat-number text-slate-700" id="statClientes">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1">ATIVOS</div>
             </div>
-
-            <!-- Clientes -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <span class="label-style text-slate-500 block mb-1">Clientes</span>
-                <div class="text-3xl font-black text-slate-700" id="statClientes">0</div>
-                <span class="text-xs text-slate-500 font-semibold">ATIVOS</span>
+            
+            <div class="stat-card">
+                <div class="stat-label">Implantados</div>
+                <div class="stat-number text-green-600" id="statIDCount">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1" id="statIDPerc">0%</div>
             </div>
-
-            <!-- Implantado -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <span class="label-style text-slate-500 block mb-1">Implantados</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-black text-blue-600" id="statIDCount">0</span>
-                    <span class="text-sm font-bold text-slate-400" id="statIDPerc">0%</span>
-                </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Em Implantação</div>
+                <div class="stat-number text-amber-600" id="statEICount">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1" id="statEIPerc">0%</div>
             </div>
-
-            <!-- Em Implantação -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <span class="label-style text-slate-500 block mb-1">Em Implantação</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-black text-amber-600" id="statEICount">0</span>
-                    <span class="text-sm font-bold text-slate-400" id="statEIPerc">0%</span>
-                </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Fomentar Uso</div>
+                <div class="stat-number text-cyan-600" id="statUSCount">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1" id="statUSPerc">0%</div>
             </div>
-
-            <!-- Fomentar Usabilidade -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <span class="label-style text-slate-500 block mb-1">Fomentar Usabilidade</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-black text-cyan-600" id="statUSCount">0</span>
-                    <span class="text-sm font-bold text-slate-400" id="statUSPerc">0%</span>
-                </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Não Implantados</div>
+                <div class="stat-number text-purple-600" id="statNICount">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1" id="statNIPerc">0%</div>
             </div>
-
-            <!-- Não Implantado -->
-            <div class="glass-card rounded-xl shadow-sm p-4 stat-card">
-                <span class="label-style text-slate-500 block mb-1">Não Implantados</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-black text-red-600" id="statNICount">0</span>
-                    <span class="text-sm font-bold text-slate-400" id="statNIPerc">0%</span>
-                </div>
-            </div>
-
         </div>
 
-        <!-- Gráfico de Evolução por Cliente -->
-        <div class="glass-card rounded-xl shadow-sm p-6 mb-6">
-            <div class="flex items-center justify-between mb-4">
+        <!-- Gráfico de Evolução -->
+        <div class="card p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                     <i data-lucide="trending-up" style="width: 20px; height: 20px;"></i>
-                    Evolução por Cliente
+                    Evolução de Implantação
                 </h2>
+                <div class="flex items-center gap-3">
+                    <button id="filterAll" class="filter-btn active" onclick="filterChart('all')">Todos</button>
+                    <button id="filterModule" class="filter-btn" onclick="filterChart('module')">Por Módulo</button>
+                    <button id="filterClient" class="filter-btn" onclick="filterChart('client')">Por Cliente</button>
+                </div>
             </div>
             <div style="height: 400px;">
                 <canvas id="evolutionChart"></canvas>
             </div>
         </div>
 
-        <!-- Legenda -->
-        <div class="glass-card rounded-xl shadow-sm p-6 mb-6">
-            <div class="flex items-center gap-2 mb-4">
-                <i data-lucide="info" class="text-slate-600" style="width: 18px; height: 18px;"></i>
-                <h3 class="text-sm font-bold text-slate-700 uppercase">Legenda de Status</h3>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <div class="legend-item">
-                    <div class="legend-badge badge-success">ID</div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-700">Implantado</p>
-                        <p class="text-[10px] text-slate-500">100% concluído</p>
-                    </div>
+        <!-- Controles de Visualização -->
+        <div class="card p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="layout-grid" class="text-slate-600" style="width: 20px; height: 20px;"></i>
+                    <span class="font-bold text-slate-700">Visualização da Matriz</span>
                 </div>
-                <div class="legend-item">
-                    <div class="legend-badge badge-warning">EI</div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-700">Em Implantação</p>
-                        <p class="text-[10px] text-slate-500">Em andamento</p>
-                    </div>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-badge badge-info">US</div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-700">Fomentar Usabilidade</p>
-                        <p class="text-[10px] text-slate-500">Já implantado</p>
-                    </div>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-badge badge-danger">NI</div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-700">Não Implantado</p>
-                        <p class="text-[10px] text-slate-500">Não iniciado</p>
-                    </div>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-badge badge-none">N/A</div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-700">Não Possui</p>
-                        <p class="text-[10px] text-slate-500">Não aplicável</p>
-                    </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-semibold text-slate-600">Módulos na Vertical</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="viewToggle" onchange="toggleView()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="text-sm font-semibold text-slate-600">Módulos na Horizontal</span>
                 </div>
             </div>
         </div>
 
-        <!-- Matrix Table -->
-        <div class="glass-card rounded-xl shadow-sm overflow-hidden">
-            
-            <!-- Top Scroll -->
-            <div id="topScrollContainer" class="overflow-x-auto custom-scrollbar" style="overflow-y: hidden;">
-                <div id="topScrollContent" style="height: 1px;"></div>
+        <!-- Legenda -->
+        <div class="card p-6 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="badge badge-id px-3 py-1">ID</div>
+                    <span class="text-xs font-semibold text-slate-700">Implantado</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="badge badge-ei px-3 py-1">EI</div>
+                    <span class="text-xs font-semibold text-slate-700">Em Implantação</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="badge badge-us px-3 py-1">US</div>
+                    <span class="text-xs font-semibold text-slate-700">Fomentar Uso</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="badge badge-ni px-3 py-1">NI</div>
+                    <span class="text-xs font-semibold text-slate-700">Não Implantado</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="badge badge-na px-3 py-1">N/A</div>
+                    <span class="text-xs font-semibold text-slate-700">Não Possui</span>
+                </div>
             </div>
+        </div>
 
-            <!-- Table Container -->
-            <div id="matrixScrollContainer" class="overflow-x-auto custom-scrollbar" style="max-height: 600px;">
-                <table id="matrixTable" class="w-full border-collapse">
-                    <thead id="matrixHead" class="sticky top-0 z-20 bg-white"></thead>
-                    <tbody id="matrixBody"></tbody>
-                </table>
+        <!-- Matriz -->
+        <div class="card overflow-hidden">
+            <div id="matrixContainer" class="overflow-auto" style="max-height: 600px;">
+                <table id="matrixTable" class="w-full" style="min-width: 100%;"></table>
             </div>
-
         </div>
 
     </div>
 
-    <!-- Modal de Detalhes -->
-    <div id="detailModal" class="modal" onclick="closeDetailModal(event)">
-        <div class="modal-content glass-card rounded-xl shadow-xl p-6 max-w-2xl w-full mx-4">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-black text-slate-800" id="modalTitle">Detalhes</h2>
-                <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 transition">
-                    <i data-lucide="x" style="width: 24px; height: 24px;"></i>
+    <!-- Modal -->
+    <div id="detailModal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-black text-slate-800" id="modalTitle">Detalhes</h2>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" style="width: 28px; height: 28px;"></i>
                 </button>
             </div>
-            <div id="modalContent" class="text-slate-600"></div>
+            <div id="modalContent"></div>
         </div>
     </div>
 
     <script>
-        // Configuração da planilha
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
         
         let UNIDADES_DATA = [];
         let MODULOS = [];
         let MATRIX_DATA = {};
         let evolutionChart = null;
+        let currentView = 'vertical'; // vertical = módulos na vertical, horizontal = módulos na horizontal
+        let chartFilter = 'all';
 
-        // Sistema de observações (salvo localmente no navegador)
-        function saveClientNote(clientId, note) {
-            localStorage.setItem('client_note_' + clientId, note);
+        function saveNote(id, note) {
+            localStorage.setItem('note_' + id, note);
         }
 
-        function getClientNote(clientId) {
-            return localStorage.getItem('client_note_' + clientId) || '';
+        function getNote(id) {
+            return localStorage.getItem('note_' + id) || '';
         }
 
-        // Função para carregar dados da planilha
         async function loadSheetData() {
             try {
                 const response = await fetch(SHEET_URL);
                 const csvText = await response.text();
                 
-                // Parse CSV mais robusto
                 const rows = csvText.split('\n').map(row => {
-                    // Divide por vírgula, mas respeita conteúdo entre aspas
                     const result = [];
                     let current = '';
                     let inQuotes = false;
                     
                     for (let i = 0; i < row.length; i++) {
                         const char = row[i];
-                        
                         if (char === '"') {
                             inQuotes = !inQuotes;
                         } else if (char === ',' && !inQuotes) {
@@ -445,16 +431,12 @@
                     return result;
                 });
 
-                // LINHA 2 (índice 1) = nomes COMPLETOS dos clientes
                 const headerRow = rows[1];
                 UNIDADES_DATA = headerRow.slice(1).filter(label => label && label.length > 0).map((label, idx) => ({
                     id: `unidade_${idx}`,
-                    label: label // Nome completo da planilha
+                    label: label
                 }));
 
-                console.log('Clientes carregados:', UNIDADES_DATA); // Debug
-
-                // Demais linhas (a partir da linha 3) = módulos e seus status
                 MODULOS = [];
                 MATRIX_DATA = {};
 
@@ -468,13 +450,14 @@
                 }
 
                 renderMatrix();
-                renderEvolutionChart();
-                updateLastUpdateTime();
+                renderChart();
+                updateStats();
+                updateLastUpdate();
                 hideLoading();
                 
             } catch (error) {
-                console.error('Erro ao carregar planilha:', error);
-                alert('Erro ao carregar dados da planilha. Verifique a conexão e tente novamente.');
+                console.error('Erro:', error);
+                alert('Erro ao carregar planilha.');
                 hideLoading();
             }
         }
@@ -483,16 +466,14 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
-        function updateLastUpdateTime() {
+        function updateLastUpdate() {
             const now = new Date();
-            const formatted = now.toLocaleString('pt-BR', {
+            document.getElementById('lastUpdate').textContent = now.toLocaleString('pt-BR', {
                 day: '2-digit',
                 month: '2-digit',
-                year: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
             });
-            document.getElementById('lastUpdate').textContent = formatted;
         }
 
         function updateStats() {
@@ -502,25 +483,25 @@
             Object.keys(MATRIX_DATA).forEach(mod => {
                 MATRIX_DATA[mod].forEach(cell => {
                     if (!cell) return;
-                    const statusPart = cell.split('|')[0].trim();
-                    if (statusPart === "N/A" || !statusPart) return;
+                    const status = cell.split('|')[0].trim();
+                    if (status === "N/A" || !status) return;
                     
                     totalCells++;
                     
-                    if (statusPart === "ID") { 
+                    if (status === "ID") { 
                         counts.ID++; 
                         totalWeight += 100; 
                     }
-                    else if (statusPart.startsWith("EI")) { 
+                    else if (status.startsWith("EI")) { 
                         counts.EI++; 
-                        const match = statusPart.match(/(\d+)%/);
+                        const match = status.match(/(\d+)%/);
                         totalWeight += match ? parseInt(match[1]) : 50;
                     }
-                    else if (statusPart === "US") { 
+                    else if (status === "US") { 
                         counts.US++; 
                         totalWeight += 80; 
                     }
-                    else if (statusPart === "NI") { 
+                    else if (status === "NI") { 
                         counts.NI++; 
                     }
                 });
@@ -545,154 +526,152 @@
         }
 
         function renderMatrix() {
-            const head = document.getElementById('matrixHead');
-            const body = document.getElementById('matrixBody');
+            const table = document.getElementById('matrixTable');
             
-            // Render header
-            head.innerHTML = `
-                <tr class="bg-slate-50 border-b border-slate-200">
-                    <th class="sticky-col px-6 py-4 label-style text-left font-bold text-slate-700">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="layers" style="width: 14px; height: 14px;"></i>
-                            Módulos Sinai
-                        </div>
-                    </th>
-                    ${UNIDADES_DATA.map(u => {
-                        const hasNote = getClientNote(u.id);
-                        return `
-                        <th class="label-style text-slate-600 client-header border-l border-slate-200 relative" 
-                            onclick="showUnitDetails('${u.label.replace(/'/g, "\\'")}')">
-                            ${hasNote ? '<div class="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full pulse-dot"></div>' : ''}
-                            <div class="font-bold whitespace-nowrap">${u.label}</div>
-                        </th>
-                    `;
-                    }).join('')}
-                </tr>
-            `;
-
-            // Render body
-            body.innerHTML = MODULOS.map((mod, modIdx) => `
-                <tr class="group hover:bg-slate-50/50 transition-all border-b border-slate-100">
-                    <td class="sticky-col px-6 py-3 value-style text-xs text-left font-bold text-slate-700">
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-md bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-[10px]">
-                                ${modIdx + 1}
-                            </div>
-                            ${mod}
-                        </div>
-                    </td>
-                    ${UNIDADES_DATA.map((u, idx) => {
-                        const cellRaw = MATRIX_DATA[mod][idx] || "NI";
-                        const [statusRaw, date] = cellRaw.split('|');
-                        const status = statusRaw.trim();
-                        
-                        let badgeClass = "badge-none";
-                        let displayStatus = status;
-                        
-                        if (status === 'ID') {
-                            badgeClass = "badge-success";
-                        }
-                        else if (status === 'US') {
-                            badgeClass = "badge-info";
-                        }
-                        else if (status.startsWith('EI')) {
-                            badgeClass = "badge-warning";
-                        }
-                        else if (status === 'NI') {
-                            badgeClass = "badge-danger";
-                        }
-                        
-                        const dateText = date ? `<div class="text-[9px] mt-1 opacity-70">${date.trim()}</div>` : '';
-                        
-                        return `
-                            <td class="px-2 py-3 border-l border-slate-100">
-                                <div class="status-cell ${badgeClass}" onclick="showCellDetails('${mod}', '${u.label.replace(/'/g, "\\'")}', '${status}', '${date || ''}')">
-                                    <div class="font-bold">${displayStatus}</div>
-                                    ${dateText}
-                                </div>
-                            </td>
-                        `;
-                    }).join('')}
-                </tr>
-            `).join('');
-            
-            lucide.createIcons();
-            updateStats();
-            setTimeout(syncScrollbars, 50);
-        }
-
-        function renderEvolutionChart() {
-            const ctx = document.getElementById('evolutionChart');
-            
-            // Calcular evolução por cliente
-            const clientProgress = UNIDADES_DATA.map(client => {
-                const clientIdx = UNIDADES_DATA.findIndex(u => u.id === client.id);
-                let total = 0;
-                let weight = 0;
+            if (currentView === 'vertical') {
+                // Módulos na VERTICAL (clientes no topo)
+                let html = '<thead><tr class="table-header"><th class="table-header" style="min-width: 150px;">Módulos</th>';
                 
-                MODULOS.forEach(mod => {
-                    const cell = MATRIX_DATA[mod][clientIdx];
-                    if (!cell) return;
-                    const status = cell.split('|')[0].trim();
-                    
-                    if (status === 'N/A' || !status) return;
-                    total++;
-                    
-                    if (status === 'ID') weight += 100;
-                    else if (status.startsWith('EI')) {
-                        const match = status.match(/(\d+)%/);
-                        weight += match ? parseInt(match[1]) : 50;
-                    }
-                    else if (status === 'US') weight += 80;
+                UNIDADES_DATA.forEach(u => {
+                    const hasNote = getNote(u.id);
+                    html += `<th class="table-header" style="min-width: 120px; cursor: pointer;" onclick="showDetails('${u.label.replace(/'/g, "\\'")}', 'client')">
+                        ${hasNote ? '<span style="display:inline-block; width:6px; height:6px; background:#f59e0b; border-radius:50%; margin-right:4px;"></span>' : ''}
+                        ${u.label}
+                    </th>`;
                 });
                 
-                return {
-                    label: client.label,
-                    progress: total > 0 ? Math.round(weight / total) : 0
-                };
-            });
-
-            // Ordenar por progresso (decrescente)
-            clientProgress.sort((a, b) => b.progress - a.progress);
-
-            if (evolutionChart) {
-                evolutionChart.destroy();
+                html += '</tr></thead><tbody>';
+                
+                MODULOS.forEach(mod => {
+                    html += '<tr><td class="table-cell table-row-header">' + mod + '</td>';
+                    
+                    UNIDADES_DATA.forEach((u, idx) => {
+                        const cellRaw = MATRIX_DATA[mod][idx] || "NI";
+                        const [status] = cellRaw.split('|');
+                        html += '<td class="table-cell">' + getBadge(status.trim()) + '</td>';
+                    });
+                    
+                    html += '</tr>';
+                });
+                
+                html += '</tbody>';
+                table.innerHTML = html;
+                
+            } else {
+                // Módulos na HORIZONTAL (clientes na esquerda)
+                let html = '<thead><tr class="table-header"><th class="table-header" style="min-width: 180px;">Clientes</th>';
+                
+                MODULOS.forEach(mod => {
+                    html += `<th class="table-header" style="min-width: 100px; cursor: pointer;" onclick="showDetails('${mod.replace(/'/g, "\\'")}', 'module')">${mod}</th>`;
+                });
+                
+                html += '<th class="table-header" style="min-width: 150px;">Observações</th></tr></thead><tbody>';
+                
+                UNIDADES_DATA.forEach((u, uIdx) => {
+                    const hasNote = getNote(u.id);
+                    html += `<tr><td class="table-cell table-row-header" onclick="showDetails('${u.label.replace(/'/g, "\\'")}', 'client')" style="cursor: pointer;">
+                        ${hasNote ? '<i data-lucide="message-square" style="width:14px;height:14px;display:inline; color:#f59e0b;"></i> ' : ''}
+                        ${u.label}
+                    </td>`;
+                    
+                    MODULOS.forEach(mod => {
+                        const cellRaw = MATRIX_DATA[mod][uIdx] || "NI";
+                        const [status] = cellRaw.split('|');
+                        html += '<td class="table-cell">' + getBadge(status.trim()) + '</td>';
+                    });
+                    
+                    const note = getNote(u.id);
+                    html += `<td class="table-cell"><button onclick="editNote('${u.id}', '${u.label.replace(/'/g, "\\'")}')" class="text-xs px-3 py-1 rounded bg-indigo-100 text-indigo-700 font-semibold hover:bg-indigo-200 transition">${note ? 'Editar' : 'Adicionar'}</button></td>`;
+                    html += '</tr>';
+                });
+                
+                html += '</tbody>';
+                table.innerHTML = html;
+                lucide.createIcons();
             }
+        }
 
+        function getBadge(status) {
+            let badgeClass = 'badge-na';
+            if (status === 'ID') badgeClass = 'badge-id';
+            else if (status === 'US') badgeClass = 'badge-us';
+            else if (status.startsWith('EI')) badgeClass = 'badge-ei';
+            else if (status === 'NI') badgeClass = 'badge-ni';
+            
+            return `<span class="badge ${badgeClass}">${status}</span>`;
+        }
+
+        function toggleView() {
+            currentView = document.getElementById('viewToggle').checked ? 'horizontal' : 'vertical';
+            renderMatrix();
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('evolutionChart');
+            
+            let data, labels;
+            
+            if (chartFilter === 'client' || chartFilter === 'all') {
+                const clientProgress = UNIDADES_DATA.map(client => {
+                    const clientIdx = UNIDADES_DATA.findIndex(u => u.id === client.id);
+                    let total = 0, weight = 0;
+                    
+                    MODULOS.forEach(mod => {
+                        const cell = MATRIX_DATA[mod][clientIdx];
+                        if (!cell) return;
+                        const status = cell.split('|')[0].trim();
+                        
+                        if (status === 'N/A' || !status) return;
+                        total++;
+                        
+                        if (status === 'ID') weight += 100;
+                        else if (status.startsWith('EI')) {
+                            const match = status.match(/(\d+)%/);
+                            weight += match ? parseInt(match[1]) : 50;
+                        }
+                        else if (status === 'US') weight += 80;
+                    });
+                    
+                    return {
+                        label: client.label,
+                        progress: total > 0 ? Math.round(weight / total) : 0
+                    };
+                });
+                
+                clientProgress.sort((a, b) => b.progress - a.progress);
+                labels = clientProgress.map(c => c.label);
+                data = clientProgress.map(c => c.progress);
+            }
+            
+            if (evolutionChart) evolutionChart.destroy();
+            
             evolutionChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: clientProgress.map(c => c.label),
+                    labels: labels,
                     datasets: [{
-                        label: 'Cobertura',
-                        data: clientProgress.map(c => c.progress),
-                        backgroundColor: clientProgress.map(c => {
-                            if (c.progress >= 90) return '#3b82f6';  // Azul
-                            if (c.progress >= 70) return '#10b981';  // Verde
-                            if (c.progress >= 50) return '#f59e0b';  // Laranja
-                            return '#ef4444';  // Vermelho
+                        label: 'Evolução (%)',
+                        data: data,
+                        backgroundColor: data.map(v => {
+                            if (v >= 90) return '#10b981';
+                            if (v >= 70) return '#06b6d4';
+                            if (v >= 50) return '#f59e0b';
+                            return '#8b5cf6';
                         }),
-                        borderRadius: 4,
-                        barThickness: 16,
+                        borderRadius: 6,
                     }]
                 },
                 options: {
-                    indexAxis: 'y',  // Barras horizontais
+                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                            padding: 10,
-                            bodyFont: { size: 12, weight: '600' },
-                            titleFont: { size: 13, weight: 'bold' },
-                            cornerRadius: 6,
-                            displayColors: false,
+                            padding: 12,
                             callbacks: {
-                                label: function(context) {
-                                    return context.parsed.x + '% concluído';
-                                }
+                                label: (context) => context.parsed.x + '% concluído'
                             }
                         }
                     },
@@ -700,230 +679,77 @@
                         x: {
                             beginAtZero: true,
                             max: 100,
-                            grid: {
-                                color: '#f1f5f9',
-                                drawBorder: false
-                            },
                             ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                },
-                                font: { size: 10 },
-                                color: '#94a3b8'
+                                callback: (value) => value + '%'
                             }
-                        },
-                        y: {
-                            grid: {
-                                display: false,
-                                drawBorder: false
-                            },
-                            ticks: {
-                                font: { size: 11, weight: '600' },
-                                color: '#475569',
-                                crossAlign: 'far'
-                            }
-                        }
-                    },
-                    layout: {
-                        padding: {
-                            left: 10,
-                            right: 20,
-                            top: 5,
-                            bottom: 5
                         }
                     }
                 }
             });
         }
 
-        function syncScrollbars() {
-            const topContainer = document.getElementById('topScrollContainer');
-            const topContent = document.getElementById('topScrollContent');
-            const mainContainer = document.getElementById('matrixScrollContainer');
-            const mainTable = document.getElementById('matrixTable');
-            
-            if (topContent && mainTable) {
-                topContent.style.width = mainTable.offsetWidth + 'px';
-            }
-            
-            topContainer.onscroll = () => mainContainer.scrollLeft = topContainer.scrollLeft;
-            mainContainer.onscroll = () => topContainer.scrollLeft = mainContainer.scrollLeft;
+        function filterChart(filter) {
+            chartFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('filter' + filter.charAt(0).toUpperCase() + filter.slice(1)).classList.add('active');
+            renderChart();
         }
 
-        function showUnitDetails(unitName) {
+        function showDetails(name, type) {
             const modal = document.getElementById('detailModal');
             const title = document.getElementById('modalTitle');
             const content = document.getElementById('modalContent');
             
-            const unit = UNIDADES_DATA.find(u => u.label === unitName);
-            const unitId = unit ? unit.id : '';
-            const savedNote = getClientNote(unitId);
+            title.textContent = name;
             
-            title.innerHTML = `<i data-lucide="building-2" class="inline" style="width: 20px; height: 20px;"></i> ${unitName}`;
-            
-            const unitIndex = UNIDADES_DATA.findIndex(u => u.label === unitName);
-            
-            // Seção de Observações
-            let html = `
-                <div class="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
-                    <div class="flex items-center gap-2 mb-3">
-                        <i data-lucide="info" class="text-indigo-600" style="width: 18px; height: 18px;"></i>
-                        <span class="text-sm font-bold text-indigo-900 uppercase">Observações de Implantação</span>
+            if (type === 'client') {
+                const unit = UNIDADES_DATA.find(u => u.label === name);
+                const unitIdx = UNIDADES_DATA.findIndex(u => u.label === name);
+                const savedNote = getNote(unit.id);
+                
+                let html = `
+                    <div class="mb-6 p-4 bg-indigo-50 rounded-lg">
+                        <label class="block text-sm font-bold text-indigo-900 mb-2">Observações</label>
+                        <textarea id="noteText" class="w-full p-3 border border-slate-300 rounded-lg text-sm" rows="4" placeholder="Adicione observações...">${savedNote}</textarea>
+                        <button onclick="saveModalNote('${unit.id}')" class="mt-3 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition">Salvar</button>
                     </div>
-                    <textarea 
-                        id="unitNoteTextarea" 
-                        class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        rows="4"
-                        placeholder="Insira o resumo do andamento geral para esta unidade..."
-                    >${savedNote}</textarea>
-                    <div class="flex justify-end gap-2 mt-3">
-                        <button 
-                            onclick="saveUnitNote('${unitId}', '${unitName.replace(/'/g, "\\'")}')"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition text-sm flex items-center gap-2">
-                            <i data-lucide="save" style="width: 16px; height: 16px;"></i>
-                            Salvar Status
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="space-y-2">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase mb-2">Status dos Módulos</h4>
-            `;
-            
-            MODULOS.forEach(mod => {
-                const status = MATRIX_DATA[mod][unitIndex] || "NI";
-                const [statusPart, date] = status.split('|');
-                
-                let badgeClass = 'badge-none';
-                let icon = 'help-circle';
-                
-                if (statusPart.trim() === 'ID') {
-                    badgeClass = 'badge-success';
-                    icon = 'check-circle';
-                } else if (statusPart.trim() === 'US') {
-                    badgeClass = 'badge-info';
-                    icon = 'zap';
-                } else if (statusPart.trim().startsWith('EI')) {
-                    badgeClass = 'badge-warning';
-                    icon = 'clock';
-                } else if (statusPart.trim() === 'NI') {
-                    badgeClass = 'badge-danger';
-                    icon = 'x-circle';
-                }
-                
-                html += `
-                    <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="${icon}" class="text-slate-400" style="width: 18px; height: 18px;"></i>
-                            <span class="font-semibold text-slate-700 text-sm">${mod}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="status-cell ${badgeClass} text-xs px-3 py-1 min-h-0">${statusPart.trim()}</span>
-                            ${date ? `<span class="text-xs text-slate-400">${date.trim()}</span>` : ''}
-                        </div>
-                    </div>
+                    <div class="space-y-2">
                 `;
-            });
-            
-            html += '</div>';
-            content.innerHTML = html;
+                
+                MODULOS.forEach(mod => {
+                    const cell = MATRIX_DATA[mod][unitIdx] || "NI";
+                    const [status, date] = cell.split('|');
+                    html += `
+                        <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50">
+                            <span class="font-semibold">${mod}</span>
+                            <div class="flex items-center gap-2">
+                                ${getBadge(status.trim())}
+                                ${date ? `<span class="text-xs text-slate-500">${date.trim()}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                content.innerHTML = html;
+            }
             
             modal.style.display = 'flex';
             lucide.createIcons();
         }
 
-        function saveUnitNote(unitId, unitName) {
-            const textarea = document.getElementById('unitNoteTextarea');
-            const note = textarea.value;
-            
-            saveClientNote(unitId, note);
-            
-            // Feedback visual
-            const btn = event.target.closest('button');
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = '<i data-lucide="check" style="width: 16px; height: 16px;"></i> Salvo!';
-            btn.classList.add('bg-green-600', 'hover:bg-green-700');
-            btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-            lucide.createIcons();
-            
-            setTimeout(() => {
-                btn.innerHTML = originalContent;
-                btn.classList.remove('bg-green-600', 'hover:bg-green-700');
-                btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
-                lucide.createIcons();
-            }, 2000);
-            
-            // Atualizar indicador visual de nota no header
+        function editNote(id, name) {
+            showDetails(name, 'client');
+        }
+
+        function saveModalNote(unitId) {
+            const note = document.getElementById('noteText').value;
+            saveNote(unitId, note);
+            closeModal();
             renderMatrix();
         }
 
-        function showCellDetails(module, unit, status, date) {
-            const modal = document.getElementById('detailModal');
-            const title = document.getElementById('modalTitle');
-            const content = document.getElementById('modalContent');
-            
-            title.innerHTML = `${module} - ${unit}`;
-            
-            let statusText = status;
-            let statusColor = 'text-slate-600';
-            let statusIcon = 'info';
-            let statusDesc = '';
-            
-            if (status === 'ID') {
-                statusText = 'Implantado';
-                statusColor = 'text-blue-600';
-                statusIcon = 'check-circle';
-                statusDesc = 'Módulo 100% implantado e operacional';
-            } else if (status === 'US') {
-                statusText = 'Fomentar Usabilidade';
-                statusColor = 'text-cyan-600';
-                statusIcon = 'zap';
-                statusDesc = 'Módulo implantado, em fase de adoção pelos usuários';
-            } else if (status.startsWith('EI')) {
-                statusText = 'Em Implantação';
-                statusColor = 'text-amber-600';
-                statusIcon = 'clock';
-                statusDesc = 'Módulo em processo de implantação';
-            } else if (status === 'NI') {
-                statusText = 'Não Implantado';
-                statusColor = 'text-red-600';
-                statusIcon = 'x-circle';
-                statusDesc = 'Módulo ainda não iniciado';
-            } else if (status === 'N/A') {
-                statusText = 'Não Aplicável';
-                statusColor = 'text-slate-500';
-                statusIcon = 'minus-circle';
-                statusDesc = 'Cliente não possui este módulo';
-            }
-            
-            content.innerHTML = `
-                <div class="space-y-4">
-                    <div class="p-4 bg-slate-50 rounded-lg">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i data-lucide="${statusIcon}" class="${statusColor}" style="width: 24px; height: 24px;"></i>
-                            <span class="label-style">Status Atual</span>
-                        </div>
-                        <div class="text-2xl font-black ${statusColor} mb-1">${statusText}</div>
-                        <div class="text-sm text-slate-600">${statusDesc}</div>
-                        <div class="text-xs text-slate-500 mt-2 font-mono">${status}</div>
-                    </div>
-                    ${date ? `
-                        <div class="p-4 bg-slate-50 rounded-lg">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i data-lucide="calendar" class="text-slate-500" style="width: 20px; height: 20px;"></i>
-                                <span class="label-style">Data Prevista</span>
-                            </div>
-                            <div class="text-lg font-bold text-slate-700">${date}</div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-            
-            modal.style.display = 'flex';
-            lucide.createIcons();
-        }
-
-        function closeDetailModal(event) {
+        function closeModal(event) {
             const modal = document.getElementById('detailModal');
             if (!event || event.target === modal) {
                 modal.style.display = 'none';
@@ -935,16 +761,12 @@
             loadSheetData();
         }
 
-        // Inicializar
         window.onload = () => {
             loadSheetData();
-            window.addEventListener('resize', syncScrollbars);
+            lucide.createIcons();
         };
 
-        // Atualizar automaticamente a cada 5 minutos
-        setInterval(() => {
-            loadSheetData();
-        }, 300000);
+        setInterval(loadSheetData, 300000);
     </script>
 
 </body>
