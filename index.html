@@ -436,6 +436,7 @@
             document.getElementById('barCoverage').style.width = coverage + "%";
             document.getElementById('statClientes').innerText = UNIDADES_DATA.length;
 
+            // Mapear módulos com seus IDs de elementos
             const moduleMap = {
                 'Secretaria': 'statSecretaria',
                 'Tesouraria': 'statTesouraria',
@@ -448,32 +449,66 @@
                 'Mau Departamen': 'statMauDepartamen'
             };
             
+            console.log('Módulos encontrados na planilha:', Object.keys(MATRIX_DATA));
+            
             Object.keys(moduleMap).forEach(moduleName => {
-                if (MATRIX_DATA[moduleName]) {
-                    let totalClients = 0;
-                    let implantados = 0;
-                    let emImplantacao = 0;
+                // Tentar encontrar o módulo exato ou similar
+                let moduleData = MATRIX_DATA[moduleName];
+                
+                // Se não encontrar exato, buscar por nome parcial (mínimo 4 caracteres)
+                if (!moduleData) {
+                    const searchTerm = moduleName.toLowerCase().substring(0, Math.max(4, moduleName.length - 3));
+                    const foundKey = Object.keys(MATRIX_DATA).find(key => 
+                        key.toLowerCase().includes(searchTerm) || searchTerm.includes(key.toLowerCase())
+                    );
+                    if (foundKey) {
+                        moduleData = MATRIX_DATA[foundKey];
+                        console.log(`Módulo mapeado: "${moduleName}" -> "${foundKey}"`);
+                    }
+                }
+                
+                if (moduleData) {
+                    let total = 0;
+                    let counts = { ID: 0, EI: 0, US: 0, NI: 0 };
                     
-                    MATRIX_DATA[moduleName].forEach(cell => {
+                    moduleData.forEach(cell => {
                         if (!cell) return;
                         const status = cell.split('|')[0].trim();
                         if (status !== 'N/A' && status) {
-                            totalClients++;
-                            if (status === 'ID') implantados++;
-                            else if (status.startsWith('EI')) emImplantacao++;
+                            total++;
+                            if (status === 'ID') counts.ID++;
+                            else if (status.startsWith('EI')) counts.EI++;
+                            else if (status === 'US') counts.US++;
+                            else if (status === 'NI') counts.NI++;
                         }
                     });
                     
                     const el = document.getElementById(moduleMap[moduleName]);
                     if (el) {
                         el.innerHTML = `
-                            <div class="text-3xl font-black" style="color: #FF7A59;">${totalClients}</div>
-                            <div class="text-xs text-slate-600 mt-1">
-                                <span class="font-semibold">${implantados}</span> impl. + 
-                                <span class="font-semibold">${emImplantacao}</span> em impl.
+                            <div class="text-2xl font-black mb-1" style="color: #FF7A59;">${total}</div>
+                            <div class="text-[10px] text-left space-y-0.5 px-2">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500 font-semibold">ID:</span>
+                                    <span class="font-bold text-green-600">${counts.ID}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500 font-semibold">EI:</span>
+                                    <span class="font-bold text-amber-600">${counts.EI}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500 font-semibold">US:</span>
+                                    <span class="font-bold text-cyan-600">${counts.US}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500 font-semibold">NI:</span>
+                                    <span class="font-bold text-purple-600">${counts.NI}</span>
+                                </div>
                             </div>
                         `;
                     }
+                } else {
+                    console.warn(`Módulo não encontrado: "${moduleName}"`);
                 }
             });
         }
