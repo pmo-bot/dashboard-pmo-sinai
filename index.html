@@ -486,23 +486,23 @@
                     const el = document.getElementById(moduleMap[moduleName]);
                     if (el) {
                         el.innerHTML = `
-                            <div class="text-2xl font-black mb-1" style="color: #FF7A59;">${total}</div>
-                            <div class="text-[10px] text-left space-y-0.5 px-2">
-                                <div class="flex justify-between">
-                                    <span class="text-slate-500 font-semibold">ID:</span>
-                                    <span class="font-bold text-green-600">${counts.ID}</span>
+                            <div class="text-3xl font-black mb-2" style="color: #FF7A59;">${total}</div>
+                            <div class="text-sm text-left space-y-1 px-1">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold" style="color: #10b981;">ID:</span>
+                                    <span class="font-black text-lg" style="color: #10b981;">${counts.ID}</span>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-500 font-semibold">EI:</span>
-                                    <span class="font-bold text-amber-600">${counts.EI}</span>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold" style="color: #f59e0b;">EI:</span>
+                                    <span class="font-black text-lg" style="color: #f59e0b;">${counts.EI}</span>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-500 font-semibold">US:</span>
-                                    <span class="font-bold text-cyan-600">${counts.US}</span>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold" style="color: #06b6d4;">US:</span>
+                                    <span class="font-black text-lg" style="color: #06b6d4;">${counts.US}</span>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-500 font-semibold">NI:</span>
-                                    <span class="font-bold text-purple-600">${counts.NI}</span>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold" style="color: #8b5cf6;">NI:</span>
+                                    <span class="font-black text-lg" style="color: #8b5cf6;">${counts.NI}</span>
                                 </div>
                             </div>
                         `;
