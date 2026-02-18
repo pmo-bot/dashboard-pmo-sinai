@@ -12,7 +12,7 @@
     <style>
         body { 
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #fff5f2 0%, #ffe8e0 100%);
             min-height: 100vh;
         }
         
@@ -34,7 +34,7 @@
         .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.15);
-            border-color: #667eea;
+            border-color: #FF7A59;
         }
         
         .stat-number {
@@ -93,7 +93,7 @@
         }
         
         .table-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7A59 0%, #FF6B47 100%);
             color: white;
             font-weight: 700;
             padding: 16px;
@@ -156,12 +156,12 @@
         }
         
         .filter-btn:hover {
-            border-color: #667eea;
-            background: #f8fafc;
+            border-color: #FF7A59;
+            background: #fff5f2;
         }
         
         .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7A59 0%, #FF6B47 100%);
             color: white;
             border-color: transparent;
         }
@@ -204,7 +204,7 @@
         }
         
         input:checked + .toggle-slider {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7A59 0%, #FF6B47 100%);
         }
         
         input:checked + .toggle-slider:before {
@@ -213,7 +213,7 @@
         
         .loading-spinner {
             border: 3px solid #f3f4f6;
-            border-top: 3px solid #667eea;
+            border-top: 3px solid #FF7A59;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -242,7 +242,7 @@
         <div class="card p-6 mb-6">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #FF7A59 0%, #FF6B47 100%);">
                         <i data-lucide="activity" class="text-white" style="width: 28px; height: 28px;"></i>
                     </div>
                     <div>
@@ -255,7 +255,7 @@
                         <p class="text-xs text-slate-500 uppercase font-bold">Atualizado</p>
                         <p class="text-sm font-bold text-slate-700" id="lastUpdate">--</p>
                     </div>
-                    <button onclick="reloadData()" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition flex items-center gap-2">
+                    <button onclick="reloadData()" class="px-4 py-2 text-white rounded-lg font-semibold hover:shadow-lg transition flex items-center gap-2" style="background: linear-gradient(135deg, #FF7A59 0%, #FF6B47 100%);">
                         <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
                         Atualizar
                     </button>
@@ -267,9 +267,9 @@
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
             <div class="stat-card">
                 <div class="stat-label">Cobertura</div>
-                <div class="stat-number text-indigo-600" id="statCoverage">0%</div>
+                <div class="stat-number" style="color: #FF7A59;" id="statCoverage">0%</div>
                 <div class="w-full bg-slate-200 rounded-full h-2 mt-2">
-                    <div id="barCoverage" class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full transition-all" style="width: 0%"></div>
+                    <div id="barCoverage" class="h-full rounded-full transition-all" style="width: 0%; background: linear-gradient(90deg, #FF7A59 0%, #FF6B47 100%);"></div>
                 </div>
             </div>
             
@@ -279,28 +279,61 @@
                 <div class="text-xs text-slate-500 font-semibold mt-1">ATIVOS</div>
             </div>
             
-            <div class="stat-card">
-                <div class="stat-label">Implantados</div>
-                <div class="stat-number text-green-600" id="statIDCount">0</div>
-                <div class="text-xs text-slate-500 font-semibold mt-1" id="statIDPerc">0%</div>
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Secretaria')">
+                <div class="stat-label">Secretaria</div>
+                <div class="stat-number text-green-600" id="statSecretaria">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1">EM IMPLANTAÇÃO</div>
             </div>
             
-            <div class="stat-card">
-                <div class="stat-label">Em Implantação</div>
-                <div class="stat-number text-amber-600" id="statEICount">0</div>
-                <div class="text-xs text-slate-500 font-semibold mt-1" id="statEIPerc">0%</div>
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Tesouraria')">
+                <div class="stat-label">Tesouraria</div>
+                <div class="stat-number text-green-600" id="statTesouraria">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1">EM IMPLANTAÇÃO</div>
             </div>
             
-            <div class="stat-card">
-                <div class="stat-label">Fomentar Uso</div>
-                <div class="stat-number text-cyan-600" id="statUSCount">0</div>
-                <div class="text-xs text-slate-500 font-semibold mt-1" id="statUSPerc">0%</div>
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Financeiro')">
+                <div class="stat-label">Financeiro</div>
+                <div class="stat-number text-green-600" id="statFinanceiro">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1">EM IMPLANTAÇÃO</div>
             </div>
             
-            <div class="stat-card">
-                <div class="stat-label">Não Implantados</div>
-                <div class="stat-number text-purple-600" id="statNICount">0</div>
-                <div class="text-xs text-slate-500 font-semibold mt-1" id="statNIPerc">0%</div>
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Comunicação')">
+                <div class="stat-label">Comunicação</div>
+                <div class="stat-number text-green-600" id="statComunicacao">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1">EM IMPLANTAÇÃO</div>
+            </div>
+        </div>
+
+        <!-- KPIs Linha 2 - Módulos restantes -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Aplicativo')">
+                <div class="stat-label">Aplicativo</div>
+                <div class="stat-number text-green-600" id="statAplicativo">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1">EM IMPLANTAÇÃO</div>
+            </div>
+            
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('EBD')">
+                <div class="stat-label">EBD</div>
+                <div class="stat-number text-green-600" id="statEBD">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1">EM IMPLANTAÇÃO</div>
+            </div>
+            
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Patrimônio')">
+                <div class="stat-label">Patrimônio</div>
+                <div class="stat-number text-green-600" id="statPatrimonio">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1">EM IMPLANTAÇÃO</div>
+            </div>
+            
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Eventos')">
+                <div class="stat-label">Eventos</div>
+                <div class="stat-number text-green-600" id="statEventos">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1">EM IMPLANTAÇÃO</div>
+            </div>
+            
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Acolhimento')">
+                <div class="stat-label">Acolhimento</div>
+                <div class="stat-number text-green-600" id="statAcolhimento">0</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1">EM IMPLANTAÇÃO</div>
             </div>
         </div>
 
@@ -312,8 +345,7 @@
                     Evolução de Implantação
                 </h2>
                 <div class="flex items-center gap-3">
-                    <button id="filterAll" class="filter-btn active" onclick="filterChart('all')">Todos</button>
-                    <button id="filterModule" class="filter-btn" onclick="filterChart('module')">Por Módulo</button>
+                    <button id="filterAll" class="filter-btn active" onclick="filterChart('all')">Visão Geral</button>
                     <button id="filterClient" class="filter-btn" onclick="filterChart('client')">Por Cliente</button>
                 </div>
             </div>
@@ -478,7 +510,6 @@
 
         function updateStats() {
             let totalCells = 0, totalWeight = 0;
-            let counts = { ID: 0, EI: 0, US: 0, NI: 0 };
             
             Object.keys(MATRIX_DATA).forEach(mod => {
                 MATRIX_DATA[mod].forEach(cell => {
@@ -489,20 +520,14 @@
                     totalCells++;
                     
                     if (status === "ID") { 
-                        counts.ID++; 
                         totalWeight += 100; 
                     }
                     else if (status.startsWith("EI")) { 
-                        counts.EI++; 
                         const match = status.match(/(\d+)%/);
                         totalWeight += match ? parseInt(match[1]) : 50;
                     }
                     else if (status === "US") { 
-                        counts.US++; 
                         totalWeight += 80; 
-                    }
-                    else if (status === "NI") { 
-                        counts.NI++; 
                     }
                 });
             });
@@ -512,17 +537,34 @@
             document.getElementById('barCoverage').style.width = coverage + "%";
             document.getElementById('statClientes').innerText = UNIDADES_DATA.length;
 
-            const setCard = (id, count) => {
-                const elCount = document.getElementById('stat' + id + 'Count');
-                const elPerc = document.getElementById('stat' + id + 'Perc');
-                if(elCount) elCount.innerText = count;
-                if(elPerc) elPerc.innerText = totalCells > 0 ? Math.round((count/totalCells)*100) + "%" : "0%";
+            // Contar clientes em implantação por módulo
+            const moduleMap = {
+                'Secretaria': 'statSecretaria',
+                'Tesouraria': 'statTesouraria',
+                'Financeiro': 'statFinanceiro',
+                'Comunicação': 'statComunicacao',
+                'Aplicativo': 'statAplicativo',
+                'EBD': 'statEBD',
+                'Patrimônio': 'statPatrimonio',
+                'Eventos': 'statEventos',
+                'Acolhimento': 'statAcolhimento'
             };
-
-            setCard('ID', counts.ID);
-            setCard('EI', counts.EI);
-            setCard('US', counts.US);
-            setCard('NI', counts.NI);
+            
+            Object.keys(moduleMap).forEach(moduleName => {
+                if (MATRIX_DATA[moduleName]) {
+                    let count = 0;
+                    MATRIX_DATA[moduleName].forEach(cell => {
+                        if (!cell) return;
+                        const status = cell.split('|')[0].trim();
+                        // Conta ID, EI e US como "em implantação"
+                        if (status === 'ID' || status.startsWith('EI') || status === 'US') {
+                            count++;
+                        }
+                    });
+                    const el = document.getElementById(moduleMap[moduleName]);
+                    if (el) el.innerText = count;
+                }
+            });
         }
 
         function renderMatrix() {
@@ -708,10 +750,10 @@
                 const savedNote = getNote(unit.id);
                 
                 let html = `
-                    <div class="mb-6 p-4 bg-indigo-50 rounded-lg">
-                        <label class="block text-sm font-bold text-indigo-900 mb-2">Observações</label>
+                    <div class="mb-6 p-4 rounded-lg" style="background: #fff5f2; border: 2px solid #FF7A59;">
+                        <label class="block text-sm font-bold mb-2" style="color: #FF7A59;">Observações</label>
                         <textarea id="noteText" class="w-full p-3 border border-slate-300 rounded-lg text-sm" rows="4" placeholder="Adicione observações...">${savedNote}</textarea>
-                        <button onclick="saveModalNote('${unit.id}')" class="mt-3 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition">Salvar</button>
+                        <button onclick="saveModalNote('${unit.id}')" class="mt-3 px-4 py-2 text-white rounded-lg font-semibold hover:shadow-lg transition" style="background: linear-gradient(135deg, #FF7A59 0%, #FF6B47 100%);">Salvar</button>
                     </div>
                     <div class="space-y-2">
                 `;
@@ -733,6 +775,48 @@
                 html += '</div>';
                 content.innerHTML = html;
             }
+            
+            modal.style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function showModuleDetails(moduleName) {
+            const modal = document.getElementById('detailModal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+            
+            title.innerHTML = `<i data-lucide="package" class="inline" style="width: 24px; height: 24px;"></i> ${moduleName}`;
+            
+            let html = '<div class="space-y-3">';
+            html += '<h3 class="text-sm font-bold text-slate-600 uppercase mb-3">Clientes com este módulo em implantação:</h3>';
+            
+            const moduleData = MATRIX_DATA[moduleName];
+            if (moduleData) {
+                UNIDADES_DATA.forEach((client, idx) => {
+                    const cell = moduleData[idx] || '';
+                    const [status, date] = cell.split('|');
+                    const statusTrim = status.trim();
+                    
+                    // Mostra apenas ID, EI e US
+                    if (statusTrim === 'ID' || statusTrim.startsWith('EI') || statusTrim === 'US') {
+                        html += `
+                            <div class="flex items-center justify-between p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition cursor-pointer" onclick="showDetails('${client.label.replace(/'/g, "\\'")}', 'client')">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="building-2" class="text-slate-400" style="width: 18px; height: 18px;"></i>
+                                    <span class="font-semibold text-slate-700">${client.label}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    ${getBadge(statusTrim)}
+                                    ${date ? `<span class="text-xs text-slate-500">${date.trim()}</span>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            html += '</div>';
+            content.innerHTML = html;
             
             modal.style.display = 'flex';
             lucide.createIcons();
