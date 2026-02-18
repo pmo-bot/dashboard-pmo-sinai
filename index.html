@@ -257,9 +257,9 @@
                 <div id="statAcolhimento"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
             </div>
             
-            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Mau Departamen')">
-                <div class="stat-label">Mau Departamen</div>
-                <div id="statMauDepartamen"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
+            <div class="stat-card cursor-pointer" onclick="showModuleDetails('Meu Departamento')">
+                <div class="stat-label">Meu Departamento</div>
+                <div id="statMeuDepartamento"><div class="text-3xl font-black" style="color: #FF7A59;">0</div></div>
             </div>
         </div>
 
@@ -446,7 +446,7 @@
                 'EBD': 'statEBD',
                 'Patrimônio': 'statPatrimonio',
                 'Acolhimento': 'statAcolhimento',
-                'Mau Departamen': 'statMauDepartamen'
+                'Meu Departamento': 'statMeuDepartamento'
             };
             
             console.log('Módulos encontrados na planilha:', Object.keys(MATRIX_DATA));
@@ -486,23 +486,27 @@
                     const el = document.getElementById(moduleMap[moduleName]);
                     if (el) {
                         el.innerHTML = `
-                            <div class="text-3xl font-black mb-2" style="color: #FF7A59;">${total}</div>
-                            <div class="text-sm text-left space-y-1 px-1">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-semibold" style="color: #10b981;">ID:</span>
-                                    <span class="font-black text-lg" style="color: #10b981;">${counts.ID}</span>
+                            <div class="text-3xl font-black mb-3" style="color: #FF7A59;">${total}</div>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div class="space-y-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold" style="color: #10b981;">ID:</span>
+                                        <span class="font-black text-base" style="color: #10b981;">${counts.ID}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold" style="color: #f59e0b;">EI:</span>
+                                        <span class="font-black text-base" style="color: #f59e0b;">${counts.EI}</span>
+                                    </div>
                                 </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="font-semibold" style="color: #f59e0b;">EI:</span>
-                                    <span class="font-black text-lg" style="color: #f59e0b;">${counts.EI}</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="font-semibold" style="color: #06b6d4;">US:</span>
-                                    <span class="font-black text-lg" style="color: #06b6d4;">${counts.US}</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="font-semibold" style="color: #8b5cf6;">NI:</span>
-                                    <span class="font-black text-lg" style="color: #8b5cf6;">${counts.NI}</span>
+                                <div class="space-y-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold" style="color: #06b6d4;">US:</span>
+                                        <span class="font-black text-base" style="color: #06b6d4;">${counts.US}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold" style="color: #8b5cf6;">NI:</span>
+                                        <span class="font-black text-base" style="color: #8b5cf6;">${counts.NI}</span>
+                                    </div>
                                 </div>
                             </div>
                         `;
