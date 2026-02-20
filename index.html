@@ -1,552 +1,447 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard PMO Sinai 3.0</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard PMO Sinai 3.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family:'Inter',sans-serif; background:#f8f7f6; }
+        .glass { background:rgba(255,255,255,0.85); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
 
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: #f1eceb; min-height: 100vh; color: #2d1f1a; }
+        /* Module cards */
+        .mod-card {
+            background:white; border:1.5px solid #f1f5f9; border-radius:26px;
+            padding:18px 18px 38px; cursor:pointer; position:relative; overflow:hidden;
+            box-shadow:0 1px 4px rgba(0,0,0,.05);
+            transition:all .25s cubic-bezier(.4,0,.2,1);
+        }
+        .mod-card:hover { transform:translateY(-3px); box-shadow:0 12px 28px rgba(249,115,22,.11); border-color:#fdba74; }
+        .mod-card.card-active { transform:scale(1.015); box-shadow:0 18px 40px rgba(249,115,22,.15); border-color:#f97316; }
 
-/* Glass */
-.glass {
-  background: rgba(255,255,255,.78);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1.5px solid rgba(255,255,255,.92);
-  border-radius: 18px;
-  box-shadow: 0 4px 24px rgba(100,50,30,.08), inset 0 1px 0 rgba(255,255,255,.9);
-}
+        .details-container {
+            max-height:0; overflow:hidden; opacity:0;
+            transition:max-height .45s ease, opacity .3s ease, margin .3s ease, padding .3s ease;
+        }
+        .card-active .details-container {
+            max-height:160px; opacity:1; margin-top:12px; padding-top:12px; border-top:1px solid #f1f5f9;
+        }
+        .chevron-icon { transition:transform .3s ease; }
+        .card-active .chevron-icon { transform:rotate(180deg); }
 
-/* KPI Card */
-.kpi {
-  background: rgba(255,255,255,.78);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1.5px solid rgba(255,255,255,.92);
-  border-radius: 14px;
-  box-shadow: 0 2px 12px rgba(100,50,30,.07), inset 0 1px 0 rgba(255,255,255,.9);
-  padding: 11px 12px 10px;
-  cursor: pointer;
-  transition: transform .2s, box-shadow .2s, border-color .2s;
-  position: relative;
-  overflow: hidden;
-  /* fixed height so all cards are equal */
-  height: 100px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.kpi::after {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 2.5px;
-  background: linear-gradient(90deg, #FF7A59, #ffb89a);
-  border-radius: 14px 14px 0 0;
-  opacity: 0; transition: opacity .2s;
-}
-.kpi:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(100,50,30,.12), inset 0 1px 0 rgba(255,255,255,.9); border-color: rgba(255,122,89,.3); }
-.kpi:hover::after { opacity: 1; }
+        /* Stacked bar */
+        .sbar { height:3.5px; border-radius:99px; display:flex; overflow:hidden; background:#f1f5f9; margin-top:7px; }
+        .sbar-id{background:#10b981;} .sbar-us{background:#06b6d4;} .sbar-ei{background:#f59e0b;} .sbar-ni{background:#c4b8b2;}
 
-/* Special taller cards for coverage + clientes */
-.kpi.kpi-hero {
-  height: 100px;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
+        /* Table */
+        #matrixTable { border-collapse:collapse; width:100%; }
+        .th { background:linear-gradient(135deg,#f97316,#ea6313); color:white; font-weight:700; font-size:11px; padding:12px 8px; text-align:center; position:sticky; top:0; z-index:10; white-space:nowrap; }
+        .th:first-child { text-align:left; padding-left:16px; }
+        .tc { padding:8px; text-align:center; border-bottom:1px solid #f8fafc; font-size:11px; vertical-align:middle; }
+        .tc-name { text-align:left; padding-left:14px; background:#fafafa; position:sticky; left:0; z-index:5; font-weight:600; font-size:11.5px; cursor:pointer; }
+        tbody tr:hover .tc { background:#fff8f5; }
+        tbody tr:hover .tc-name { background:#fff1ec; }
+        .prog-bar { height:3px; border-radius:99px; background:#f1f5f9; overflow:hidden; width:100%; margin-top:3px; }
+        .prog-fill { height:100%; border-radius:99px; }
 
-.kpi-label { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: #a08070; white-space: nowrap; line-height: 1; flex-shrink: 0; }
-.kpi-num   { font-family: 'Syne', sans-serif; font-size: 1.45rem; font-weight: 900; color: #FF7A59; line-height: 1; flex-shrink: 0; }
-.kpi-counts { display: flex; gap: 5px; flex-wrap: wrap; flex-shrink: 0; }
-.kpi-counts span { font-size: 9.5px; font-weight: 700; }
-.sbar { height: 3.5px; border-radius: 999px; display: flex; overflow: hidden; background: #e8e0dc; flex-shrink: 0; }
-.sbar-id { background: #10b981; } .sbar-us { background: #06b6d4; }
-.sbar-ei { background: #f59e0b; } .sbar-ni { background: #c4b8b4; }
+        /* Badges */
+        .badge { display:inline-block; padding:3px 7px; border-radius:6px; font-size:10px; font-weight:700; transition:transform .15s; white-space:nowrap; }
+        .badge:hover { transform:scale(1.07); }
+        .b-id{background:linear-gradient(135deg,#10b981,#059669);color:#fff;}
+        .b-ei{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;}
+        .b-us{background:linear-gradient(135deg,#06b6d4,#0891b2);color:#fff;}
+        .b-ni{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;}
+        .b-na{background:#e2e8f0;color:#94a3b8;}
 
-/* Circular */
-.cp-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
-.cp-wrap svg { transform: rotate(-90deg); }
-.cp-text { position: absolute; font-family: 'Syne', sans-serif; font-weight: 900; font-size: 1rem; color: #FF7A59; }
+        /* Filters */
+        .fbtn { padding:5px 12px; border-radius:8px; font-size:11px; font-weight:700; border:1.5px solid #e2e8f0; cursor:pointer; background:white; color:#64748b; transition:all .15s; font-family:'Inter',sans-serif; }
+        .fbtn.on,.fbtn:hover { background:#f97316; color:white; border-color:#f97316; }
 
-/* Badges */
-.badge { display: inline-block; padding: 3px 7px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: .03em; transition: transform .15s; white-space: nowrap; }
-.badge:hover { transform: scale(1.08); }
-.b-id { background: linear-gradient(135deg,#10b981,#059669); color:#fff; }
-.b-ei { background: linear-gradient(135deg,#f59e0b,#d97706); color:#fff; }
-.b-us { background: linear-gradient(135deg,#06b6d4,#0891b2); color:#fff; }
-.b-ni { background: linear-gradient(135deg,#8b5cf6,#7c3aed); color:#fff; }
-.b-na { background: #e8e0dc; color: #9a8580; }
+        /* Modal */
+        .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter:blur(5px); z-index:9999; align-items:center; justify-content:center; padding:20px; }
+        .modal-box { background:white; border-radius:20px; padding:24px; max-width:740px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,.18); }
 
-/* Filter */
-.fbtn { padding: 5px 11px; border-radius: 8px; font-size: 11px; font-weight: 700; border: 1.5px solid transparent; cursor: pointer; transition: all .18s; font-family: 'DM Sans', sans-serif; }
-.fbtn.on  { background: #FF7A59; color: #fff; border-color: #FF7A59; }
-.fbtn.off { background: rgba(255,255,255,.7); color: #7a5a50; border-color: rgba(0,0,0,.08); }
-.fbtn.off:hover { border-color: #FF7A59; color: #FF7A59; }
-.search-wrap { position: relative; }
-.search-wrap i { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #a08070; pointer-events: none; }
-.search-wrap input { padding: 6px 10px 6px 29px; border-radius: 9px; border: 1.5px solid rgba(0,0,0,.1); background: rgba(255,255,255,.8); font-size: 11.5px; font-family: 'DM Sans', sans-serif; color: #2d1f1a; outline: none; width: 175px; transition: border-color .2s, box-shadow .2s; }
-.search-wrap input:focus { border-color: #FF7A59; box-shadow: 0 0 0 3px rgba(255,122,89,.12); }
-
-/* Table */
-#matrixTable { border-collapse: collapse; width: 100%; }
-.th { background: linear-gradient(135deg,#FF7A59,#e8623e); color: #fff; font-weight: 700; font-size: 10.5px; padding: 11px 9px; text-align: center; position: sticky; top: 0; z-index: 10; white-space: nowrap; letter-spacing: .02em; }
-.th:first-child { text-align: left; padding-left: 14px; }
-.tc { padding: 8px 9px; text-align: center; border-bottom: 1px solid rgba(0,0,0,.045); font-size: 11px; vertical-align: middle; }
-.tc-name { text-align: left; padding-left: 13px; background: rgba(241,236,235,.9); position: sticky; left: 0; z-index: 5; font-weight: 600; font-size: 11px; cursor: pointer; }
-tbody tr:hover .tc { background: rgba(255,122,89,.04); }
-tbody tr:hover .tc-name { background: rgba(255,122,89,.07); }
-.prog-bar { height: 3.5px; border-radius: 999px; background: #e8e0dc; overflow: hidden; width: 100%; margin-top: 3px; }
-.prog-fill { height: 100%; border-radius: 999px; }
-
-/* Modal */
-.modal-bg { display: none; position: fixed; inset: 0; background: rgba(30,12,6,.55); backdrop-filter: blur(6px); z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
-.modal-box { background: rgba(255,255,255,.97); border-radius: 20px; border: 1.5px solid rgba(255,255,255,.9); padding: 24px; max-width: 740px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 60px rgba(30,12,6,.22); }
-
-/* Loading */
-#loadingOverlay { position: fixed; inset: 0; background: linear-gradient(135deg,#3d2a22,#6b3d2a); z-index: 50000; display: flex; align-items: center; justify-content: center; }
-.spinner { border: 3px solid rgba(255,122,89,.25); border-top-color: #FF7A59; border-radius: 50%; width: 38px; height: 38px; animation: spin .75s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-.fu  { animation: fadeUp .35s ease both; }
-.d1  { animation-delay: .06s; } .d2 { animation-delay: .12s; } .d3 { animation-delay: .18s; }
-.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-</style>
+        /* Loading */
+        #loadingOverlay { position:fixed; inset:0; background:linear-gradient(135deg,#1e293b,#334155); z-index:50000; display:flex; align-items:center; justify-content:center; }
+        .spinner { border:3px solid rgba(249,115,22,.25); border-top-color:#f97316; border-radius:50%; width:38px; height:38px; animation:spin .75s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    </style>
 </head>
-<body style="padding:18px 22px;">
+<body class="p-4 md:p-6">
 
 <div id="loadingOverlay">
-  <div style="text-align:center;">
-    <div class="spinner" style="margin:0 auto 12px;"></div>
-    <p style="color:rgba(255,255,255,.8);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:600;">Carregando dados...</p>
-  </div>
+    <div class="text-center">
+        <div class="spinner mx-auto mb-3"></div>
+        <p style="color:rgba(255,255,255,.65);font-size:13px;font-family:'Inter',sans-serif;font-weight:600;">Carregando dados...</p>
+    </div>
 </div>
 
-<div style="max-width:1720px;margin:0 auto;display:flex;flex-direction:column;gap:14px;">
+<div style="max-width:1640px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
 
-  <!-- HEADER -->
-  <div class="glass fu" style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#FF7A59,#ffb89a);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="24" height="24" viewBox="0 0 150 150"><path d="M 38 108 L 75 38 L 112 108 Z" fill="white" opacity=".95"/><path d="M 55 88 L 75 58 L 95 88 Z" fill="rgba(255,100,60,.5)"/></svg>
-      </div>
-      <div>
-        <div style="font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:900;color:#2d1f1a;line-height:1.1;">Projetos Sinai</div>
-        <div style="font-size:9.5px;font-weight:600;color:#a08070;text-transform:uppercase;letter-spacing:.08em;margin-top:2px;">Dashboard PMO · Controle de Implantação</div>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="text-align:right;">
-        <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#a08070;">Atualizado</div>
-        <div id="lastUpdate" style="font-size:11.5px;font-weight:700;color:#5a3a2a;">--</div>
-      </div>
-      <button onclick="reloadData()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:linear-gradient(135deg,#FF7A59,#e8623e);color:#fff;border:none;border-radius:10px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:box-shadow .2s;" onmouseover="this.style.boxShadow='0 6px 18px rgba(255,122,89,.4)'" onmouseout="this.style.boxShadow='none'">
-        <i data-lucide="refresh-cw" style="width:12px;height:12px;"></i> Atualizar
-      </button>
-    </div>
-  </div>
+    <!-- HEADER -->
+    <header class="glass border border-white shadow-xl shadow-slate-200/40 rounded-3xl px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-11 h-11 bg-orange-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-200 flex-shrink-0">
+                <span class="text-xl font-black">Δ</span>
+            </div>
+            <div>
+                <h1 class="text-xl font-black text-slate-900 leading-tight">Projetos Sinai</h1>
+                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Dashboard PMO · Controle de Implantação</p>
+            </div>
+        </div>
 
-  <!-- KPI GRID — 12 cards in 2 rows of 6 on desktop, strict equal sizing -->
-  <div class="fu d1" style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:stretch;">
+        <div class="flex flex-wrap items-center justify-center gap-6 px-6 py-2.5 bg-slate-50/60 rounded-2xl border border-slate-100">
+            <div class="flex flex-col items-center">
+                <span class="text-[9px] uppercase tracking-widest text-slate-400 font-bold mb-0.5">Cobertura</span>
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xl font-black text-orange-500" id="statCoverage">0%</span>
+                    <div class="w-20 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div id="barCoverage" class="h-full bg-orange-500 rounded-full transition-all duration-700" style="width:0%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-px h-8 bg-slate-200 hidden md:block"></div>
+            <div class="flex flex-col items-center">
+                <span class="text-[9px] uppercase tracking-widest text-slate-400 font-bold mb-0.5">Clientes Ativos</span>
+                <span class="text-xl font-black text-slate-900" id="statClientes">0</span>
+            </div>
+        </div>
 
-    <!-- Cobertura -->
-    <div class="kpi kpi-hero" style="cursor:default;">
-      <div class="kpi-label" style="margin-bottom:4px;">Cobertura</div>
-      <div class="cp-wrap">
-        <svg width="54" height="54" viewBox="0 0 64 64">
-          <circle cx="32" cy="32" r="25" fill="none" stroke="#e8e0dc" stroke-width="5.5"/>
-          <circle id="cpCircle" cx="32" cy="32" r="25" fill="none" stroke="url(#cpg)" stroke-width="5.5"
-            stroke-linecap="round" stroke-dasharray="157.08" stroke-dashoffset="157.08"
-            style="transition:stroke-dashoffset 1.2s ease;"/>
-          <defs><linearGradient id="cpg" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#FF7A59"/><stop offset="100%" stop-color="#ffb89a"/>
-          </linearGradient></defs>
-        </svg>
-        <div class="cp-text" id="statCoverage" style="font-size:.8rem;">0%</div>
-      </div>
-    </div>
+        <div class="flex flex-col items-end gap-1">
+            <button onclick="reloadData()" class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 active:scale-95 transition-all text-white px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-orange-200">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Atualizar
+            </button>
+            <span class="text-[9.5px] text-slate-400 uppercase font-bold" id="lastUpdate">--</span>
+        </div>
+    </header>
 
-    <!-- Clientes -->
-    <div class="kpi kpi-hero" style="cursor:default;">
-      <div class="kpi-label" style="margin-bottom:4px;">Clientes</div>
-      <div class="kpi-num" id="statClientes">0</div>
-      <div style="font-size:8px;font-weight:700;color:#a08070;letter-spacing:.07em;">IGREJAS</div>
+    <!-- HINT -->
+    <div class="px-1">
+        <p class="text-xs text-slate-400 font-medium bg-white/70 inline-block px-4 py-1.5 rounded-full border border-white/80 shadow-sm">
+            Clique num módulo para ver o estado detalhado de implantação.
+        </p>
     </div>
 
-    <!-- Módulos linha 1 -->
-    <div class="kpi" onclick="showModuleDetails('Secretaria')"><div class="kpi-label">Secretaria</div><div id="statSecretaria"><div class="kpi-num">—</div></div></div>
-    <div class="kpi" onclick="showModuleDetails('Tesouraria')"><div class="kpi-label">Tesouraria</div><div id="statTesouraria"><div class="kpi-num">—</div></div></div>
-    <div class="kpi" onclick="showModuleDetails('Financeiro')"><div class="kpi-label">Financeiro</div><div id="statFinanceiro"><div class="kpi-num">—</div></div></div>
-    <div class="kpi" onclick="showModuleDetails('Aplicativo')"><div class="kpi-label">Aplicativo</div><div id="statAplicativo"><div class="kpi-num">—</div></div></div>
+    <!-- KPI ROW 1 (6 cards) -->
+    <div id="kpi-row-1" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"></div>
 
-    <!-- Módulos linha 2 — 6 cards to complete the row -->
-    <div class="kpi" onclick="showModuleDetails('Eventos')"><div class="kpi-label">Eventos</div><div id="statEventos"><div class="kpi-num">—</div></div></div>
-    <div class="kpi" onclick="showModuleDetails('EBD')"><div class="kpi-label">EBD</div><div id="statEBD"><div class="kpi-num">—</div></div></div>
-    <div class="kpi" onclick="showModuleDetails('Patrimônio')"><div class="kpi-label">Patrimônio</div><div id="statPatrimonio"><div class="kpi-num">—</div></div></div>
-    <div class="kpi" onclick="showModuleDetails('Acolhimento')"><div class="kpi-label">Acolhimento</div><div id="statAcolhimento"><div class="kpi-num">—</div></div></div>
-    <div class="kpi" onclick="showModuleDetails('Meu Departamento')"><div class="kpi-label">Meu Depto.</div><div id="statMeuDepartamento"><div class="kpi-num">—</div></div></div>
-    <div class="kpi" onclick="showModuleDetails('EBL')"><div class="kpi-label">EBL / Célula</div><div id="statEBL"><div class="kpi-num">—</div></div></div>
-  </div>
+    <!-- KPI ROW 2 (4 cards) -->
+    <div id="kpi-row-2" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
 
-  <!-- LEGEND + FILTERS -->
-  <div class="glass fu d2" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <span style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#a08070;">Legenda</span>
-      <div style="display:flex;align-items:center;gap:4px;"><div class="dot" style="background:#10b981;"></div><span style="font-size:10.5px;font-weight:600;color:#5a3a2a;">Implantado</span></div>
-      <div style="display:flex;align-items:center;gap:4px;"><div class="dot" style="background:#f59e0b;"></div><span style="font-size:10.5px;font-weight:600;color:#5a3a2a;">Em Implantação</span></div>
-      <div style="display:flex;align-items:center;gap:4px;"><div class="dot" style="background:#06b6d4;"></div><span style="font-size:10.5px;font-weight:600;color:#5a3a2a;">Fomentar Uso</span></div>
-      <div style="display:flex;align-items:center;gap:4px;"><div class="dot" style="background:#8b5cf6;"></div><span style="font-size:10.5px;font-weight:600;color:#5a3a2a;">Não Implantado</span></div>
-      <div style="display:flex;align-items:center;gap:4px;"><div class="dot" style="background:#c4b8b4;"></div><span style="font-size:10.5px;font-weight:600;color:#5a3a2a;">Não Possui</span></div>
+    <!-- LEGENDA + FILTROS -->
+    <div class="glass border border-white rounded-2xl px-5 py-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-3">
+            <span class="text-[9px] uppercase tracking-widest text-slate-300 font-bold">Legenda</span>
+            <div class="flex items-center gap-1.5"><div class="dot" style="background:#10b981;"></div><span class="text-xs font-semibold text-slate-500">Implantado</span></div>
+            <div class="flex items-center gap-1.5"><div class="dot" style="background:#f59e0b;"></div><span class="text-xs font-semibold text-slate-500">Em Implantação</span></div>
+            <div class="flex items-center gap-1.5"><div class="dot" style="background:#06b6d4;"></div><span class="text-xs font-semibold text-slate-500">Fomentar Uso</span></div>
+            <div class="flex items-center gap-1.5"><div class="dot" style="background:#8b5cf6;"></div><span class="text-xs font-semibold text-slate-500">Não Implantado</span></div>
+            <div class="flex items-center gap-1.5"><div class="dot" style="background:#cbd5e1;"></div><span class="text-xs font-semibold text-slate-500">Não Possui</span></div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+            <div class="relative">
+                <i data-lucide="search" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:11px;height:11px;color:#94a3b8;"></i>
+                <input id="searchInput" type="text" placeholder="Buscar cliente..." oninput="applyFilters()"
+                    style="padding:5px 10px 5px 26px;font-size:11px;border:1.5px solid #e2e8f0;border-radius:9px;outline:none;background:#f8fafc;width:155px;font-family:'Inter',sans-serif;color:#334155;">
+            </div>
+            <button class="fbtn on"  id="fALL" onclick="setFilter('ALL')">Todos</button>
+            <button class="fbtn off" id="fID"  onclick="setFilter('ID')">ID</button>
+            <button class="fbtn off" id="fEI"  onclick="setFilter('EI')">EI</button>
+            <button class="fbtn off" id="fUS"  onclick="setFilter('US')">US</button>
+            <button class="fbtn off" id="fNI"  onclick="setFilter('NI')">NI</button>
+        </div>
     </div>
-    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-      <div class="search-wrap">
-        <i data-lucide="search" style="width:12px;height:12px;"></i>
-        <input type="text" id="searchInput" placeholder="Buscar cliente..." oninput="applyFilters()">
-      </div>
-      <button class="fbtn on"  id="fALL" onclick="setFilter('ALL')">Todos</button>
-      <button class="fbtn off" id="fID"  onclick="setFilter('ID')">ID</button>
-      <button class="fbtn off" id="fEI"  onclick="setFilter('EI')">EI</button>
-      <button class="fbtn off" id="fUS"  onclick="setFilter('US')">US</button>
-      <button class="fbtn off" id="fNI"  onclick="setFilter('NI')">NI</button>
-    </div>
-  </div>
 
-  <!-- MATRIX -->
-  <div class="glass fu d3" style="overflow:hidden;padding:0;">
-    <div style="overflow:auto;max-height:580px;border-radius:18px;">
-      <table id="matrixTable"></table>
+    <!-- MATRIX -->
+    <div style="background:white;border-radius:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden;">
+        <div style="overflow:auto;max-height:580px;border-radius:20px;">
+            <table id="matrixTable"></table>
+        </div>
     </div>
-  </div>
 
 </div>
 
 <!-- MODAL -->
 <div id="modal" class="modal-bg" onclick="closeModal(event)">
-  <div class="modal-box">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-      <h2 id="modalTitle" style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:900;color:#2d1f1a;"></h2>
-      <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;color:#a08070;padding:4px;" onmouseover="this.style.color='#2d1f1a'" onmouseout="this.style.color='#a08070'">
-        <i data-lucide="x" style="width:20px;height:20px;"></i>
-      </button>
+    <div class="modal-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h2 id="modalTitle" style="font-size:1.1rem;font-weight:900;color:#1e293b;"></h2>
+            <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;color:#94a3b8;" onmouseover="this.style.color='#334155'" onmouseout="this.style.color='#94a3b8'">
+                <i data-lucide="x" style="width:20px;height:20px;"></i>
+            </button>
+        </div>
+        <div id="modalContent"></div>
     </div>
-    <div id="modalContent"></div>
-  </div>
 </div>
 
 <script>
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
+const SHEET_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
+let CLIENTS=[],MODULES=[],DATA={};
+let activeFilter='ALL', expandedCard=null;
 
-let CLIENTS = [];
-let MODULES = [];
-let DATA    = {};
-let activeFilter = 'ALL';
+const saveNote=(id,v)=>localStorage.setItem('note_'+id,v);
+const getNote=(id)=>localStorage.getItem('note_'+id)||'';
 
-const saveNote = (id, v) => localStorage.setItem('note_' + id, v);
-const getNote  = (id)    => localStorage.getItem('note_' + id) || '';
+const MOD_ICONS={
+    secretaria:'building-2',tesouraria:'wallet',financeiro:'coins',aplicativo:'smartphone',
+    eventos:'calendar',ebd:'book-open','patrimônio':'shield-check',patrimonio:'shield-check',
+    acolhimento:'heart','meu departamento':'users',meudepto:'users',
+    ebl:'church','ebl / célula':'church',célula:'church',celula:'church',
+};
+const iconFor=k=>MOD_ICONS[k.toLowerCase()]||'layout-grid';
 
-function parseCSV(text) {
-  return text.split('\n').map(row => {
-    const cols = []; let cur = '', inQ = false;
-    for (const ch of row) {
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else cur += ch;
+const MOD_DEFS=[
+    {id:'secretaria', label:'Secretaria',      keys:['Secretaria'],                         row:1},
+    {id:'tesouraria', label:'Tesouraria',       keys:['Tesouraria'],                         row:1},
+    {id:'financeiro', label:'Financeiro',       keys:['Financeiro'],                         row:1},
+    {id:'aplicativo', label:'Aplicativo',       keys:['Aplicativo'],                         row:1},
+    {id:'eventos',    label:'Eventos',          keys:['Eventos'],                            row:1},
+    {id:'ebd',        label:'EBD',              keys:['EBD'],                                row:1},
+    {id:'patrimonio', label:'Patrimônio',       keys:['Patrimônio','Patrimonio'],             row:2},
+    {id:'acolhimento',label:'Acolhimento',      keys:['Acolhimento'],                        row:2},
+    {id:'meudepto',   label:'Meu Departamento', keys:['Meu Departamento','Departamento'],    row:2},
+    {id:'ebl',        label:'EBL / Célula',     keys:['EBL','Célula','Celula','EBL/Célula'], row:2},
+];
+
+function parseCSV(text){
+    return text.split('\n').map(row=>{
+        const cols=[];let cur='',inQ=false;
+        for(const ch of row){
+            if(ch==='"'){inQ=!inQ;}
+            else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+            else cur+=ch;
+        }
+        cols.push(cur.trim());return cols;
+    });
+}
+
+async function loadSheetData(){
+    try{
+        const rows=parseCSV(await(await fetch(SHEET_URL)).text());
+        MODULES=rows[1].slice(1).filter(m=>m?.trim());
+        CLIENTS=[];DATA={};
+        MODULES.forEach(m=>DATA[m]=[]);
+        for(let i=2;i<rows.length;i++){
+            const row=rows[i];
+            if(!row[0]?.trim())continue;
+            const id='u'+(i-2);
+            CLIENTS.push({id,label:row[0].trim()});
+            const nc=MODULES.length+1;
+            if(row[nc]?.trim())saveNote(id,row[nc].trim());
+            MODULES.forEach((m,mi)=>DATA[m].push((row[mi+1]||'NI').trim()));
+        }
+        renderKPIs();renderMatrix();
+        document.getElementById('lastUpdate').textContent=
+            new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+        document.getElementById('loadingOverlay').style.display='none';
+    }catch(e){
+        console.error(e);alert('Erro ao carregar planilha.');
+        document.getElementById('loadingOverlay').style.display='none';
     }
-    cols.push(cur.trim());
-    return cols;
-  });
 }
 
-async function loadSheetData() {
-  try {
-    const res  = await fetch(SHEET_URL);
-    const text = await res.text();
-    const rows = parseCSV(text);
-
-    // Row 1 (index 1) = module names starting col B (index 1)
-    MODULES = rows[1].slice(1).filter(m => m && m.trim());
-
-    CLIENTS = []; DATA = {};
-    MODULES.forEach(m => DATA[m] = []);
-
-    for (let i = 2; i < rows.length; i++) {
-      const row = rows[i];
-      if (!row[0] || !row[0].trim()) continue;
-      const id = 'u' + (i - 2);
-      CLIENTS.push({ id, label: row[0].trim() });
-      // Save inline note if exists beyond module columns
-      const noteCol = MODULES.length + 1;
-      if (row[noteCol] && row[noteCol].trim()) saveNote(id, row[noteCol].trim());
-      MODULES.forEach((m, mi) => DATA[m].push((row[mi + 1] || 'NI').trim()));
+const ps=raw=>(raw||'').split('|')[0].trim();
+function wt(s){
+    if(s==='ID')return 100;if(s==='US')return 80;
+    if(s.startsWith('EI')){const m=s.match(/(\d+)%/);return m?+m[1]:50;}
+    return 0;
+}
+function getBadge(s){
+    const c=s==='ID'?'b-id':s==='US'?'b-us':s.startsWith('EI')?'b-ei':s==='NI'?'b-ni':'b-na';
+    return`<span class="badge ${c}">${s}</span>`;
+}
+function findMod(keys){
+    for(const k of keys){
+        if(DATA[k])return DATA[k];
+        const hit=Object.keys(DATA).find(dk=>dk.toLowerCase().includes(k.toLowerCase())||k.toLowerCase().includes(dk.toLowerCase().substring(0,Math.max(4,dk.length-2))));
+        if(hit)return DATA[hit];
     }
-
-    renderKPIs();
-    renderMatrix();
-    document.getElementById('lastUpdate').textContent =
-      new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
-    document.getElementById('loadingOverlay').style.display = 'none';
-  } catch (e) {
-    console.error(e);
-    alert('Erro ao carregar planilha. Verifique o link CSV.');
-    document.getElementById('loadingOverlay').style.display = 'none';
-  }
+    return null;
 }
 
-function parseStatus(raw) { return (raw || '').split('|')[0].trim(); }
-
-function weight(s) {
-  if (s === 'ID') return 100;
-  if (s === 'US') return 80;
-  if (s.startsWith('EI')) { const m = s.match(/(\d+)%/); return m ? +m[1] : 50; }
-  return 0;
-}
-
-function badgeCls(s) {
-  if (s === 'ID') return 'b-id';
-  if (s === 'US') return 'b-us';
-  if (s.startsWith('EI')) return 'b-ei';
-  if (s === 'NI') return 'b-ni';
-  return 'b-na';
-}
-
-function badge(s) { return `<span class="badge ${badgeCls(s)}">${s}</span>`; }
-
-// Find module data by a list of fallback keywords
-function findMod(keywords) {
-  const kws = Array.isArray(keywords) ? keywords : [keywords];
-  for (const kw of kws) {
-    if (DATA[kw]) return { key: kw, data: DATA[kw] };
-    const hit = Object.keys(DATA).find(k =>
-      k.toLowerCase().includes(kw.toLowerCase()) ||
-      kw.toLowerCase().includes(k.toLowerCase().substring(0, Math.max(4, k.length - 2)))
-    );
-    if (hit) return { key: hit, data: DATA[hit] };
-  }
-  return null;
-}
-
-function renderModKPI(elId, keywords) {
-  const el = document.getElementById(elId);
-  if (!el) return;
-  const f = findMod(keywords);
-  if (!f) { el.innerHTML = `<div class="kpi-num" style="color:#c4b8b4;">—</div>`; return; }
-
-  let total = 0, id = 0, ei = 0, us = 0, ni = 0;
-  f.data.forEach(raw => {
-    const s = parseStatus(raw);
-    if (!s || s === 'N/A') return;
-    total++;
-    if (s === 'ID') id++;
-    else if (s.startsWith('EI')) ei++;
-    else if (s === 'US') us++;
-    else if (s === 'NI') ni++;
-  });
-  const d = id + ei + us + ni || 1;
-  el.innerHTML = `
-    <div class="kpi-num">${total}</div>
-    <div class="kpi-counts">
-      <span style="color:#10b981;">ID&nbsp;${id}</span><span style="color:#f59e0b;">EI&nbsp;${ei}</span><span style="color:#06b6d4;">US&nbsp;${us}</span><span style="color:#8b5cf6;">NI&nbsp;${ni}</span>
-    </div>
-    <div class="sbar">
-      <div class="sbar-id" style="width:${id/d*100}%;"></div>
-      <div class="sbar-us" style="width:${us/d*100}%;"></div>
-      <div class="sbar-ei" style="width:${ei/d*100}%;"></div>
-      <div class="sbar-ni" style="width:${ni/d*100}%;"></div>
+function buildCard(def,counts,total){
+    const icon=iconFor(def.id==='meudepto'?'meu departamento':def.id);
+    const d=total||1;
+    const iW=(counts.id/d*100).toFixed(1),uW=(counts.us/d*100).toFixed(1),
+          eW=(counts.ei/d*100).toFixed(1),nW=(counts.ni/d*100).toFixed(1);
+    return`<div id="kcard-${def.id}" class="mod-card" onclick="toggleCard('${def.id}')">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
+            <div style="width:36px;height:36px;background:#f97316;border-radius:13px;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 4px 10px rgba(249,115,22,.22);flex-shrink:0;">
+                <i data-lucide="${icon}" style="width:17px;height:17px;"></i>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:1.8rem;font-weight:900;color:#1e293b;line-height:1;">${total}</div>
+                <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-top:1px;">Total</div>
+            </div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#64748b;margin-top:6px;">${def.label}</div>
+        <div class="sbar"><div class="sbar-id" style="width:${iW}%;"></div><div class="sbar-us" style="width:${uW}%;"></div><div class="sbar-ei" style="width:${eW}%;"></div><div class="sbar-ni" style="width:${nW}%;"></div></div>
+        <div class="details-container">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+                <div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:10px;padding:7px;text-align:center;"><div style="font-size:7px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.05em;">Implantado</div><div style="font-size:1.25rem;font-weight:900;color:#065f46;line-height:1.2;">${counts.id}</div></div>
+                <div style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:10px;padding:7px;text-align:center;"><div style="font-size:7px;font-weight:700;color:#0891b2;text-transform:uppercase;letter-spacing:.05em;">Fomentar Uso</div><div style="font-size:1.25rem;font-weight:900;color:#155e75;line-height:1.2;">${counts.us}</div></div>
+                <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:7px;text-align:center;"><div style="font-size:7px;font-weight:700;color:#d97706;text-transform:uppercase;letter-spacing:.05em;">Em Implantação</div><div style="font-size:1.25rem;font-weight:900;color:#92400e;line-height:1.2;">${counts.ei}</div></div>
+                <div style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:7px;text-align:center;"><div style="font-size:7px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.05em;">Não Implantado</div><div style="font-size:1.25rem;font-weight:900;color:#4c1d95;line-height:1.2;">${counts.ni}</div></div>
+            </div>
+        </div>
+        <div style="position:absolute;bottom:12px;right:14px;color:#e2e8f0;">
+            <i data-lucide="chevron-down" class="chevron-icon" style="width:15px;height:15px;"></i>
+        </div>
     </div>`;
 }
 
-function renderKPIs() {
-  let tc = 0, tw = 0;
-  Object.values(DATA).forEach(col => col.forEach(raw => {
-    const s = parseStatus(raw);
-    if (!s || s === 'N/A') return;
-    tc++; tw += weight(s);
-  }));
-  const cov = tc ? Math.round(tw / tc) : 0;
-  document.getElementById('statCoverage').textContent = cov + '%';
-  document.getElementById('statClientes').textContent = CLIENTS.length;
-  // r=25 => C=2π*25=157.08
-  setTimeout(() => {
-    const c = document.getElementById('cpCircle');
-    if (c) c.style.strokeDashoffset = 157.08 - (cov / 100) * 157.08;
-  }, 200);
+function renderKPIs(){
+    let tc=0,tw=0;
+    Object.values(DATA).forEach(col=>col.forEach(raw=>{const s=ps(raw);if(!s||s==='N/A')return;tc++;tw+=wt(s);}));
+    const cov=tc?Math.round(tw/tc):0;
+    document.getElementById('statCoverage').textContent=cov+'%';
+    document.getElementById('barCoverage').style.width=cov+'%';
+    document.getElementById('statClientes').textContent=CLIENTS.length;
 
-  renderModKPI('statSecretaria',      ['Secretaria']);
-  renderModKPI('statTesouraria',      ['Tesouraria']);
-  renderModKPI('statFinanceiro',      ['Financeiro']);
-  renderModKPI('statAplicativo',      ['Aplicativo']);
-  renderModKPI('statEventos',         ['Eventos']);
-  renderModKPI('statEBD',            ['EBD']);
-  renderModKPI('statPatrimonio',      ['Patrimônio','Patrimonio']);
-  renderModKPI('statAcolhimento',     ['Acolhimento']);
-  renderModKPI('statMeuDepartamento', ['Meu Departamento','Departamento']);
-  renderModKPI('statEBL',            ['EBL','Célula','Celula','EBL/Célula','EBL / Célula']);
-}
+    const r1=document.getElementById('kpi-row-1'),r2=document.getElementById('kpi-row-2');
+    r1.innerHTML='';r2.innerHTML='';
 
-function clientProg(idx) {
-  let tot = 0, w = 0;
-  MODULES.forEach(m => {
-    const s = parseStatus(DATA[m][idx]);
-    if (!s || s === 'N/A') return;
-    tot++; w += weight(s);
-  });
-  return tot ? Math.round(w / tot) : 0;
-}
-
-function renderMatrix() {
-  const tbl = document.getElementById('matrixTable');
-  let html = '<thead><tr>';
-  html += `<th class="th" style="text-align:left;padding-left:14px;min-width:175px;position:sticky;left:0;z-index:20;background:linear-gradient(135deg,#FF7A59,#e8623e);">Cliente</th>`;
-  MODULES.forEach(m => { html += `<th class="th" style="min-width:85px;">${m}</th>`; });
-  html += '</tr></thead><tbody>';
-
-  CLIENTS.forEach((cl, idx) => {
-    const prog = clientProg(idx);
-    const hasNote = getNote(cl.id);
-    let fill = '#8b5cf6';
-    if (prog >= 90) fill = '#10b981';
-    else if (prog >= 70) fill = '#06b6d4';
-    else if (prog >= 50) fill = '#f59e0b';
-
-    html += `<tr>
-      <td class="tc tc-name" onclick="showDetails('${cl.label.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">
-        <div style="display:flex;flex-direction:column;gap:2px;padding:3px 0;">
-          <div style="display:flex;align-items:center;gap:4px;">
-            ${hasNote ? '<i data-lucide="message-square" style="width:10px;height:10px;color:#f59e0b;flex-shrink:0;"></i>' : ''}
-            <span>${cl.label}</span>
-          </div>
-          <div class="prog-bar"><div class="prog-fill" style="width:${prog}%;background:${fill};"></div></div>
-          <span style="font-size:9px;font-weight:700;color:${fill};">${prog}%</span>
-        </div>
-      </td>`;
-    MODULES.forEach(m => {
-      const s = parseStatus(DATA[m][idx] || 'NI');
-      html += `<td class="tc">${badge(s)}</td>`;
+    MOD_DEFS.forEach(def=>{
+        const col=findMod(def.keys);
+        let total=0,counts={id:0,ei:0,us:0,ni:0};
+        if(col)col.forEach(raw=>{
+            const s=ps(raw);if(!s||s==='N/A')return;
+            total++;
+            if(s==='ID')counts.id++;else if(s.startsWith('EI'))counts.ei++;
+            else if(s==='US')counts.us++;else if(s==='NI')counts.ni++;
+        });
+        (def.row===1?r1:r2).insertAdjacentHTML('beforeend',buildCard(def,counts,total));
     });
-    html += '</tr>';
-  });
-
-  html += '</tbody>';
-  tbl.innerHTML = html;
-  lucide.createIcons();
+    lucide.createIcons();
 }
 
-function setFilter(f) {
-  activeFilter = f;
-  ['ALL','ID','EI','US','NI'].forEach(k => {
-    const b = document.getElementById('f'+k);
-    if (b) b.className = 'fbtn ' + (k === f ? 'on' : 'off');
-  });
-  applyFilters();
-}
-
-function applyFilters() {
-  const q = (document.getElementById('searchInput').value || '').toLowerCase();
-  document.querySelectorAll('#matrixTable tbody tr').forEach(row => {
-    const name = row.querySelector('td')?.textContent.toLowerCase() || '';
-    const matchQ = !q || name.includes(q);
-    let matchF = true;
-    if (activeFilter !== 'ALL') {
-      matchF = [...row.querySelectorAll('.badge')].some(b => {
-        const t = b.textContent.trim();
-        return activeFilter === 'EI' ? t.startsWith('EI') : t === activeFilter;
-      });
+function toggleCard(id){
+    const card=document.getElementById('kcard-'+id);if(!card)return;
+    if(expandedCard===id){card.classList.remove('card-active');expandedCard=null;}
+    else{
+        if(expandedCard)document.getElementById('kcard-'+expandedCard)?.classList.remove('card-active');
+        card.classList.add('card-active');expandedCard=id;
     }
-    row.style.display = matchQ && matchF ? '' : 'none';
-  });
 }
 
-function showDetails(name) {
-  const cl  = CLIENTS.find(c => c.label === name);
-  const idx = CLIENTS.findIndex(c => c.label === name);
-  if (!cl) return;
-  const note = getNote(cl.id);
-  document.getElementById('modalTitle').textContent = name;
-  const safeId = cl.id.replace(/'/g, "\\'");
-  let html = `
-    <div style="background:#fff5f2;border:1.5px solid rgba(255,122,89,.2);border-radius:12px;padding:12px;margin-bottom:14px;">
-      <label style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#FF7A59;display:block;margin-bottom:5px;">Observações</label>
-      <textarea id="noteTA" style="width:100%;padding:8px;border:1.5px solid #e8d0c8;border-radius:9px;font-size:12px;font-family:'DM Sans',sans-serif;color:#2d1f1a;resize:none;outline:none;" rows="3">${note}</textarea>
-      <button onclick="saveModalNote('${safeId}')" style="margin-top:7px;padding:6px 14px;background:linear-gradient(135deg,#FF7A59,#e8623e);color:#fff;border:none;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Salvar</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:5px;">`;
-  MODULES.forEach(m => {
-    const raw = DATA[m][idx] || 'NI';
-    const [s, date] = raw.split('|');
-    html += `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:#f9f5f4;border-radius:10px;">
-        <span style="font-size:11.5px;font-weight:600;color:#3d2a22;">${m}</span>
-        <div style="display:flex;align-items:center;gap:7px;">
-          ${badge(s.trim())}
-          ${date ? `<span style="font-size:10px;color:#a08070;font-weight:500;">${date.trim()}</span>` : ''}
-        </div>
-      </div>`;
-  });
-  html += '</div>';
-  document.getElementById('modalContent').innerHTML = html;
-  document.getElementById('modal').style.display = 'flex';
-  lucide.createIcons();
+function cprog(idx){
+    let tot=0,w=0;
+    MODULES.forEach(m=>{const s=ps(DATA[m][idx]);if(!s||s==='N/A')return;tot++;w+=wt(s);});
+    return tot?Math.round(w/tot):0;
 }
 
-function showModuleDetails(name) {
-  const f = findMod([name]);
-  document.getElementById('modalTitle').textContent = name;
-  let html = '<div style="display:flex;flex-direction:column;gap:5px;">';
-  if (!f) {
-    html += `<p style="font-size:12px;color:#a08070;">Módulo não encontrado na planilha.</p>`;
-  } else {
-    const groups = { ID:[], US:[], EI:[], NI:[] };
-    CLIENTS.forEach((cl, idx) => {
-      const [s, date] = (f.data[idx] || '').split('|');
-      const st = s.trim();
-      if (st === 'ID') groups.ID.push({cl,st,date});
-      else if (st === 'US') groups.US.push({cl,st,date});
-      else if (st.startsWith('EI')) groups.EI.push({cl,st,date});
-      else if (st === 'NI') groups.NI.push({cl,st,date});
-    });
-    const labels = { ID:'Implantado', US:'Fomentar Uso', EI:'Em Implantação', NI:'Não Implantado' };
-    ['ID','US','EI','NI'].forEach(k => {
-      if (!groups[k].length) return;
-      html += `<p style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#a08070;margin:10px 0 4px;">${labels[k]} (${groups[k].length})</p>`;
-      groups[k].forEach(({cl,st,date}) => {
-        html += `
-          <div onclick="showDetails('${cl.label.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}');" style="display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:#f9f5f4;border-radius:10px;cursor:pointer;" onmouseover="this.style.background='#f0ebe9'" onmouseout="this.style.background='#f9f5f4'">
-            <span style="font-size:11.5px;font-weight:600;color:#3d2a22;">${cl.label}</span>
-            <div style="display:flex;align-items:center;gap:6px;">
-              ${badge(st)}
-              ${date ? `<span style="font-size:10px;color:#a08070;">${date.trim()}</span>` : ''}
+function renderMatrix(){
+    const tbl=document.getElementById('matrixTable');
+    let html='<thead><tr>';
+    html+=`<th class="th" style="text-align:left;padding-left:16px;min-width:185px;position:sticky;left:0;z-index:20;background:linear-gradient(135deg,#f97316,#ea6313);">Cliente</th>`;
+    MODULES.forEach(m=>{html+=`<th class="th" style="min-width:82px;">${m}</th>`;});
+    html+='</tr></thead><tbody>';
+    CLIENTS.forEach((cl,idx)=>{
+        const prog=cprog(idx),hasNote=getNote(cl.id);
+        const fill=prog>=90?'#10b981':prog>=70?'#06b6d4':prog>=50?'#f59e0b':'#8b5cf6';
+        const sl=cl.label.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        html+=`<tr><td class="tc tc-name" onclick="showDetails('${sl}')">
+            <div style="display:flex;flex-direction:column;gap:2px;padding:1px 0;">
+                <div style="display:flex;align-items:center;gap:4px;">
+                    ${hasNote?'<i data-lucide="message-square" style="width:10px;height:10px;color:#f59e0b;flex-shrink:0;"></i>':''}
+                    <span>${cl.label}</span>
+                </div>
+                <div class="prog-bar"><div class="prog-fill" style="width:${prog}%;background:${fill};"></div></div>
+                <span style="font-size:9px;font-weight:700;color:${fill};">${prog}%</span>
             </div>
-          </div>`;
-      });
+        </td>`;
+        MODULES.forEach(m=>{html+=`<td class="tc">${getBadge(ps(DATA[m][idx]||'NI'))}</td>`;});
+        html+='</tr>';
     });
-  }
-  html += '</div>';
-  document.getElementById('modalContent').innerHTML = html;
-  document.getElementById('modal').style.display = 'flex';
-  lucide.createIcons();
+    html+='</tbody>';
+    tbl.innerHTML=html;
+    lucide.createIcons();
 }
 
-function saveModalNote(id) {
-  saveNote(id, document.getElementById('noteTA').value);
-  closeModal(); renderMatrix();
+function setFilter(f){
+    activeFilter=f;
+    ['ALL','ID','EI','US','NI'].forEach(k=>{
+        const b=document.getElementById('f'+k);if(b)b.className='fbtn '+(k===f?'on':'off');
+    });
+    applyFilters();
+}
+function applyFilters(){
+    const q=(document.getElementById('searchInput').value||'').toLowerCase();
+    document.querySelectorAll('#matrixTable tbody tr').forEach(row=>{
+        const name=row.querySelector('td')?.textContent.toLowerCase()||'';
+        const matchQ=!q||name.includes(q);
+        let matchF=activeFilter==='ALL';
+        if(!matchF)matchF=[...row.querySelectorAll('.badge')].some(b=>{
+            const t=b.textContent.trim();return activeFilter==='EI'?t.startsWith('EI'):t===activeFilter;
+        });
+        row.style.display=matchQ&&matchF?'':'none';
+    });
 }
 
-function closeModal(e) {
-  const m = document.getElementById('modal');
-  if (!e || e.target === m) m.style.display = 'none';
+function showDetails(name){
+    const cl=CLIENTS.find(c=>c.label===name),idx=CLIENTS.findIndex(c=>c.label===name);
+    if(!cl)return;
+    document.getElementById('modalTitle').innerHTML=`<span style="color:#f97316;">●</span> ${name}`;
+    let html=`<div style="background:#fff8f5;border:1.5px solid rgba(249,115,22,.2);border-radius:12px;padding:12px;margin-bottom:12px;">
+        <label style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#f97316;display:block;margin-bottom:5px;">Observações</label>
+        <textarea id="noteTA" style="width:100%;padding:8px;border:1.5px solid #fed7aa;border-radius:8px;font-size:12px;font-family:'Inter',sans-serif;color:#1e293b;resize:none;outline:none;" rows="3">${getNote(cl.id)}</textarea>
+        <button onclick="saveModalNote('${cl.id}')" style="margin-top:7px;padding:5px 13px;background:linear-gradient(135deg,#f97316,#ea6313);color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">Salvar</button>
+    </div><div style="display:flex;flex-direction:column;gap:4px;">`;
+    MODULES.forEach(m=>{
+        const raw=DATA[m][idx]||'NI';const[s,date]=raw.split('|');
+        html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:#f8fafc;border-radius:8px;">
+            <span style="font-size:12px;font-weight:600;color:#334155;">${m}</span>
+            <div style="display:flex;align-items:center;gap:6px;">${getBadge(s.trim())}${date?`<span style="font-size:10px;color:#94a3b8;">${date.trim()}</span>`:''}</div>
+        </div>`;
+    });
+    html+='</div>';
+    document.getElementById('modalContent').innerHTML=html;
+    document.getElementById('modal').style.display='flex';
+    lucide.createIcons();
 }
 
-function reloadData() {
-  document.getElementById('loadingOverlay').style.display = 'flex';
-  loadSheetData();
+function showModuleDetails(name){
+    const col=findMod([name]);
+    document.getElementById('modalTitle').innerHTML=`<span style="color:#f97316;">◈</span> ${name}`;
+    let html='<div style="display:flex;flex-direction:column;gap:4px;">';
+    if(!col){html+=`<p style="font-size:12px;color:#94a3b8;">Módulo não encontrado.</p>`;}
+    else{
+        const groups={ID:[],US:[],EI:[],NI:[]};
+        CLIENTS.forEach((cl,idx)=>{
+            const[s,date]=(col[idx]||'').split('|');const st=(s||'').trim();
+            if(st==='ID')groups.ID.push({cl,st,date});
+            else if(st==='US')groups.US.push({cl,st,date});
+            else if(st.startsWith('EI'))groups.EI.push({cl,st,date});
+            else if(st==='NI')groups.NI.push({cl,st,date});
+        });
+        const labels={ID:'Implantado',US:'Fomentar Uso',EI:'Em Implantação',NI:'Não Implantado'};
+        ['ID','US','EI','NI'].forEach(k=>{
+            if(!groups[k].length)return;
+            html+=`<p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin:8px 0 2px;">${labels[k]} (${groups[k].length})</p>`;
+            groups[k].forEach(({cl,st,date})=>{
+                const sl=cl.label.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+                html+=`<div onclick="showDetails('${sl}');" style="display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:#f8fafc;border-radius:8px;cursor:pointer;" onmouseover="this.style.background='#fff1ec'" onmouseout="this.style.background='#f8fafc'">
+                    <span style="font-size:12px;font-weight:600;color:#334155;">${cl.label}</span>
+                    <div style="display:flex;align-items:center;gap:6px;">${getBadge(st)}${date?`<span style="font-size:10px;color:#94a3b8;">${date.trim()}</span>`:''}</div>
+                </div>`;
+            });
+        });
+    }
+    html+='</div>';
+    document.getElementById('modalContent').innerHTML=html;
+    document.getElementById('modal').style.display='flex';
+    lucide.createIcons();
 }
 
-window.onload = () => { lucide.createIcons(); loadSheetData(); };
-setInterval(loadSheetData, 300000);
+function saveModalNote(id){saveNote(id,document.getElementById('noteTA').value);closeModal();renderMatrix();}
+function closeModal(e){const m=document.getElementById('modal');if(!e||e.target===m)m.style.display='none';}
+function reloadData(){document.getElementById('loadingOverlay').style.display='flex';loadSheetData();}
+
+window.onload=()=>{lucide.createIcons();loadSheetData();};
+setInterval(loadSheetData,300000);
 </script>
 </body>
 </html>
