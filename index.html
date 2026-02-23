@@ -167,9 +167,10 @@
     <div id="kpi-row-1" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"></div>
     <div id="kpi-row-2" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
 
-    <!-- LEGENDA + FILTROS -->
+    <!-- LEGENDA + FILTROS + BUSCA -->
     <div class="bg-white rounded-2xl px-6 py-4 border border-slate-100 shadow-sm">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <!-- Legenda -->
             <div class="flex flex-wrap items-center gap-4">
                 <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Legenda</span>
                 <div class="flex items-center gap-2">
@@ -194,7 +195,21 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-2 flex-wrap">
+            <!-- Filtros + Busca -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <!-- Campo de busca -->
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="Buscar cliente..."
+                        oninput="applyFilters()"
+                        class="pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20 w-44"
+                    >
+                </div>
+                
+                <!-- Filtros de status -->
                 <button class="filter-btn active" id="filterAll" onclick="setFilter('ALL')">Todos</button>
                 <button class="filter-btn" id="filterID" onclick="setFilter('ID')">ID</button>
                 <button class="filter-btn" id="filterEI" onclick="setFilter('EI')">EI</button>
@@ -225,6 +240,32 @@
         </div>
     </div>
 
+</div>
+
+<!-- MODAL DETALHES DO CLIENTE -->
+<div id="clientModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden items-center justify-center p-4" onclick="closeClientModal(event)">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-3xl">
+            <h2 id="modalClientName" class="text-xl font-black text-slate-900"></h2>
+            <button onclick="closeClientModal()" class="text-slate-400 hover:text-slate-600 transition">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+        
+        <div class="p-6">
+            <!-- Observações -->
+            <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-6">
+                <div class="flex items-center gap-2 mb-2">
+                    <i data-lucide="message-square" class="w-4 h-4 text-orange-600"></i>
+                    <span class="text-xs font-bold text-orange-900 uppercase tracking-wider">Observações</span>
+                </div>
+                <p id="modalClientObs" class="text-sm text-slate-700 leading-relaxed"></p>
+            </div>
+            
+            <!-- Status dos módulos -->
+            <div class="space-y-2" id="modalClientModules"></div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -269,6 +310,9 @@ function parseCSV(text) {
     });
 }
 
+const saveNote = (id, v) => localStorage.setItem('note_' + id, v);
+const getNote = (id) => localStorage.getItem('note_' + id) || '';
+
 async function loadSheetData() {
     try {
         const rows = parseCSV(await (await fetch(SHEET_URL)).text());
@@ -284,6 +328,9 @@ async function loadSheetData() {
             
             const id = 'u' + (i - 2);
             CLIENTS.push({id, label: row[0].trim()});
+            
+            // Coluna 11 (L) = observações
+            if (row[11]?.trim()) saveNote(id, row[11].trim());
             
             MODULES.forEach((m, mi) => DATA[m].push((row[mi + 1] || 'NI').trim()));
         }
@@ -322,11 +369,6 @@ function findMod(keys) {
 
 function buildCard(def, total, counts) {
     const icon = iconFor(def.id === 'meudepto' ? 'meu departamento' : def.id);
-    const d = total || 1;
-    const iW = (counts.id / d * 100).toFixed(1);
-    const uW = (counts.us / d * 100).toFixed(1);
-    const eW = (counts.ei / d * 100).toFixed(1);
-    const nW = (counts.ni / d * 100).toFixed(1);
     
     return `<div class="mod-card" id="card-${def.id}" onclick="toggleCard('${def.id}')">
         <div class="flex items-start justify-between mb-3">
@@ -338,34 +380,26 @@ function buildCard(def, total, counts) {
                 <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total</div>
             </div>
         </div>
-        <div class="text-sm font-bold text-slate-600">${def.label}</div>
-        
-        <!-- Barra empilhada -->
-        <div class="stacked-bar">
-            <div class="bar-id" style="width: ${iW}%;"></div>
-            <div class="bar-us" style="width: ${uW}%;"></div>
-            <div class="bar-ei" style="width: ${eW}%;"></div>
-            <div class="bar-ni" style="width: ${nW}%;"></div>
-        </div>
+        <div class="text-sm font-bold text-slate-600 mb-2">${def.label}</div>
         
         <!-- Detalhes expansíveis -->
         <div class="card-details">
-            <div class="grid grid-cols-2 gap-2">
-                <div class="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-                    <div class="text-[9px] font-bold text-green-700 uppercase tracking-wide mb-1">Implantado</div>
-                    <div class="text-2xl font-black text-green-900">${counts.id}</div>
+            <div class="grid grid-cols-2 gap-2 mt-3">
+                <div class="bg-green-50 border border-green-200 rounded-xl p-2.5 text-center">
+                    <div class="text-[8px] font-bold text-green-700 uppercase tracking-wide mb-0.5">Implantado</div>
+                    <div class="text-xl font-black text-green-900">${counts.id}</div>
                 </div>
-                <div class="bg-cyan-50 border border-cyan-200 rounded-xl p-3 text-center">
-                    <div class="text-[9px] font-bold text-cyan-700 uppercase tracking-wide mb-1">Fomentar Uso</div>
-                    <div class="text-2xl font-black text-cyan-900">${counts.us}</div>
+                <div class="bg-cyan-50 border border-cyan-200 rounded-xl p-2.5 text-center">
+                    <div class="text-[8px] font-bold text-cyan-700 uppercase tracking-wide mb-0.5">Fomentar Uso</div>
+                    <div class="text-xl font-black text-cyan-900">${counts.us}</div>
                 </div>
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
-                    <div class="text-[9px] font-bold text-amber-700 uppercase tracking-wide mb-1">Em Implantação</div>
-                    <div class="text-2xl font-black text-amber-900">${counts.ei}</div>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-center">
+                    <div class="text-[8px] font-bold text-amber-700 uppercase tracking-wide mb-0.5">Em Implantação</div>
+                    <div class="text-xl font-black text-amber-900">${counts.ei}</div>
                 </div>
-                <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-center">
-                    <div class="text-[9px] font-bold text-purple-700 uppercase tracking-wide mb-1">Não Implantado</div>
-                    <div class="text-2xl font-black text-purple-900">${counts.ni}</div>
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-2.5 text-center">
+                    <div class="text-[8px] font-bold text-purple-700 uppercase tracking-wide mb-0.5">Não Implantado</div>
+                    <div class="text-xl font-black text-purple-900">${counts.ni}</div>
                 </div>
             </div>
         </div>
@@ -491,11 +525,11 @@ function renderTable() {
         else if (prog > 0) dotColor = 'bg-red-500';
         
         bodyHtml += `<tr class="group hover:bg-slate-50/50 transition-all">
-            <td class="sticky-col px-6 py-5">
+            <td class="sticky-col px-6 py-5 cursor-pointer" onclick="showClientModal('${cl.label.replace(/'/g, "\\'")}')">
                 <div class="flex items-center gap-4">
                     <div class="w-2 h-2 rounded-full ${dotColor} flex-shrink-0"></div>
                     <div class="flex-1 min-w-0">
-                        <div class="font-bold text-slate-900 text-sm mb-1">${cl.label}</div>
+                        <div class="font-bold text-slate-900 text-sm mb-1 hover:text-orange-500 transition">${cl.label}</div>
                         <div class="flex items-center gap-2">
                             <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
                                 <div class="h-full ${dotColor} rounded-full progress-bar-transition" style="width: ${prog}%;"></div>
@@ -534,25 +568,67 @@ function setFilter(filter) {
         }
     });
     
-    // Aplicar filtro na tabela
+    applyFilters();
+}
+
+function applyFilters() {
+    const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
     const rows = document.querySelectorAll('#tableBody tr');
+    
     rows.forEach(row => {
-        if (filter === 'ALL') {
-            row.style.display = '';
-            return;
+        const clientName = row.querySelector('.sticky-col')?.textContent.toLowerCase() || '';
+        const matchesSearch = !searchTerm || clientName.includes(searchTerm);
+        
+        let matchesFilter = activeFilter === 'ALL';
+        if (!matchesFilter) {
+            const badges = row.querySelectorAll('td:not(.sticky-col) span');
+            badges.forEach(badge => {
+                const text = badge.textContent.trim();
+                if (activeFilter === 'EI' && text.startsWith('EI')) matchesFilter = true;
+                else if (text === activeFilter) matchesFilter = true;
+            });
         }
         
-        const badges = row.querySelectorAll('td:not(.sticky-col) span');
-        let hasMatch = false;
-        
-        badges.forEach(badge => {
-            const text = badge.textContent.trim();
-            if (filter === 'EI' && text.startsWith('EI')) hasMatch = true;
-            else if (text === filter) hasMatch = true;
-        });
-        
-        row.style.display = hasMatch ? '' : 'none';
+        row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
     });
+}
+
+function showClientModal(clientLabel) {
+    const client = CLIENTS.find(c => c.label === clientLabel);
+    if (!client) return;
+    
+    const clientIdx = CLIENTS.findIndex(c => c.label === clientLabel);
+    const obs = getNote(client.id) || 'Sem observações registradas.';
+    
+    document.getElementById('modalClientName').innerHTML = `
+        <i data-lucide="building-2" class="inline w-5 h-5 text-orange-500 mr-2"></i>${clientLabel}
+    `;
+    document.getElementById('modalClientObs').textContent = obs;
+    
+    // Mostrar status dos módulos
+    let modulesHtml = '';
+    MODULES.forEach(m => {
+        const status = ps(DATA[m][clientIdx] || 'N/A');
+        modulesHtml += `
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition">
+                <span class="text-sm font-semibold text-slate-700">${m}</span>
+                ${getStatusBadge(status)}
+            </div>
+        `;
+    });
+    document.getElementById('modalClientModules').innerHTML = modulesHtml;
+    
+    document.getElementById('clientModal').classList.remove('hidden');
+    document.getElementById('clientModal').classList.add('flex');
+    lucide.createIcons();
+}
+
+function closeClientModal(event) {
+    const modal = document.getElementById('clientModal');
+    if (!event || event.target === modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 }
 
 function toggleExpand() {
