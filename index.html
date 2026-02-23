@@ -134,12 +134,55 @@
 
             <!-- KPIs (Cobertura + Clientes Ativos) -->
             <div class="flex items-center gap-12">
-                <div class="text-center">
-                    <p class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Cobertura</p>
+                <div class="text-center relative">
+                    <div class="flex items-center justify-center gap-2 mb-1">
+                        <p class="text-xs uppercase tracking-wider text-slate-400 font-bold">Cobertura</p>
+                        <button onclick="toggleCoberturaInfo()" class="relative group">
+                            <i data-lucide="info" class="w-4 h-4 text-slate-400 hover:text-orange-500 transition cursor-pointer"></i>
+                        </button>
+                    </div>
                     <div class="flex items-center gap-2">
                         <span class="text-4xl font-black text-orange-500" id="statCoverage">40%</span>
                         <div class="w-20 h-2 bg-slate-200 rounded-full overflow-hidden">
                             <div id="barCoverage" class="h-full bg-orange-500 rounded-full progress-bar-transition" style="width: 40%;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tooltip/Popover de informação -->
+                    <div id="coberturaInfo" class="hidden absolute top-full left-1/2 -translate-x-1/2 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 z-50">
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="text-sm font-black text-slate-900">KPI: Cobertura Geral</h3>
+                            <button onclick="toggleCoberturaInfo()" class="text-slate-400 hover:text-slate-600 transition">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-indigo-600 font-bold uppercase tracking-wider mb-3">Entenda a métrica mestre</p>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            Representa o nível de prontidão global. Responde: "Quanto falta para concluirmos a implantação em todas as unidades?"
+                        </p>
+                        
+                        <div class="space-y-2">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pesos do cálculo:</p>
+                            
+                            <div class="flex items-center justify-between py-2 border-b border-slate-100">
+                                <span class="text-xs font-semibold text-green-700">IMPLANTADO (ID)</span>
+                                <span class="text-sm font-black text-green-900">100%</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between py-2 border-b border-slate-100">
+                                <span class="text-xs font-semibold text-amber-700">EM IMPLANTAÇÃO (EI)</span>
+                                <span class="text-sm font-black text-amber-900">Percentual indicado</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between py-2 border-b border-slate-100">
+                                <span class="text-xs font-semibold text-cyan-700">FOMENTAR USABILIDADE</span>
+                                <span class="text-sm font-black text-cyan-900">80%</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-xs font-semibold text-purple-700">NÃO IMPLANTADO (NI)</span>
+                                <span class="text-sm font-black text-purple-900">0%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -215,6 +258,11 @@
                 <button class="filter-btn" id="filterEI" onclick="setFilter('EI')">EI</button>
                 <button class="filter-btn" id="filterUS" onclick="setFilter('US')">US</button>
                 <button class="filter-btn" id="filterNI" onclick="setFilter('NI')">NI</button>
+                
+                <!-- Contador de resultados -->
+                <div id="filterCount" class="px-3 py-2 bg-orange-50 border border-orange-200 rounded-xl text-xs font-bold text-orange-700 hidden">
+                    <span id="filterCountNumber">0</span> encontrado(s)
+                </div>
             </div>
         </div>
     </div>
@@ -574,23 +622,48 @@ function setFilter(filter) {
 function applyFilters() {
     const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
     const rows = document.querySelectorAll('#tableBody tr');
+    let visibleCount = 0;
+    let totalMatchingStatus = 0;
     
     rows.forEach(row => {
         const clientName = row.querySelector('.sticky-col')?.textContent.toLowerCase() || '';
         const matchesSearch = !searchTerm || clientName.includes(searchTerm);
         
         let matchesFilter = activeFilter === 'ALL';
+        let hasStatusInRow = false;
+        
         if (!matchesFilter) {
             const badges = row.querySelectorAll('td:not(.sticky-col) span');
             badges.forEach(badge => {
                 const text = badge.textContent.trim();
-                if (activeFilter === 'EI' && text.startsWith('EI')) matchesFilter = true;
-                else if (text === activeFilter) matchesFilter = true;
+                if (activeFilter === 'EI' && text.startsWith('EI')) {
+                    matchesFilter = true;
+                    hasStatusInRow = true;
+                }
+                else if (text === activeFilter) {
+                    matchesFilter = true;
+                    hasStatusInRow = true;
+                }
             });
         }
         
-        row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
+        const isVisible = matchesSearch && matchesFilter;
+        row.style.display = isVisible ? '' : 'none';
+        
+        if (isVisible) visibleCount++;
+        if (hasStatusInRow) totalMatchingStatus++;
     });
+    
+    // Atualizar contador
+    const counterDiv = document.getElementById('filterCount');
+    const counterNumber = document.getElementById('filterCountNumber');
+    
+    if (activeFilter !== 'ALL') {
+        counterNumber.textContent = visibleCount;
+        counterDiv.classList.remove('hidden');
+    } else {
+        counterDiv.classList.add('hidden');
+    }
 }
 
 function showClientModal(clientLabel) {
@@ -630,6 +703,27 @@ function closeClientModal(event) {
         modal.classList.remove('flex');
     }
 }
+
+function toggleCoberturaInfo() {
+    const info = document.getElementById('coberturaInfo');
+    if (info.classList.contains('hidden')) {
+        info.classList.remove('hidden');
+        lucide.createIcons();
+    } else {
+        info.classList.add('hidden');
+    }
+}
+
+// Fechar tooltip ao clicar fora
+document.addEventListener('click', function(event) {
+    const info = document.getElementById('coberturaInfo');
+    const button = event.target.closest('button[onclick="toggleCoberturaInfo()"]');
+    const tooltip = event.target.closest('#coberturaInfo');
+    
+    if (!button && !tooltip && info && !info.classList.contains('hidden')) {
+        info.classList.add('hidden');
+    }
+});
 
 function toggleExpand() {
     isExpanded = !isExpanded;
