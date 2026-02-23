@@ -623,14 +623,13 @@ function applyFilters() {
     const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
     const rows = document.querySelectorAll('#tableBody tr');
     let visibleCount = 0;
-    let totalMatchingStatus = 0;
+    let totalStatusCount = 0; // Conta TODOS os badges do status filtrado
     
     rows.forEach(row => {
         const clientName = row.querySelector('.sticky-col')?.textContent.toLowerCase() || '';
         const matchesSearch = !searchTerm || clientName.includes(searchTerm);
         
         let matchesFilter = activeFilter === 'ALL';
-        let hasStatusInRow = false;
         
         if (!matchesFilter) {
             const badges = row.querySelectorAll('td:not(.sticky-col) span');
@@ -638,11 +637,9 @@ function applyFilters() {
                 const text = badge.textContent.trim();
                 if (activeFilter === 'EI' && text.startsWith('EI')) {
                     matchesFilter = true;
-                    hasStatusInRow = true;
                 }
                 else if (text === activeFilter) {
                     matchesFilter = true;
-                    hasStatusInRow = true;
                 }
             });
         }
@@ -651,15 +648,31 @@ function applyFilters() {
         row.style.display = isVisible ? '' : 'none';
         
         if (isVisible) visibleCount++;
-        if (hasStatusInRow) totalMatchingStatus++;
     });
+    
+    // Contar TOTAL de badges (incluindo linhas ocultas por "Ver menos")
+    if (activeFilter !== 'ALL') {
+        const allRows = document.querySelectorAll('#tableBody tr');
+        allRows.forEach(row => {
+            const badges = row.querySelectorAll('td:not(.sticky-col) span');
+            badges.forEach(badge => {
+                const text = badge.textContent.trim();
+                if (activeFilter === 'EI' && text.startsWith('EI')) {
+                    totalStatusCount++;
+                }
+                else if (text === activeFilter) {
+                    totalStatusCount++;
+                }
+            });
+        });
+    }
     
     // Atualizar contador
     const counterDiv = document.getElementById('filterCount');
     const counterNumber = document.getElementById('filterCountNumber');
     
     if (activeFilter !== 'ALL') {
-        counterNumber.textContent = visibleCount;
+        counterNumber.textContent = totalStatusCount;
         counterDiv.classList.remove('hidden');
     } else {
         counterDiv.classList.add('hidden');
@@ -706,24 +719,15 @@ function closeClientModal(event) {
 
 function toggleCoberturaInfo() {
     const info = document.getElementById('coberturaInfo');
+    if (!info) return;
+    
     if (info.classList.contains('hidden')) {
         info.classList.remove('hidden');
-        lucide.createIcons();
+        setTimeout(() => lucide.createIcons(), 10);
     } else {
         info.classList.add('hidden');
     }
 }
-
-// Fechar tooltip ao clicar fora
-document.addEventListener('click', function(event) {
-    const info = document.getElementById('coberturaInfo');
-    const button = event.target.closest('button[onclick="toggleCoberturaInfo()"]');
-    const tooltip = event.target.closest('#coberturaInfo');
-    
-    if (!button && !tooltip && info && !info.classList.contains('hidden')) {
-        info.classList.add('hidden');
-    }
-});
 
 function toggleExpand() {
     isExpanded = !isExpanded;
@@ -735,6 +739,19 @@ function toggleExpand() {
 window.onload = () => {
     lucide.createIcons();
     loadSheetData();
+    
+    // Event listener para fechar tooltip ao clicar fora
+    document.addEventListener('click', function(event) {
+        const info = document.getElementById('coberturaInfo');
+        if (!info) return;
+        
+        const isButton = event.target.closest('button[onclick="toggleCoberturaInfo()"]');
+        const isTooltip = event.target.closest('#coberturaInfo');
+        
+        if (!isButton && !isTooltip && !info.classList.contains('hidden')) {
+            info.classList.add('hidden');
+        }
+    });
 };
 
 setInterval(loadSheetData, 300000);
