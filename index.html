@@ -161,28 +161,9 @@
                             Representa o nível de prontidão global. Responde: "Quanto falta para concluirmos a implantação em todas as unidades?"
                         </p>
                         
-                        <div class="space-y-2">
+                        <div class="space-y-2" id="coberturaBreakdown">
                             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pesos do cálculo:</p>
-                            
-                            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                                <span class="text-xs font-semibold text-green-700">IMPLANTADO (ID)</span>
-                                <span class="text-sm font-black text-green-900">100%</span>
-                            </div>
-                            
-                            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                                <span class="text-xs font-semibold text-amber-700">EM IMPLANTAÇÃO (EI)</span>
-                                <span class="text-sm font-black text-amber-900">Percentual indicado</span>
-                            </div>
-                            
-                            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                                <span class="text-xs font-semibold text-cyan-700">FOMENTAR USABILIDADE</span>
-                                <span class="text-sm font-black text-cyan-900">80%</span>
-                            </div>
-                            
-                            <div class="flex items-center justify-between py-2">
-                                <span class="text-xs font-semibold text-purple-700">NÃO IMPLANTADO (NI)</span>
-                                <span class="text-sm font-black text-purple-900">0%</span>
-                            </div>
+                            <!-- Será preenchido dinamicamente -->
                         </div>
                     </div>
                 </div>
@@ -623,7 +604,6 @@ function applyFilters() {
     const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
     const rows = document.querySelectorAll('#tableBody tr');
     let visibleCount = 0;
-    let totalStatusCount = 0; // Conta TODOS os badges do status filtrado
     
     rows.forEach(row => {
         const clientName = row.querySelector('.sticky-col')?.textContent.toLowerCase() || '';
@@ -650,33 +630,84 @@ function applyFilters() {
         if (isVisible) visibleCount++;
     });
     
-    // Contar TOTAL de badges (incluindo linhas ocultas por "Ver menos")
-    if (activeFilter !== 'ALL') {
-        const allRows = document.querySelectorAll('#tableBody tr');
-        allRows.forEach(row => {
-            const badges = row.querySelectorAll('td:not(.sticky-col) span');
-            badges.forEach(badge => {
-                const text = badge.textContent.trim();
-                if (activeFilter === 'EI' && text.startsWith('EI')) {
-                    totalStatusCount++;
-                }
-                else if (text === activeFilter) {
-                    totalStatusCount++;
-                }
-            });
-        });
-    }
-    
-    // Atualizar contador
+    // Contar TOTAL de badges direto dos dados
     const counterDiv = document.getElementById('filterCount');
     const counterNumber = document.getElementById('filterCountNumber');
     
     if (activeFilter !== 'ALL') {
-        counterNumber.textContent = totalStatusCount;
+        const count = countStatusInGrid(activeFilter);
+        counterNumber.textContent = count;
         counterDiv.classList.remove('hidden');
     } else {
         counterDiv.classList.add('hidden');
     }
+}
+
+// Função para contar TODOS os badges de um status na grid inteira
+function countStatusInGrid(status) {
+    let count = 0;
+    
+    CLIENTS.forEach((client, clientIdx) => {
+        MODULES.forEach(module => {
+            const cellValue = DATA[module]?.[clientIdx];
+            if (!cellValue) return;
+            
+            const cellStatus = ps(cellValue);
+            
+            if (status === 'EI' && cellStatus.startsWith('EI')) {
+                count++;
+            } else if (cellStatus === status) {
+                count++;
+            }
+        });
+    });
+    
+    return count;
+}
+
+// Função para calcular breakdown real da cobertura
+function calculateCoverageBreakdown() {
+    let totalCells = 0;
+    let counts = { ID: 0, EI: 0, US: 0, NI: 0 };
+    let weights = { ID: 0, EI: 0, US: 0, NI: 0 };
+    
+    CLIENTS.forEach((client, clientIdx) => {
+        MODULES.forEach(module => {
+            const cellValue = DATA[module]?.[clientIdx];
+            if (!cellValue) return;
+            
+            const status = ps(cellValue);
+            if (status === 'N/A' || !status) return;
+            
+            totalCells++;
+            
+            if (status === 'ID') {
+                counts.ID++;
+                weights.ID += 100;
+            } else if (status.startsWith('EI')) {
+                counts.EI++;
+                const match = status.match(/(\d+)%/);
+                const percent = match ? parseInt(match[1]) : 50;
+                weights.EI += percent;
+            } else if (status === 'US') {
+                counts.US++;
+                weights.US += 80;
+            } else if (status === 'NI') {
+                counts.NI++;
+            }
+        });
+    });
+    
+    return {
+        counts,
+        avgPercentages: {
+            ID: counts.ID > 0 ? Math.round(weights.ID / counts.ID) : 100,
+            EI: counts.EI > 0 ? Math.round(weights.EI / counts.EI) : 0,
+            US: counts.US > 0 ? Math.round(weights.US / counts.US) : 80,
+            NI: 0
+        },
+        total: totalCells
+    };
 }
 
 function showClientModal(clientLabel) {
@@ -722,6 +753,36 @@ function toggleCoberturaInfo() {
     if (!info) return;
     
     if (info.classList.contains('hidden')) {
+        // Calcular breakdown real
+        const breakdown = calculateCoverageBreakdown();
+        const breakdownDiv = document.getElementById('coberturaBreakdown');
+        
+        if (breakdownDiv) {
+            breakdownDiv.innerHTML = `
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pesos do cálculo:</p>
+                
+                <div class="flex items-center justify-between py-2 border-b border-slate-100">
+                    <span class="text-xs font-semibold text-green-700">IMPLANTADO (ID)</span>
+                    <span class="text-sm font-black text-green-900">${breakdown.avgPercentages.ID}%</span>
+                </div>
+                
+                <div class="flex items-center justify-between py-2 border-b border-slate-100">
+                    <span class="text-xs font-semibold text-amber-700">EM IMPLANTAÇÃO (EI)</span>
+                    <span class="text-sm font-black text-amber-900">${breakdown.avgPercentages.EI}%</span>
+                </div>
+                
+                <div class="flex items-center justify-between py-2 border-b border-slate-100">
+                    <span class="text-xs font-semibold text-cyan-700">FOMENTAR USABILIDADE (US)</span>
+                    <span class="text-sm font-black text-cyan-900">${breakdown.avgPercentages.US}%</span>
+                </div>
+                
+                <div class="flex items-center justify-between py-2">
+                    <span class="text-xs font-semibold text-purple-700">NÃO IMPLANTADO (NI)</span>
+                    <span class="text-sm font-black text-purple-900">${breakdown.avgPercentages.NI}%</span>
+                </div>
+            `;
+        }
+        
         info.classList.remove('hidden');
         setTimeout(() => lucide.createIcons(), 10);
     } else {
