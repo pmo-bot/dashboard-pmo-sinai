@@ -180,7 +180,7 @@
                 </div>
                 <div>
                     <h2 class="text-base font-black text-slate-900 uppercase tracking-wide">Clientes / Módulos em Implantação</h2>
-                    <p class="text-xs text-slate-400 font-medium mt-0.5">Acompanhamento dos módulos em andamento ativo</p>
+                    <p class="text-xs text-slate-400 font-medium mt-0.5">Acompanhamento dos módulos em implantação</p>
                 </div>
             </div>
 
@@ -220,10 +220,10 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-50/50 border-b border-slate-100">
-                        <th class="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Projeto / Módulo</th>
+                        <th class="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Cliente - Módulo</th>
                         <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Progresso</th>
-                        <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Data Finalização</th>
+                        <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Evolução</th>
+                        <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Data Prevista</th>
                         <th class="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">OBS</th>
                     </tr>
                 </thead>
@@ -363,20 +363,14 @@ async function loadImplData() {
     try {
         const rows = parseCSV(await (await fetch(SHEET_IMPL)).text());
 
-        // Encontrar linha de cabeçalho (que contém "Status" ou "Cliente")
-        let hIdx = 0;
-        for (let i = 0; i < Math.min(5, rows.length); i++) {
-            const joined = rows[i].join('').toLowerCase();
-            if (joined.includes('status') || joined.includes('cliente') || joined.includes('percentual')) {
-                hIdx = i; break;
-            }
-        }
+        // Linha 1 (idx 0) = ícone/vazio, Linha 2 (idx 1) = cabeçalho, dados a partir de idx 2 (linha 3)
+        const dataStartIdx = 2;
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
         const items = [];
-        for (let i = hIdx + 1; i < rows.length; i++) {
+        for (let i = dataStartIdx; i < rows.length; i++) {
             const row = rows[i];
             const cliente    = (row[0] || '').trim();
             const status     = (row[1] || '').trim();
