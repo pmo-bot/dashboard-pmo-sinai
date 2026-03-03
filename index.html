@@ -9,189 +9,55 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #F8FAFC;
-        }
-        
-        .mod-card {
-            background: white;
-            border: 2px solid #f1f5f9;
-            border-radius: 24px;
-            padding: 20px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,.05);
-            transition: all .3s cubic-bezier(.4,0,.2,1);
-        }
-        
-        .mod-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(249,115,22,.12);
-            border-color: #fb923c;
-        }
-        
-        .mod-card.active {
-            border-color: #f97316;
-            box-shadow: 0 16px 32px rgba(249,115,22,.18);
-            transform: translateY(-2px);
-        }
-        
-        .card-details {
-            max-height: 0;
-            overflow: hidden;
-            opacity: 0;
-            transition: max-height .4s ease, opacity .3s ease, margin .3s ease;
-        }
-        
-        .mod-card.active .card-details {
-            max-height: 200px;
-            opacity: 1;
-            margin-top: 16px;
-        }
-        
-        .chevron-icon { transition: transform .3s ease; }
-        .mod-card.active .chevron-icon { transform: rotate(180deg); }
-        
-        .stacked-bar {
-            height: 4px;
-            border-radius: 99px;
-            display: flex;
-            overflow: hidden;
-            background: #f1f5f9;
-            margin-top: 8px;
-        }
-        
-        .bar-id { background: #10b981; }
-        .bar-us { background: #06b6d4; }
-        .bar-ei { background: #f59e0b; }
-        .bar-ni { background: #8b5cf6; }
-        
-        .sticky-col {
-            position: sticky;
-            left: 0;
-            background-color: #FDFDFF;
-            z-index: 10;
-        }
+        body { font-family: 'Inter', sans-serif; background: #F8FAFC; }
+        .mod-card { background:white; border:2px solid #f1f5f9; border-radius:24px; padding:20px; cursor:pointer; position:relative; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.05); transition:all .3s cubic-bezier(.4,0,.2,1); }
+        .mod-card:hover { transform:translateY(-4px); box-shadow:0 12px 24px rgba(249,115,22,.12); border-color:#fb923c; }
+        .mod-card.active { border-color:#f97316; box-shadow:0 16px 32px rgba(249,115,22,.18); transform:translateY(-2px); }
+        .card-details { max-height:0; overflow:hidden; opacity:0; transition:max-height .4s ease, opacity .3s ease, margin .3s ease; }
+        .mod-card.active .card-details { max-height:200px; opacity:1; margin-top:16px; }
+        .chevron-icon { transition:transform .3s ease; }
+        .mod-card.active .chevron-icon { transform:rotate(180deg); }
+        .stacked-bar { height:4px; border-radius:99px; display:flex; overflow:hidden; background:#f1f5f9; margin-top:8px; }
+        .bar-id { background:#10b981; } .bar-us { background:#06b6d4; } .bar-ei { background:#f59e0b; } .bar-ni { background:#8b5cf6; }
+        .sticky-col { position:sticky; left:0; background-color:#FDFDFF; z-index:10; }
+        ::-webkit-scrollbar { width:8px; height:8px; }
+        ::-webkit-scrollbar-track { background:#f1f1f1; }
+        ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:10px; }
+        ::-webkit-scrollbar-thumb:hover { background:#94a3b8; }
+        .progress-bar-transition { transition:width 1s cubic-bezier(0.4,0,0.2,1), background-color 0.5s ease; }
+        .filter-btn { padding:6px 14px; border-radius:10px; font-size:12px; font-weight:700; border:1.5px solid #e2e8f0; cursor:pointer; background:white; color:#64748b; transition:all .2s; }
+        .filter-btn.active, .filter-btn:hover { background:#f97316; color:white; border-color:#f97316; }
 
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* ── SEÇÃO IMPLANTAÇÃO ── */
+        .impl-status-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 4px 14px; border-radius: 99px; font-size: 11px; font-weight: 700;
+            letter-spacing: 0.02em; white-space: nowrap;
+        }
+        .impl-status-em-andamento   { background:#dcfce7; color:#15803d; }
+        .impl-status-ag-cliente     { background:#fef9c3; color:#854d0e; }
+        .impl-status-ag-planejamento{ background:#e0f2fe; color:#0369a1; }
+        .impl-status-paralisado     { background:#fee2e2; color:#b91c1c; }
+        .impl-status-default        { background:#f1f5f9; color:#475569; }
 
-        .progress-bar-transition {
-            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
+        .impl-progress-track {
+            flex:1; height:8px; background:#e2e8f0; border-radius:99px; overflow:hidden; min-width:80px;
         }
-        
-        .filter-btn {
-            padding: 6px 14px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 700;
-            border: 1.5px solid #e2e8f0;
-            cursor: pointer;
-            background: white;
-            color: #64748b;
-            transition: all .2s;
+        .impl-progress-fill {
+            height:100%; border-radius:99px;
+            transition: width 1s cubic-bezier(0.4,0,0.2,1);
         }
-        
-        .filter-btn.active, .filter-btn:hover {
-            background: #f97316;
-            color: white;
-            border-color: #f97316;
-        }
+        .impl-row { transition: background .15s; }
+        .impl-row:hover { background: #f8fafc; }
 
-        /* ── NOVO: coluna Cliente & Saúde expandida ── */
-        .client-health-cell {
-            min-width: 220px;
+        @keyframes fadeInUp {
+            from { opacity:0; transform:translateY(12px); }
+            to   { opacity:1; transform:translateY(0); }
         }
-
-        /* Separador visual entre as duas métricas */
-        .metric-divider {
-            width: 1px;
-            height: 28px;
-            background: #e2e8f0;
-            margin: 0 6px;
-            flex-shrink: 0;
-        }
-
-        /* Pill de evolução */
-        .evo-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            font-size: 10px;
-            font-weight: 800;
-            padding: 2px 7px;
-            border-radius: 8px;
-            letter-spacing: 0.02em;
-        }
-        .evo-pill.up   { background: #ecfdf5; color: #059669; }
-        .evo-pill.down { background: #fef2f2; color: #dc2626; }
-        .evo-pill.flat { background: #f8fafc; color: #64748b; }
-
-        /* Barras lado a lado */
-        .dual-bar-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            flex: 1;
-        }
-
-        .bar-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .bar-label {
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #94a3b8;
-            width: 42px;
-            flex-shrink: 0;
-        }
-
-        .bar-track {
-            flex: 1;
-            height: 6px;
-            background: #f1f5f9;
-            border-radius: 99px;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            border-radius: 99px;
-        }
-
-        .bar-pct {
-            font-size: 10px;
-            font-weight: 800;
-            color: #475569;
-            width: 30px;
-            text-align: right;
-            flex-shrink: 0;
-        }
-
-        /* Loading skeleton */
-        @keyframes shimmer {
-            0%   { background-position: -400px 0; }
-            100% { background-position: 400px 0; }
-        }
-        .skeleton {
-            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-            background-size: 400px 100%;
-            animation: shimmer 1.4s infinite;
-            border-radius: 6px;
-        }
+        .impl-row { animation: fadeInUp .3s ease both; }
     </style>
 </head>
 <body class="p-4 md:p-8">
-
 <div class="max-w-[1600px] mx-auto space-y-6">
 
     <!-- HEADER -->
@@ -209,42 +75,35 @@
                     <p class="text-sm text-slate-500 font-medium">Dashboard PMO • Controle de Implantação</p>
                 </div>
             </div>
-
             <div class="flex items-center gap-12">
                 <div class="text-center relative">
                     <div class="flex items-center justify-center gap-2 mb-1">
                         <p class="text-xs uppercase tracking-wider text-slate-400 font-bold">Cobertura</p>
-                        <button onclick="toggleCoberturaInfo()" class="relative group">
+                        <button onclick="toggleCoberturaInfo()">
                             <i data-lucide="info" class="w-4 h-4 text-slate-400 hover:text-orange-500 transition cursor-pointer"></i>
                         </button>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-4xl font-black text-orange-500" id="statCoverage">–</span>
+                        <span class="text-4xl font-black text-orange-500" id="statCoverage">40%</span>
                         <div class="w-20 h-2 bg-slate-200 rounded-full overflow-hidden">
-                            <div id="barCoverage" class="h-full bg-orange-500 rounded-full progress-bar-transition" style="width: 0%;"></div>
+                            <div id="barCoverage" class="h-full bg-orange-500 rounded-full progress-bar-transition" style="width:40%;"></div>
                         </div>
                     </div>
-                    
                     <div id="coberturaInfo" class="hidden absolute top-full left-1/2 -translate-x-1/2 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 z-50">
                         <div class="flex items-start justify-between mb-3">
                             <h3 class="text-sm font-black text-slate-900">KPI: Cobertura Geral</h3>
-                            <button onclick="toggleCoberturaInfo()" class="text-slate-400 hover:text-slate-600 transition">
-                                <i data-lucide="x" class="w-4 h-4"></i>
-                            </button>
+                            <button onclick="toggleCoberturaInfo()" class="text-slate-400 hover:text-slate-600 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
                         </div>
                         <p class="text-xs text-indigo-600 font-bold uppercase tracking-wider mb-3">Entenda a métrica mestre</p>
-                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
-                            Representa o nível de prontidão global. Responde: "Quanto falta para concluirmos a implantação em todas as unidades?"
-                        </p>
-                        <div class="space-y-2" id="coberturaBreakdown"></div>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">Representa o nível de prontidão global. Responde: "Quanto falta para concluirmos a implantação em todas as unidades?"</p>
+                        <div class="space-y-2" id="coberturaBreakdown"><p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pesos do cálculo:</p></div>
                     </div>
                 </div>
-                
                 <div class="text-center">
                     <p class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Clientes Ativos</p>
                     <div class="flex items-center gap-2 justify-center">
                         <i data-lucide="users" class="w-5 h-5 text-slate-400"></i>
-                        <span class="text-4xl font-black text-slate-900" id="statClientes">–</span>
+                        <span class="text-4xl font-black text-slate-900" id="statClientes">17</span>
                     </div>
                 </div>
             </div>
@@ -255,7 +114,7 @@
     <div class="px-1">
         <p class="text-xs text-slate-500 font-medium bg-white inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-100">
             <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-amber-500"></i>
-            Clique num módulo para ver o detalhamento · A coluna <strong>Saúde</strong> mostra a cobertura atual e a <strong>Evolução</strong> mostra o progresso histórico
+            Clique num módulo para ver o detalhamento
         </p>
     </div>
 
@@ -268,59 +127,22 @@
         <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-4">
                 <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Legenda</span>
-                <div class="flex items-center gap-2">
-                    <div style="width:8px;height:8px;background:#10b981;border-radius:50%;"></div>
-                    <span class="text-xs font-semibold text-slate-600">Implantado</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div style="width:8px;height:8px;background:#f59e0b;border-radius:50%;"></div>
-                    <span class="text-xs font-semibold text-slate-600">Em Implantação</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div style="width:8px;height:8px;background:#06b6d4;border-radius:50%;"></div>
-                    <span class="text-xs font-semibold text-slate-600">Fomentar Uso</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div style="width:8px;height:8px;background:#8b5cf6;border-radius:50%;"></div>
-                    <span class="text-xs font-semibold text-slate-600">Não Implantado</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div style="width:8px;height:8px;background:#cbd5e1;border-radius:50%;"></div>
-                    <span class="text-xs font-semibold text-slate-600">Não Possui</span>
-                </div>
-
-                <!-- Separador -->
-                <div class="w-px h-4 bg-slate-200 mx-1"></div>
-
-                <!-- Legenda das barras duais -->
-                <div class="flex items-center gap-2">
-                    <div style="width:18px;height:5px;background:#f97316;border-radius:99px;"></div>
-                    <span class="text-xs font-semibold text-slate-600">Saúde</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div style="width:18px;height:5px;background:#6366f1;border-radius:99px;"></div>
-                    <span class="text-xs font-semibold text-slate-600">Evolução</span>
-                </div>
+                <div class="flex items-center gap-2"><div style="width:8px;height:8px;background:#10b981;border-radius:50%;"></div><span class="text-xs font-semibold text-slate-600">Implantado</span></div>
+                <div class="flex items-center gap-2"><div style="width:8px;height:8px;background:#f59e0b;border-radius:50%;"></div><span class="text-xs font-semibold text-slate-600">Em Implantação</span></div>
+                <div class="flex items-center gap-2"><div style="width:8px;height:8px;background:#06b6d4;border-radius:50%;"></div><span class="text-xs font-semibold text-slate-600">Fomentar Uso</span></div>
+                <div class="flex items-center gap-2"><div style="width:8px;height:8px;background:#8b5cf6;border-radius:50%;"></div><span class="text-xs font-semibold text-slate-600">Não Implantado</span></div>
+                <div class="flex items-center gap-2"><div style="width:8px;height:8px;background:#cbd5e1;border-radius:50%;"></div><span class="text-xs font-semibold text-slate-600">Não Possui</span></div>
             </div>
-            
             <div class="flex items-center gap-3 flex-wrap">
                 <div class="relative">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5"></i>
-                    <input 
-                        type="text" 
-                        id="searchInput"
-                        placeholder="Buscar cliente..."
-                        oninput="applyFilters()"
-                        class="pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20 w-44"
-                    >
+                    <input type="text" id="searchInput" placeholder="Buscar cliente..." oninput="applyFilters()" class="pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20 w-44">
                 </div>
-                
                 <button class="filter-btn active" id="filterAll" onclick="setFilter('ALL')">Todos</button>
-                <button class="filter-btn" id="filterID"  onclick="setFilter('ID')">ID</button>
-                <button class="filter-btn" id="filterEI"  onclick="setFilter('EI')">EI</button>
-                <button class="filter-btn" id="filterUS"  onclick="setFilter('US')">US</button>
-                <button class="filter-btn" id="filterNI"  onclick="setFilter('NI')">NI</button>
-                
+                <button class="filter-btn" id="filterID" onclick="setFilter('ID')">ID</button>
+                <button class="filter-btn" id="filterEI" onclick="setFilter('EI')">EI</button>
+                <button class="filter-btn" id="filterUS" onclick="setFilter('US')">US</button>
+                <button class="filter-btn" id="filterNI" onclick="setFilter('NI')">NI</button>
                 <div id="filterCount" class="px-3 py-2 bg-orange-50 border border-orange-200 rounded-xl text-xs font-bold text-orange-700 hidden">
                     <span id="filterCountNumber">0</span> encontrado(s)
                 </div>
@@ -328,24 +150,91 @@
         </div>
     </div>
 
-    <!-- GRID -->
+    <!-- GRID PRINCIPAL -->
     <div class="bg-white rounded-[32px] border border-slate-100 shadow-xl overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse" id="clientsTable">
-                <thead>
-                    <tr class="bg-slate-50/50 border-b border-slate-100" id="tableHeader"></tr>
-                </thead>
+                <thead><tr class="bg-slate-50/50 border-b border-slate-100" id="tableHeader"></tr></thead>
                 <tbody class="divide-y divide-slate-50" id="tableBody"></tbody>
             </table>
         </div>
-        
         <div class="px-8 py-5 bg-slate-50/30 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400 font-medium">
-            <span id="footerCount">Carregando…</span>
+            <span id="footerCount">A mostrar 5 de 17 clientes</span>
             <button id="toggleExpand" onclick="toggleExpand()" class="flex items-center gap-2 text-indigo-500 font-bold hover:text-indigo-700 transition-all bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100">
                 <span id="toggleText">Ver todos</span>
                 <i data-lucide="chevron-down" id="toggleIcon" class="w-4 h-4 transition-transform duration-300"></i>
             </button>
         </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SEÇÃO: CLIENTES / MÓDULOS EM IMPLANTAÇÃO
+    ══════════════════════════════════════════ -->
+    <div class="bg-white rounded-[32px] border border-slate-100 shadow-xl overflow-hidden">
+
+        <!-- Cabeçalho da seção -->
+        <div class="px-8 py-5 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-orange-500 rounded-2xl flex items-center justify-center shadow-md flex-shrink-0">
+                    <i data-lucide="activity" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-base font-black text-slate-900 uppercase tracking-wide">Clientes / Módulos em Implantação</h2>
+                    <p class="text-xs text-slate-400 font-medium mt-0.5">Acompanhamento dos módulos em andamento ativo</p>
+                </div>
+            </div>
+
+            <!-- KPIs da seção -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <!-- Total -->
+                <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5">
+                    <i data-lucide="layout-grid" class="w-4 h-4 text-slate-400"></i>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total:</span>
+                    <span class="text-lg font-black text-slate-900" id="implTotal">–</span>
+                </div>
+                <!-- Evolução geral -->
+                <div class="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-2xl px-4 py-2.5">
+                    <i data-lucide="trending-up" class="w-4 h-4 text-orange-500"></i>
+                    <span class="text-xs font-bold text-orange-600 uppercase tracking-wider">Evolução:</span>
+                    <span class="text-lg font-black text-orange-600" id="implEvolucao">–</span>
+                    <button onclick="toggleImplInfo()" class="text-orange-400 hover:text-orange-600 transition">
+                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+                <!-- Atrasos -->
+                <div class="flex items-center gap-2 bg-red-50 border border-red-200 rounded-2xl px-4 py-2.5">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-red-500"></i>
+                    <span class="text-xs font-bold text-red-600 uppercase tracking-wider">Atrasos:</span>
+                    <span class="text-lg font-black text-red-600" id="implAtrasos">–</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tooltip evolução -->
+        <div id="implInfo" class="hidden mx-8 mt-4 bg-orange-50 border border-orange-200 rounded-2xl p-4 text-xs text-orange-800 font-medium">
+            Média aritmética dos percentuais de progresso de todos os módulos em implantação listados.
+        </div>
+
+        <!-- Tabela de implantação -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-100">
+                        <th class="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Projeto / Módulo</th>
+                        <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                        <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Progresso</th>
+                        <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Data Finalização</th>
+                        <th class="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">OBS</th>
+                    </tr>
+                </thead>
+                <tbody id="implBody" class="divide-y divide-slate-50">
+                    <tr><td colspan="5" class="px-8 py-10 text-center text-sm text-slate-400">Carregando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Rodapé -->
+        <div class="px-8 py-4 bg-slate-50/30 border-t border-slate-100 text-xs text-slate-400 font-medium" id="implFooter"></div>
     </div>
 
 </div>
@@ -355,14 +244,9 @@
     <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
         <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-3xl">
             <h2 id="modalClientName" class="text-xl font-black text-slate-900"></h2>
-            <button onclick="closeClientModal()" class="text-slate-400 hover:text-slate-600 transition">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
+            <button onclick="closeClientModal()" class="text-slate-400 hover:text-slate-600 transition"><i data-lucide="x" class="w-6 h-6"></i></button>
         </div>
         <div class="p-6">
-            <!-- Métricas resumidas no modal -->
-            <div id="modalMetrics" class="grid grid-cols-2 gap-3 mb-6"></div>
-
             <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-6">
                 <div class="flex items-center gap-2 mb-2">
                     <i data-lucide="message-square" class="w-4 h-4 text-orange-600"></i>
@@ -376,21 +260,17 @@
 </div>
 
 <script>
-/* ─────────────────────────────────────────────
-   CONFIGURAÇÃO
-───────────────────────────────────────────── */
-const SHEET_MAIN  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
-const SHEET_EVO   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=698759854&single=true&output=csv';
+/* ══════════════════════════════════════
+   PLANILHAS
+══════════════════════════════════════ */
+const SHEET_MAIN = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
+const SHEET_IMPL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=698759854&single=true&output=csv';
 
 let CLIENTS = [], MODULES = [], DATA = {};
-let EVO_DATA = {};          // { "Nome Cliente": { pct: 38, delta: +5 } }
-let isExpanded   = false;
-let activeFilter = 'ALL';
+let isExpanded = false, activeFilter = 'ALL';
 const INITIAL_ROWS = 5;
 
-/* ─────────────────────────────────────────────
-   PARSING
-───────────────────────────────────────────── */
+/* ── CSV ── */
 function parseCSV(text) {
     return text.split('\n').map(row => {
         const cols = []; let cur = '', inQ = false;
@@ -406,84 +286,19 @@ function parseCSV(text) {
 
 const saveNote = (id, v) => localStorage.setItem('note_' + id, v);
 const getNote  = (id)    => localStorage.getItem('note_' + id) || '';
+const ps       = raw     => (raw || '').split('|')[0].trim();
 
-const ps  = raw => (raw || '').split('|')[0].trim();
-
-/* ─────────────────────────────────────────────
-   PESOS
-───────────────────────────────────────────── */
 function wt(s) {
     if (s === 'ID') return 100;
     if (s === 'US') return 80;
-    if (s.startsWith('EI')) {
-        const m = s.match(/(\d+)%/);
-        return m ? +m[1] : 50;
-    }
+    if (s.startsWith('EI')) { const m = s.match(/(\d+)%/); return m ? +m[1] : 50; }
     return 0;
 }
 
-/* ─────────────────────────────────────────────
-   CARREGAR PLANILHA DE EVOLUÇÃO
-   Formato esperado: Coluna A = nome cliente,
-   Coluna B = % evolução (número ou "38%" ou "38"),
-   Coluna C (opcional) = % anterior ou delta
-───────────────────────────────────────────── */
-async function loadEvoData() {
-    try {
-        const rows = parseCSV(await (await fetch(SHEET_EVO)).text());
-        EVO_DATA = {};
-
-        // Detectar linha de cabeçalho — pula se não for número
-        const startRow = isNaN(parseFloat(rows[1]?.[1])) ? 1 : 0;
-
-        for (let i = startRow; i < rows.length; i++) {
-            const row  = rows[i];
-            const name = (row[0] || '').trim();
-            if (!name) continue;
-
-            // % atual (coluna B)
-            const rawPct  = (row[1] || '').replace('%','').trim();
-            const pct     = parseFloat(rawPct);
-            if (isNaN(pct)) continue;
-
-            // % anterior ou delta (coluna C) — opcional
-            const rawPrev = (row[2] || '').replace('%','').trim();
-            const prev    = parseFloat(rawPrev);
-            const delta   = (!isNaN(prev) && prev !== pct)
-                ? (rawPrev.startsWith('+') || rawPrev.startsWith('-')
-                    ? prev               // já é delta
-                    : Math.round(pct - prev))  // calcula delta
-                : null;
-
-            EVO_DATA[name.toLowerCase()] = { pct: Math.round(pct), delta };
-        }
-    } catch(e) {
-        console.warn('Não foi possível carregar a planilha de evolução:', e);
-    }
-}
-
-/* ─────────────────────────────────────────────
-   BUSCAR EVOLUÇÃO DO CLIENTE
-───────────────────────────────────────────── */
-function getEvo(clientLabel) {
-    const key = clientLabel.toLowerCase();
-    // Busca exata
-    if (EVO_DATA[key]) return EVO_DATA[key];
-    // Busca parcial
-    const hit = Object.keys(EVO_DATA).find(k =>
-        k.includes(key.substring(0, Math.min(8, key.length))) ||
-        key.includes(k.substring(0, Math.min(8, k.length)))
-    );
-    return hit ? EVO_DATA[hit] : null;
-}
-
-/* ─────────────────────────────────────────────
-   MÓDULOS
-───────────────────────────────────────────── */
+/* ── MÓDULOS CONFIG ── */
 const MOD_ICONS = {
-    secretaria:'building-2', tesouraria:'wallet', financeiro:'coins',
-    aplicativo:'smartphone', eventos:'calendar', ebd:'book-open',
-    'patrimônio':'shield-check', patrimonio:'shield-check',
+    secretaria:'building-2', tesouraria:'wallet', financeiro:'coins', aplicativo:'smartphone',
+    eventos:'calendar', ebd:'book-open', 'patrimônio':'shield-check', patrimonio:'shield-check',
     acolhimento:'heart', 'meu departamento':'users', meudepto:'users',
     ebl:'church', 'ebl / célula':'church', célula:'church', celula:'church',
 };
@@ -507,34 +322,30 @@ function findMod(keys) {
         if (DATA[k]) return DATA[k];
         const hit = Object.keys(DATA).find(dk =>
             dk.toLowerCase().includes(k.toLowerCase()) ||
-            k.toLowerCase().includes(dk.toLowerCase().substring(0, Math.max(4, dk.length - 2)))
+            k.toLowerCase().includes(dk.toLowerCase().substring(0, Math.max(4, dk.length-2)))
         );
         if (hit) return DATA[hit];
     }
     return null;
 }
 
-/* ─────────────────────────────────────────────
+/* ══════════════════════════════════════
    CARREGAR PLANILHA PRINCIPAL
-───────────────────────────────────────────── */
+══════════════════════════════════════ */
 async function loadSheetData() {
     try {
         const rows = parseCSV(await (await fetch(SHEET_MAIN)).text());
         MODULES = rows[1].slice(1, 11).filter(m => m?.trim());
-        CLIENTS = [];
-        DATA    = {};
-
+        CLIENTS = []; DATA = {};
         MODULES.forEach(m => DATA[m] = []);
-
         for (let i = 2; i < rows.length; i++) {
             const row = rows[i];
             if (!row[0]?.trim()) continue;
             const id = 'u' + (i - 2);
             CLIENTS.push({id, label: row[0].trim()});
             if (row[11]?.trim()) saveNote(id, row[11].trim());
-            MODULES.forEach((m, mi) => DATA[m].push((row[mi + 1] || 'NI').trim()));
+            MODULES.forEach((m, mi) => DATA[m].push((row[mi+1]||'NI').trim()));
         }
-
         renderKPIs();
         renderTable();
     } catch(e) {
@@ -543,126 +354,163 @@ async function loadSheetData() {
     }
 }
 
-/* ─────────────────────────────────────────────
-   INICIALIZAÇÃO (carrega as duas em paralelo)
-───────────────────────────────────────────── */
-async function init() {
-    lucide.createIcons();
-    await Promise.all([loadSheetData(), loadEvoData()]);
-    renderTable(); // re-renderiza com dados de evolução
+/* ══════════════════════════════════════
+   CARREGAR PLANILHA IMPLANTAÇÃO
+   Colunas: Cliente | Status | Percentual | Data Prevista | OBS
+   Linha 2 = cabeçalho, dados a partir da linha 3
+══════════════════════════════════════ */
+async function loadImplData() {
+    try {
+        const rows = parseCSV(await (await fetch(SHEET_IMPL)).text());
+
+        // Encontrar linha de cabeçalho (que contém "Status" ou "Cliente")
+        let hIdx = 0;
+        for (let i = 0; i < Math.min(5, rows.length); i++) {
+            const joined = rows[i].join('').toLowerCase();
+            if (joined.includes('status') || joined.includes('cliente') || joined.includes('percentual')) {
+                hIdx = i; break;
+            }
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const items = [];
+        for (let i = hIdx + 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cliente    = (row[0] || '').trim();
+            const status     = (row[1] || '').trim();
+            const percentRaw = (row[2] || '').trim();
+            const dataRaw    = (row[3] || '').trim();
+            const obs        = (row[4] || '').trim();
+
+            if (!cliente) continue;
+
+            const pct = parseFloat(percentRaw.replace('%', '')) || 0;
+
+            // Parsear data no formato DD/MM/YYYY
+            let dataDate = null;
+            let atrasado = false;
+            if (dataRaw) {
+                const parts = dataRaw.split('/');
+                if (parts.length === 3) {
+                    dataDate = new Date(+parts[2], +parts[1] - 1, +parts[0]);
+                    dataDate.setHours(0, 0, 0, 0);
+                    atrasado = dataDate < today;
+                }
+            }
+
+            items.push({ cliente, status, pct, dataRaw, dataDate, atrasado, obs });
+        }
+
+        renderImplSection(items);
+    } catch(e) {
+        console.error('Erro ao carregar implantação:', e);
+        document.getElementById('implBody').innerHTML =
+            '<tr><td colspan="5" class="px-8 py-8 text-center text-sm text-red-400">Erro ao carregar dados.</td></tr>';
+    }
 }
 
-/* ─────────────────────────────────────────────
-   PROGRESSO DO CLIENTE (saúde)
-───────────────────────────────────────────── */
-function cprog(idx) {
-    let tot = 0, w = 0;
-    MODULES.forEach(m => {
-        const s = ps(DATA[m][idx]);
-        if (!s || s === 'N/A') return;
-        tot++;
-        w += wt(s);
-    });
-    return tot ? Math.round(w / tot) : 0;
+/* ══════════════════════════════════════
+   RENDER SEÇÃO IMPLANTAÇÃO
+══════════════════════════════════════ */
+function implStatusClass(status) {
+    const s = status.toLowerCase();
+    if (s.includes('andamento'))    return 'impl-status-em-andamento';
+    if (s.includes('ag. cliente') || s.includes('aguardando cliente')) return 'impl-status-ag-cliente';
+    if (s.includes('ag. plane') || s.includes('planejamento')) return 'impl-status-ag-planejamento';
+    if (s.includes('paralisado') || s.includes('cancelado')) return 'impl-status-paralisado';
+    return 'impl-status-default';
 }
 
-/* ─────────────────────────────────────────────
-   BADGE DE STATUS
-───────────────────────────────────────────── */
-function getStatusBadge(status) {
-    const colors = {
-        'ID':'bg-green-50 text-green-700 border-green-200',
-        'US':'bg-cyan-50 text-cyan-700 border-cyan-200',
-        'EI':'bg-amber-50 text-amber-700 border-amber-200',
-        'NI':'bg-purple-50 text-purple-700 border-purple-200',
-        'N/A':'bg-slate-50 text-slate-500 border-slate-200',
-    };
-    let cls = colors['N/A'];
-    if (status === 'ID')            cls = colors['ID'];
-    else if (status === 'US')       cls = colors['US'];
-    else if (status.startsWith('EI')) cls = colors['EI'];
-    else if (status === 'NI')       cls = colors['NI'];
-    return `<span class="inline-flex items-center justify-center px-3 py-1.5 rounded-xl text-xs font-bold border ${cls}">${status}</span>`;
+function implProgressColor(pct, atrasado) {
+    if (atrasado) return '#ef4444';   // vermelho
+    if (pct >= 75) return '#10b981';  // verde
+    if (pct >= 40) return '#f97316';  // laranja
+    return '#f59e0b';                 // âmbar
 }
 
-/* ─────────────────────────────────────────────
-   PILL DE DELTA
-───────────────────────────────────────────── */
-function deltaPill(delta) {
-    if (delta === null || delta === undefined) return '';
-    if (delta > 0)  return `<span class="evo-pill up">▲ +${delta}%</span>`;
-    if (delta < 0)  return `<span class="evo-pill down">▼ ${delta}%</span>`;
-    return `<span class="evo-pill flat">→ 0%</span>`;
+function formatDate(raw, atrasado) {
+    if (!raw) return '<span class="text-slate-300">–</span>';
+    if (atrasado) {
+        return `<div>
+            <span class="font-black text-red-500">${raw}</span>
+            <div class="text-[10px] font-bold text-red-400 uppercase tracking-wider mt-0.5">Prazo Vencido</div>
+        </div>`;
+    }
+    return `<span class="font-bold text-slate-700">${raw}</span>`;
 }
 
-/* ─────────────────────────────────────────────
-   COLUNA CLIENTE & SAÚDE — célula expandida
-───────────────────────────────────────────── */
-function buildHealthCell(cl, actualIdx) {
-    const prog = cprog(actualIdx);
-    const evo  = getEvo(cl.label);
-    const evoPct = evo ? evo.pct : null;
+function renderImplSection(items) {
+    // KPIs
+    const total     = items.length;
+    const evolucao  = total > 0 ? Math.round(items.reduce((s, i) => s + i.pct, 0) / total) : 0;
+    const atrasos   = items.filter(i => i.atrasado).length;
 
-    /* cor da bolinha */
-    let dotColor = 'bg-purple-400';
-    if      (prog >= 75) dotColor = 'bg-green-500';
-    else if (prog >= 50) dotColor = 'bg-cyan-500';
-    else if (prog >= 25) dotColor = 'bg-amber-500';
-    else if (prog >  0)  dotColor = 'bg-red-400';
+    document.getElementById('implTotal').textContent    = total;
+    document.getElementById('implEvolucao').textContent = evolucao + '%';
+    document.getElementById('implAtrasos').textContent  = atrasos;
 
-    /* cor da barra de saúde */
-    let healthBarColor = '#8b5cf6';
-    if      (prog >= 75) healthBarColor = '#10b981';
-    else if (prog >= 50) healthBarColor = '#06b6d4';
-    else if (prog >= 25) healthBarColor = '#f59e0b';
-    else if (prog >  0)  healthBarColor = '#ef4444';
+    // Alertar atraso visualmente
+    const atrasosEl = document.getElementById('implAtrasos').parentElement;
+    if (atrasos > 0) {
+        atrasosEl.classList.remove('bg-slate-50', 'border-slate-200');
+        atrasosEl.classList.add('bg-red-50', 'border-red-200');
+    }
 
-    const evoBar = evoPct !== null ? `
-        <div class="bar-row">
-            <span class="bar-label" style="color:#6366f1;">Evolução</span>
-            <div class="bar-track">
-                <div class="bar-fill progress-bar-transition" style="width:${evoPct}%;background:#6366f1;"></div>
-            </div>
-            <span class="bar-pct" style="color:#6366f1;">${evoPct}%</span>
-        </div>` : '';
+    if (items.length === 0) {
+        document.getElementById('implBody').innerHTML =
+            '<tr><td colspan="5" class="px-8 py-10 text-center text-sm text-slate-400">Nenhum módulo em implantação encontrado.</td></tr>';
+        document.getElementById('implFooter').textContent = '';
+        return;
+    }
 
-    const evoDeltaHtml = evo?.delta !== null && evo?.delta !== undefined
-        ? deltaPill(evo.delta)
-        : '';
+    let html = '';
+    items.forEach((item, idx) => {
+        const barColor = implProgressColor(item.pct, item.atrasado);
+        const rowBg    = item.atrasado ? 'bg-red-50/30' : '';
 
-    return `
-        <td class="sticky-col px-4 py-4 client-health-cell cursor-pointer" onclick="showClientModal('${cl.label.replace(/'/g, "\\'")}')">
-            <div class="flex items-start gap-3">
-                <!-- Indicador de cor -->
-                <div class="w-2 h-2 rounded-full ${dotColor} mt-2 flex-shrink-0"></div>
-
-                <!-- Nome + barras duplas -->
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between mb-2 gap-1 flex-wrap">
-                        <span class="font-bold text-slate-900 text-sm hover:text-orange-500 transition truncate max-w-[130px]">${cl.label}</span>
-                        ${evoDeltaHtml}
-                    </div>
-
-                    <div class="dual-bar-wrapper">
-                        <!-- Barra Saúde -->
-                        <div class="bar-row">
-                            <span class="bar-label" style="color:#f97316;">Saúde</span>
-                            <div class="bar-track">
-                                <div class="bar-fill progress-bar-transition" style="width:${prog}%;background:${healthBarColor};"></div>
-                            </div>
-                            <span class="bar-pct">${prog}%</span>
-                        </div>
-
-                        ${evoBar}
-                    </div>
+        html += `<tr class="impl-row ${rowBg}" style="animation-delay:${idx * 40}ms">
+            <td class="px-8 py-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-1 h-8 rounded-full flex-shrink-0" style="background:${item.atrasado ? '#ef4444' : '#f97316'};"></div>
+                    <span class="text-sm font-bold text-slate-800">${item.cliente}</span>
                 </div>
-            </div>
-        </td>`;
+            </td>
+            <td class="px-4 py-4 text-center">
+                <span class="impl-status-badge ${implStatusClass(item.status)}">${item.status || '–'}</span>
+            </td>
+            <td class="px-4 py-4">
+                <div class="flex items-center gap-3 justify-center">
+                    <div class="impl-progress-track">
+                        <div class="impl-progress-fill" style="width:${item.pct}%; background:${barColor};"></div>
+                    </div>
+                    <span class="text-sm font-black tabular-nums w-10 text-right" style="color:${barColor};">${item.pct}%</span>
+                </div>
+            </td>
+            <td class="px-4 py-4 text-center text-sm">
+                ${formatDate(item.dataRaw, item.atrasado)}
+            </td>
+            <td class="px-8 py-4 text-xs text-slate-500 font-medium max-w-xs">
+                ${item.obs || '<span class="text-slate-300">–</span>'}
+            </td>
+        </tr>`;
+    });
+
+    document.getElementById('implBody').innerHTML = html;
+    document.getElementById('implFooter').textContent =
+        `${total} módulo(s) em acompanhamento · ${atrasos} com prazo vencido`;
+    lucide.createIcons();
 }
 
-/* ─────────────────────────────────────────────
-   RENDER KPIs
-───────────────────────────────────────────── */
+function toggleImplInfo() {
+    const el = document.getElementById('implInfo');
+    el.classList.toggle('hidden');
+}
+
+/* ══════════════════════════════════════
+   KPI CARDS (grade principal)
+══════════════════════════════════════ */
 function buildCard(def, total, counts) {
     const icon = iconFor(def.id === 'meudepto' ? 'meu departamento' : def.id);
     return `<div class="mod-card" id="card-${def.id}" onclick="toggleCard('${def.id}')">
@@ -678,314 +526,193 @@ function buildCard(def, total, counts) {
         <div class="text-sm font-bold text-slate-600 mb-2">${def.label}</div>
         <div class="card-details">
             <div class="grid grid-cols-2 gap-2 mt-3">
-                <div class="bg-green-50 border border-green-200 rounded-xl p-2.5 text-center">
-                    <div class="text-[8px] font-bold text-green-700 uppercase tracking-wide mb-0.5">Implantado</div>
-                    <div class="text-xl font-black text-green-900">${counts.id}</div>
-                </div>
-                <div class="bg-cyan-50 border border-cyan-200 rounded-xl p-2.5 text-center">
-                    <div class="text-[8px] font-bold text-cyan-700 uppercase tracking-wide mb-0.5">Fomentar Uso</div>
-                    <div class="text-xl font-black text-cyan-900">${counts.us}</div>
-                </div>
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-center">
-                    <div class="text-[8px] font-bold text-amber-700 uppercase tracking-wide mb-0.5">Em Implantação</div>
-                    <div class="text-xl font-black text-amber-900">${counts.ei}</div>
-                </div>
-                <div class="bg-purple-50 border border-purple-200 rounded-xl p-2.5 text-center">
-                    <div class="text-[8px] font-bold text-purple-700 uppercase tracking-wide mb-0.5">Não Implantado</div>
-                    <div class="text-xl font-black text-purple-900">${counts.ni}</div>
-                </div>
+                <div class="bg-green-50 border border-green-200 rounded-xl p-2.5 text-center"><div class="text-[8px] font-bold text-green-700 uppercase tracking-wide mb-0.5">Implantado</div><div class="text-xl font-black text-green-900">${counts.id}</div></div>
+                <div class="bg-cyan-50 border border-cyan-200 rounded-xl p-2.5 text-center"><div class="text-[8px] font-bold text-cyan-700 uppercase tracking-wide mb-0.5">Fomentar Uso</div><div class="text-xl font-black text-cyan-900">${counts.us}</div></div>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-center"><div class="text-[8px] font-bold text-amber-700 uppercase tracking-wide mb-0.5">Em Implantação</div><div class="text-xl font-black text-amber-900">${counts.ei}</div></div>
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-2.5 text-center"><div class="text-[8px] font-bold text-purple-700 uppercase tracking-wide mb-0.5">Não Implantado</div><div class="text-xl font-black text-purple-900">${counts.ni}</div></div>
             </div>
         </div>
-        <div class="absolute bottom-3 right-3 text-slate-300">
-            <i data-lucide="chevron-down" class="chevron-icon w-4 h-4"></i>
-        </div>
+        <div class="absolute bottom-3 right-3 text-slate-300"><i data-lucide="chevron-down" class="chevron-icon w-4 h-4"></i></div>
     </div>`;
 }
 
 function renderKPIs() {
     let tc = 0, tw = 0;
     Object.values(DATA).forEach(col => col.forEach(raw => {
-        const s = ps(raw);
-        if (!s || s === 'N/A') return;
-        tc++; tw += wt(s);
+        const s = ps(raw); if (!s || s==='N/A') return; tc++; tw += wt(s);
     }));
-    const cov = tc ? Math.round(tw / tc) : 0;
+    const cov = tc ? Math.round(tw/tc) : 0;
     document.getElementById('statCoverage').textContent = cov + '%';
     document.getElementById('barCoverage').style.width  = cov + '%';
     document.getElementById('statClientes').textContent  = CLIENTS.length;
 
-    const r1 = document.getElementById('kpi-row-1');
-    const r2 = document.getElementById('kpi-row-2');
+    const r1 = document.getElementById('kpi-row-1'), r2 = document.getElementById('kpi-row-2');
     r1.innerHTML = r2.innerHTML = '';
-
     MOD_DEFS.forEach(def => {
-        const col = findMod(def.keys);
-        let total = 0, counts = {id:0, ei:0, us:0, ni:0};
+        const col = findMod(def.keys); let total = 0, counts = {id:0,ei:0,us:0,ni:0};
         if (col) col.forEach(raw => {
-            const s = ps(raw);
-            if (!s || s === 'N/A') return;
-            total++;
-            if      (s === 'ID')          counts.id++;
-            else if (s.startsWith('EI'))  counts.ei++;
-            else if (s === 'US')          counts.us++;
-            else if (s === 'NI')          counts.ni++;
+            const s = ps(raw); if (!s||s==='N/A') return; total++;
+            if (s==='ID') counts.id++; else if (s.startsWith('EI')) counts.ei++; else if (s==='US') counts.us++; else if (s==='NI') counts.ni++;
         });
-        (def.row === 1 ? r1 : r2).insertAdjacentHTML('beforeend', buildCard(def, total, counts));
+        (def.row===1?r1:r2).insertAdjacentHTML('beforeend', buildCard(def, total, counts));
     });
     lucide.createIcons();
 }
 
 let activeCard = null;
 function toggleCard(id) {
-    const card = document.getElementById('card-' + id);
-    if (!card) return;
-    if (activeCard === id) {
-        card.classList.remove('active');
-        activeCard = null;
-    } else {
-        if (activeCard) document.getElementById('card-' + activeCard)?.classList.remove('active');
-        card.classList.add('active');
-        activeCard = id;
-        lucide.createIcons();
-    }
+    const card = document.getElementById('card-'+id); if (!card) return;
+    if (activeCard===id) { card.classList.remove('active'); activeCard=null; }
+    else { if (activeCard) document.getElementById('card-'+activeCard)?.classList.remove('active'); card.classList.add('active'); activeCard=id; lucide.createIcons(); }
 }
 
-/* ─────────────────────────────────────────────
-   RENDER TABLE
-───────────────────────────────────────────── */
-function renderTable() {
-    const thead = document.getElementById('tableHeader');
-    const tbody = document.getElementById('tableBody');
+function cprog(idx) {
+    let tot=0, w=0;
+    MODULES.forEach(m=>{ const s=ps(DATA[m][idx]); if(!s||s==='N/A')return; tot++; w+=wt(s); });
+    return tot ? Math.round(w/tot) : 0;
+}
 
-    // Cabeçalho
-    let hHtml = `<th class="sticky-col px-4 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
-        <div class="flex flex-col gap-0.5">
-            <span>Cliente &amp; Saúde</span>
-            <span style="color:#6366f1;font-size:9px;letter-spacing:.06em;">+ Evolução</span>
-        </div>
-    </th>`;
-    MODULES.forEach(m => {
-        hHtml += `<th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">${m}</th>`;
-    });
+function getStatusBadge(status) {
+    const colors = {'ID':'bg-green-50 text-green-700 border-green-200','US':'bg-cyan-50 text-cyan-700 border-cyan-200','EI':'bg-amber-50 text-amber-700 border-amber-200','NI':'bg-purple-50 text-purple-700 border-purple-200','N/A':'bg-slate-50 text-slate-500 border-slate-200'};
+    let cls = colors['N/A'];
+    if (status==='ID') cls=colors['ID']; else if (status==='US') cls=colors['US']; else if (status.startsWith('EI')) cls=colors['EI']; else if (status==='NI') cls=colors['NI'];
+    return `<span class="inline-flex items-center justify-center px-3 py-1.5 rounded-xl text-xs font-bold border ${cls}">${status}</span>`;
+}
+
+function renderTable() {
+    const thead = document.getElementById('tableHeader'), tbody = document.getElementById('tableBody');
+    let hHtml = `<th class="sticky-col px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Cliente &amp; Saúde</th>`;
+    MODULES.forEach(m => { hHtml += `<th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">${m}</th>`; });
     thead.innerHTML = hHtml;
 
-    // Body
     let bHtml = '';
     const display = isExpanded ? CLIENTS : CLIENTS.slice(0, INITIAL_ROWS);
-
     display.forEach(cl => {
         const actualIdx = CLIENTS.findIndex(c => c.id === cl.id);
-        bHtml += `<tr class="group hover:bg-slate-50/50 transition-all">`;
-        bHtml += buildHealthCell(cl, actualIdx);
+        const prog = cprog(actualIdx);
+        let dotColor = 'bg-purple-500';
+        if (prog>=75) dotColor='bg-green-500'; else if (prog>=50) dotColor='bg-cyan-500'; else if (prog>=25) dotColor='bg-amber-500'; else if (prog>0) dotColor='bg-red-500';
+
+        bHtml += `<tr class="group hover:bg-slate-50/50 transition-all">
+            <td class="sticky-col px-6 py-5 cursor-pointer" onclick="showClientModal('${cl.label.replace(/'/g,"\\'")}')">
+                <div class="flex items-center gap-4">
+                    <div class="w-2 h-2 rounded-full ${dotColor} flex-shrink-0"></div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-bold text-slate-900 text-sm mb-1 hover:text-orange-500 transition">${cl.label}</div>
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full ${dotColor} rounded-full progress-bar-transition" style="width:${prog}%;"></div>
+                            </div>
+                            <span class="text-xs font-bold text-slate-500 tabular-nums w-10 text-right">${prog}%</span>
+                        </div>
+                    </div>
+                </div>
+            </td>`;
         MODULES.forEach(m => {
-            const status = ps(DATA[m][actualIdx] || 'N/A');
+            const status = ps(DATA[m][actualIdx]||'N/A');
             bHtml += `<td class="px-4 py-5 text-center">${getStatusBadge(status)}</td>`;
         });
         bHtml += '</tr>';
     });
-
     tbody.innerHTML = bHtml;
-    document.getElementById('footerCount').textContent =
-        `A mostrar ${display.length} de ${CLIENTS.length} clientes`;
+    document.getElementById('footerCount').textContent = `A mostrar ${display.length} de ${CLIENTS.length} clientes`;
     lucide.createIcons();
 }
 
-/* ─────────────────────────────────────────────
-   FILTROS
-───────────────────────────────────────────── */
 function setFilter(filter) {
     activeFilter = filter;
-    ['All','ID','EI','US','NI'].forEach(f => {
-        const btn = document.getElementById('filter' + f);
-        if (btn) btn.className = 'filter-btn' + (filter === f ? ' active' : '');
-    });
+    ['All','ID','EI','US','NI'].forEach(f => { const btn=document.getElementById('filter'+f); if(btn) btn.className='filter-btn'+(filter===f?' active':''); });
     applyFilters();
 }
 
 function applyFilters() {
-    const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
-    let vis = 0;
+    const term = (document.getElementById('searchInput')?.value||'').toLowerCase();
     document.querySelectorAll('#tableBody tr').forEach(row => {
-        const name = row.querySelector('.sticky-col')?.textContent.toLowerCase() || '';
-        const matchSearch = !term || name.includes(term);
-        let matchFilter = activeFilter === 'ALL';
+        const name = row.querySelector('.sticky-col')?.textContent.toLowerCase()||'';
+        const matchSearch = !term||name.includes(term);
+        let matchFilter = activeFilter==='ALL';
         if (!matchFilter) {
             row.querySelectorAll('td:not(.sticky-col) span').forEach(badge => {
                 const t = badge.textContent.trim();
-                if (activeFilter === 'EI' && t.startsWith('EI')) matchFilter = true;
-                else if (t === activeFilter) matchFilter = true;
+                if (activeFilter==='EI'&&t.startsWith('EI')) matchFilter=true;
+                else if (t===activeFilter) matchFilter=true;
             });
         }
-        const show = matchSearch && matchFilter;
-        row.style.display = show ? '' : 'none';
-        if (show) vis++;
+        row.style.display = (matchSearch&&matchFilter)?'':'none';
     });
-
     const counterDiv = document.getElementById('filterCount');
-    if (activeFilter !== 'ALL') {
-        document.getElementById('filterCountNumber').textContent = countStatusInGrid(activeFilter);
-        counterDiv.classList.remove('hidden');
-    } else {
-        counterDiv.classList.add('hidden');
-    }
+    if (activeFilter!=='ALL') { document.getElementById('filterCountNumber').textContent=countStatusInGrid(activeFilter); counterDiv.classList.remove('hidden'); }
+    else counterDiv.classList.add('hidden');
 }
 
 function countStatusInGrid(status) {
-    let count = 0;
-    CLIENTS.forEach((_, ci) => MODULES.forEach(m => {
-        const s = ps(DATA[m]?.[ci]);
-        if (status === 'EI' && s.startsWith('EI')) count++;
-        else if (s === status) count++;
-    }));
+    let count=0;
+    CLIENTS.forEach((_,ci)=>MODULES.forEach(m=>{ const s=ps(DATA[m]?.[ci]); if(status==='EI'&&s.startsWith('EI'))count++; else if(s===status)count++; }));
     return count;
 }
 
-/* ─────────────────────────────────────────────
-   MODAL DO CLIENTE
-───────────────────────────────────────────── */
+function calculateCoverageBreakdown() {
+    let totalCells=0, counts={ID:0,EI:0,US:0,NI:0}, weights={ID:0,EI:0,US:0,NI:0};
+    CLIENTS.forEach((_,ci)=>MODULES.forEach(m=>{ const s=ps(DATA[m]?.[ci]); if(!s||s==='N/A')return; totalCells++; if(s==='ID'){counts.ID++;weights.ID+=100;} else if(s.startsWith('EI')){counts.EI++;const mt=s.match(/(\d+)%/);weights.EI+=mt?+mt[1]:50;} else if(s==='US'){counts.US++;weights.US+=80;} else if(s==='NI')counts.NI++; }));
+    return {avgPercentages:{ID:counts.ID>0?Math.round(weights.ID/counts.ID):100,EI:counts.EI>0?Math.round(weights.EI/counts.EI):0,US:counts.US>0?Math.round(weights.US/counts.US):80,NI:0}};
+}
+
 function showClientModal(label) {
-    const client = CLIENTS.find(c => c.label === label);
-    if (!client) return;
-    const idx  = CLIENTS.findIndex(c => c.label === label);
-    const prog = cprog(idx);
-    const evo  = getEvo(label);
-    const obs  = getNote(client.id) || 'Sem observações registradas.';
-
-    document.getElementById('modalClientName').innerHTML =
-        `<i data-lucide="building-2" class="inline w-5 h-5 text-orange-500 mr-2"></i>${label}`;
-
-    // Métricas resumidas
-    let metricsHtml = `
-        <div class="bg-orange-50 border border-orange-100 rounded-2xl p-4">
-            <p class="text-[9px] font-bold uppercase tracking-wider text-orange-400 mb-1">Saúde Atual</p>
-            <p class="text-3xl font-black text-orange-600">${prog}%</p>
-            <div class="h-2 bg-orange-100 rounded-full mt-2 overflow-hidden">
-                <div class="h-full bg-orange-500 rounded-full" style="width:${prog}%"></div>
-            </div>
-        </div>`;
-
-    if (evo) {
-        metricsHtml += `
-            <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4">
-                <p class="text-[9px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Evolução</p>
-                <div class="flex items-end gap-2">
-                    <p class="text-3xl font-black text-indigo-600">${evo.pct}%</p>
-                    ${evo.delta !== null ? deltaPill(evo.delta) : ''}
-                </div>
-                <div class="h-2 bg-indigo-100 rounded-full mt-2 overflow-hidden">
-                    <div class="h-full bg-indigo-500 rounded-full" style="width:${evo.pct}%"></div>
-                </div>
-            </div>`;
-    }
-    document.getElementById('modalMetrics').innerHTML = metricsHtml;
-
-    document.getElementById('modalClientObs').textContent = obs;
-
-    let modHtml = '';
-    MODULES.forEach(m => {
-        const status = ps(DATA[m][idx] || 'N/A');
-        modHtml += `
-            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition">
-                <span class="text-sm font-semibold text-slate-700">${m}</span>
-                ${getStatusBadge(status)}
-            </div>`;
-    });
-    document.getElementById('modalClientModules').innerHTML = modHtml;
-
+    const client=CLIENTS.find(c=>c.label===label); if(!client)return;
+    const idx=CLIENTS.findIndex(c=>c.label===label);
+    const obs=getNote(client.id)||'Sem observações registradas.';
+    document.getElementById('modalClientName').innerHTML=`<i data-lucide="building-2" class="inline w-5 h-5 text-orange-500 mr-2"></i>${label}`;
+    document.getElementById('modalClientObs').textContent=obs;
+    let modHtml='';
+    MODULES.forEach(m=>{ const status=ps(DATA[m][idx]||'N/A'); modHtml+=`<div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition"><span class="text-sm font-semibold text-slate-700">${m}</span>${getStatusBadge(status)}</div>`; });
+    document.getElementById('modalClientModules').innerHTML=modHtml;
     document.getElementById('clientModal').classList.remove('hidden');
     document.getElementById('clientModal').classList.add('flex');
     lucide.createIcons();
 }
 
 function closeClientModal(event) {
-    const modal = document.getElementById('clientModal');
-    if (!event || event.target === modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-}
-
-/* ─────────────────────────────────────────────
-   TOOLTIP COBERTURA
-───────────────────────────────────────────── */
-function calculateCoverageBreakdown() {
-    let totalCells = 0, counts = {ID:0,EI:0,US:0,NI:0}, weights = {ID:0,EI:0,US:0,NI:0};
-    CLIENTS.forEach((_, ci) => MODULES.forEach(m => {
-        const s = ps(DATA[m]?.[ci]);
-        if (!s || s === 'N/A') return;
-        totalCells++;
-        if      (s === 'ID')          { counts.ID++; weights.ID += 100; }
-        else if (s.startsWith('EI'))  { counts.EI++; const mt = s.match(/(\d+)%/); weights.EI += mt ? +mt[1] : 50; }
-        else if (s === 'US')          { counts.US++; weights.US += 80; }
-        else if (s === 'NI')          { counts.NI++; }
-    }));
-    return {
-        counts,
-        avgPercentages: {
-            ID: counts.ID > 0 ? Math.round(weights.ID / counts.ID) : 100,
-            EI: counts.EI > 0 ? Math.round(weights.EI / counts.EI) : 0,
-            US: counts.US > 0 ? Math.round(weights.US / counts.US) : 80,
-            NI: 0,
-        },
-        total: totalCells,
-    };
+    const modal=document.getElementById('clientModal');
+    if(!event||event.target===modal){modal.classList.add('hidden');modal.classList.remove('flex');}
 }
 
 function toggleCoberturaInfo() {
-    const info = document.getElementById('coberturaInfo');
-    if (!info) return;
-    if (info.classList.contains('hidden')) {
-        const bd = calculateCoverageBreakdown();
-        document.getElementById('coberturaBreakdown').innerHTML = `
+    const info=document.getElementById('coberturaInfo'); if(!info)return;
+    if(info.classList.contains('hidden')){
+        const bd=calculateCoverageBreakdown();
+        document.getElementById('coberturaBreakdown').innerHTML=`
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pesos do cálculo:</p>
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                <span class="text-xs font-semibold text-green-700">IMPLANTADO (ID)</span>
-                <span class="text-sm font-black text-green-900">${bd.avgPercentages.ID}%</span>
-            </div>
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                <span class="text-xs font-semibold text-amber-700">EM IMPLANTAÇÃO (EI)</span>
-                <span class="text-sm font-black text-amber-900">${bd.avgPercentages.EI}%</span>
-            </div>
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                <span class="text-xs font-semibold text-cyan-700">FOMENTAR USABILIDADE (US)</span>
-                <span class="text-sm font-black text-cyan-900">${bd.avgPercentages.US}%</span>
-            </div>
-            <div class="flex items-center justify-between py-2">
-                <span class="text-xs font-semibold text-purple-700">NÃO IMPLANTADO (NI)</span>
-                <span class="text-sm font-black text-purple-900">0%</span>
-            </div>`;
-        info.classList.remove('hidden');
-        setTimeout(() => lucide.createIcons(), 10);
-    } else {
-        info.classList.add('hidden');
-    }
+            <div class="flex items-center justify-between py-2 border-b border-slate-100"><span class="text-xs font-semibold text-green-700">IMPLANTADO (ID)</span><span class="text-sm font-black text-green-900">${bd.avgPercentages.ID}%</span></div>
+            <div class="flex items-center justify-between py-2 border-b border-slate-100"><span class="text-xs font-semibold text-amber-700">EM IMPLANTAÇÃO (EI)</span><span class="text-sm font-black text-amber-900">${bd.avgPercentages.EI}%</span></div>
+            <div class="flex items-center justify-between py-2 border-b border-slate-100"><span class="text-xs font-semibold text-cyan-700">FOMENTAR USABILIDADE (US)</span><span class="text-sm font-black text-cyan-900">${bd.avgPercentages.US}%</span></div>
+            <div class="flex items-center justify-between py-2"><span class="text-xs font-semibold text-purple-700">NÃO IMPLANTADO (NI)</span><span class="text-sm font-black text-purple-900">0%</span></div>`;
+        info.classList.remove('hidden'); setTimeout(()=>lucide.createIcons(),10);
+    } else info.classList.add('hidden');
 }
 
-/* ─────────────────────────────────────────────
-   EXPANDIR / RECOLHER
-───────────────────────────────────────────── */
 function toggleExpand() {
-    isExpanded = !isExpanded;
-    document.getElementById('toggleText').textContent    = isExpanded ? 'Ver menos' : 'Ver todos';
-    document.getElementById('toggleIcon').style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+    isExpanded=!isExpanded;
+    document.getElementById('toggleText').textContent=isExpanded?'Ver menos':'Ver todos';
+    document.getElementById('toggleIcon').style.transform=isExpanded?'rotate(180deg)':'rotate(0deg)';
     renderTable();
 }
 
-/* ─────────────────────────────────────────────
+/* ══════════════════════════════════════
    BOOT
-───────────────────────────────────────────── */
+══════════════════════════════════════ */
 window.onload = () => {
-    init();
+    lucide.createIcons();
+    loadSheetData();
+    loadImplData();
     document.addEventListener('click', e => {
-        const info = document.getElementById('coberturaInfo');
-        if (!info) return;
-        const isBtn  = e.target.closest('button[onclick="toggleCoberturaInfo()"]');
-        const isTip  = e.target.closest('#coberturaInfo');
-        if (!isBtn && !isTip && !info.classList.contains('hidden')) info.classList.add('hidden');
+        const info=document.getElementById('coberturaInfo'); if(!info)return;
+        const isBtn=e.target.closest('button[onclick="toggleCoberturaInfo()"]');
+        const isTip=e.target.closest('#coberturaInfo');
+        if(!isBtn&&!isTip&&!info.classList.contains('hidden'))info.classList.add('hidden');
     });
 };
 
-setInterval(() => Promise.all([loadSheetData(), loadEvoData()]).then(renderTable), 300000);
+setInterval(()=>{ loadSheetData(); loadImplData(); }, 300000);
 </script>
 </body>
 </html>
