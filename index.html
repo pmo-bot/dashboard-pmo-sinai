@@ -14,7 +14,6 @@
             background: #F8FAFC;
         }
         
-        /* Cards interativos */
         .mod-card {
             background: white;
             border: 2px solid #f1f5f9;
@@ -52,15 +51,9 @@
             margin-top: 16px;
         }
         
-        .chevron-icon {
-            transition: transform .3s ease;
-        }
+        .chevron-icon { transition: transform .3s ease; }
+        .mod-card.active .chevron-icon { transform: rotate(180deg); }
         
-        .mod-card.active .chevron-icon {
-            transform: rotate(180deg);
-        }
-        
-        /* Barra empilhada */
         .stacked-bar {
             height: 4px;
             border-radius: 99px;
@@ -91,7 +84,6 @@
             transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
         }
         
-        /* Filtros */
         .filter-btn {
             padding: 6px 14px;
             border-radius: 10px;
@@ -109,16 +101,102 @@
             color: white;
             border-color: #f97316;
         }
+
+        /* ── NOVO: coluna Cliente & Saúde expandida ── */
+        .client-health-cell {
+            min-width: 220px;
+        }
+
+        /* Separador visual entre as duas métricas */
+        .metric-divider {
+            width: 1px;
+            height: 28px;
+            background: #e2e8f0;
+            margin: 0 6px;
+            flex-shrink: 0;
+        }
+
+        /* Pill de evolução */
+        .evo-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 8px;
+            letter-spacing: 0.02em;
+        }
+        .evo-pill.up   { background: #ecfdf5; color: #059669; }
+        .evo-pill.down { background: #fef2f2; color: #dc2626; }
+        .evo-pill.flat { background: #f8fafc; color: #64748b; }
+
+        /* Barras lado a lado */
+        .dual-bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bar-label {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #94a3b8;
+            width: 42px;
+            flex-shrink: 0;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 99px;
+        }
+
+        .bar-pct {
+            font-size: 10px;
+            font-weight: 800;
+            color: #475569;
+            width: 30px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        /* Loading skeleton */
+        @keyframes shimmer {
+            0%   { background-position: -400px 0; }
+            100% { background-position: 400px 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 400px 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
 <div class="max-w-[1600px] mx-auto space-y-6">
 
-    <!-- HEADER (igual imagem 1) -->
+    <!-- HEADER -->
     <header class="bg-white rounded-3xl shadow-sm border border-slate-100 px-6 py-5">
         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-            <!-- Logo + Título -->
             <div class="flex items-center gap-4">
                 <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
                     <svg width="36" height="36" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
@@ -132,7 +210,6 @@
                 </div>
             </div>
 
-            <!-- KPIs (Cobertura + Clientes Ativos) -->
             <div class="flex items-center gap-12">
                 <div class="text-center relative">
                     <div class="flex items-center justify-center gap-2 mb-1">
@@ -142,13 +219,12 @@
                         </button>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-4xl font-black text-orange-500" id="statCoverage">40%</span>
+                        <span class="text-4xl font-black text-orange-500" id="statCoverage">–</span>
                         <div class="w-20 h-2 bg-slate-200 rounded-full overflow-hidden">
-                            <div id="barCoverage" class="h-full bg-orange-500 rounded-full progress-bar-transition" style="width: 40%;"></div>
+                            <div id="barCoverage" class="h-full bg-orange-500 rounded-full progress-bar-transition" style="width: 0%;"></div>
                         </div>
                     </div>
                     
-                    <!-- Tooltip/Popover de informação -->
                     <div id="coberturaInfo" class="hidden absolute top-full left-1/2 -translate-x-1/2 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 z-50">
                         <div class="flex items-start justify-between mb-3">
                             <h3 class="text-sm font-black text-slate-900">KPI: Cobertura Geral</h3>
@@ -160,11 +236,7 @@
                         <p class="text-xs text-slate-600 leading-relaxed mb-4">
                             Representa o nível de prontidão global. Responde: "Quanto falta para concluirmos a implantação em todas as unidades?"
                         </p>
-                        
-                        <div class="space-y-2" id="coberturaBreakdown">
-                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pesos do cálculo:</p>
-                            <!-- Será preenchido dinamicamente -->
-                        </div>
+                        <div class="space-y-2" id="coberturaBreakdown"></div>
                     </div>
                 </div>
                 
@@ -172,7 +244,7 @@
                     <p class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Clientes Ativos</p>
                     <div class="flex items-center gap-2 justify-center">
                         <i data-lucide="users" class="w-5 h-5 text-slate-400"></i>
-                        <span class="text-4xl font-black text-slate-900" id="statClientes">17</span>
+                        <span class="text-4xl font-black text-slate-900" id="statClientes">–</span>
                     </div>
                 </div>
             </div>
@@ -183,45 +255,55 @@
     <div class="px-1">
         <p class="text-xs text-slate-500 font-medium bg-white inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-100">
             <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-amber-500"></i>
-            Clique num módulo para ver o detalhamento
+            Clique num módulo para ver o detalhamento · A coluna <strong>Saúde</strong> mostra a cobertura atual e a <strong>Evolução</strong> mostra o progresso histórico
         </p>
     </div>
 
-    <!-- KPI CARDS (sem barras, igual imagem 1) -->
+    <!-- KPI CARDS -->
     <div id="kpi-row-1" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"></div>
     <div id="kpi-row-2" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
 
     <!-- LEGENDA + FILTROS + BUSCA -->
     <div class="bg-white rounded-2xl px-6 py-4 border border-slate-100 shadow-sm">
         <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            <!-- Legenda -->
             <div class="flex flex-wrap items-center gap-4">
                 <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Legenda</span>
                 <div class="flex items-center gap-2">
-                    <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
+                    <div style="width:8px;height:8px;background:#10b981;border-radius:50%;"></div>
                     <span class="text-xs font-semibold text-slate-600">Implantado</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%;"></div>
+                    <div style="width:8px;height:8px;background:#f59e0b;border-radius:50%;"></div>
                     <span class="text-xs font-semibold text-slate-600">Em Implantação</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div style="width: 8px; height: 8px; background: #06b6d4; border-radius: 50%;"></div>
+                    <div style="width:8px;height:8px;background:#06b6d4;border-radius:50%;"></div>
                     <span class="text-xs font-semibold text-slate-600">Fomentar Uso</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div style="width: 8px; height: 8px; background: #8b5cf6; border-radius: 50%;"></div>
+                    <div style="width:8px;height:8px;background:#8b5cf6;border-radius:50%;"></div>
                     <span class="text-xs font-semibold text-slate-600">Não Implantado</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div style="width: 8px; height: 8px; background: #cbd5e1; border-radius: 50%;"></div>
+                    <div style="width:8px;height:8px;background:#cbd5e1;border-radius:50%;"></div>
                     <span class="text-xs font-semibold text-slate-600">Não Possui</span>
+                </div>
+
+                <!-- Separador -->
+                <div class="w-px h-4 bg-slate-200 mx-1"></div>
+
+                <!-- Legenda das barras duais -->
+                <div class="flex items-center gap-2">
+                    <div style="width:18px;height:5px;background:#f97316;border-radius:99px;"></div>
+                    <span class="text-xs font-semibold text-slate-600">Saúde</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div style="width:18px;height:5px;background:#6366f1;border-radius:99px;"></div>
+                    <span class="text-xs font-semibold text-slate-600">Evolução</span>
                 </div>
             </div>
             
-            <!-- Filtros + Busca -->
             <div class="flex items-center gap-3 flex-wrap">
-                <!-- Campo de busca -->
                 <div class="relative">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5"></i>
                     <input 
@@ -233,14 +315,12 @@
                     >
                 </div>
                 
-                <!-- Filtros de status -->
                 <button class="filter-btn active" id="filterAll" onclick="setFilter('ALL')">Todos</button>
-                <button class="filter-btn" id="filterID" onclick="setFilter('ID')">ID</button>
-                <button class="filter-btn" id="filterEI" onclick="setFilter('EI')">EI</button>
-                <button class="filter-btn" id="filterUS" onclick="setFilter('US')">US</button>
-                <button class="filter-btn" id="filterNI" onclick="setFilter('NI')">NI</button>
+                <button class="filter-btn" id="filterID"  onclick="setFilter('ID')">ID</button>
+                <button class="filter-btn" id="filterEI"  onclick="setFilter('EI')">EI</button>
+                <button class="filter-btn" id="filterUS"  onclick="setFilter('US')">US</button>
+                <button class="filter-btn" id="filterNI"  onclick="setFilter('NI')">NI</button>
                 
-                <!-- Contador de resultados -->
                 <div id="filterCount" class="px-3 py-2 bg-orange-50 border border-orange-200 rounded-xl text-xs font-bold text-orange-700 hidden">
                     <span id="filterCountNumber">0</span> encontrado(s)
                 </div>
@@ -248,7 +328,7 @@
         </div>
     </div>
 
-    <!-- GRID (igual imagem 2 e HTML base) -->
+    <!-- GRID -->
     <div class="bg-white rounded-[32px] border border-slate-100 shadow-xl overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse" id="clientsTable">
@@ -259,9 +339,8 @@
             </table>
         </div>
         
-        <!-- Rodapé com botão Ver todos -->
         <div class="px-8 py-5 bg-slate-50/30 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400 font-medium">
-            <span id="footerCount">A mostrar 5 de 17 clientes</span>
+            <span id="footerCount">Carregando…</span>
             <button id="toggleExpand" onclick="toggleExpand()" class="flex items-center gap-2 text-indigo-500 font-bold hover:text-indigo-700 transition-all bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100">
                 <span id="toggleText">Ver todos</span>
                 <i data-lucide="chevron-down" id="toggleIcon" class="w-4 h-4 transition-transform duration-300"></i>
@@ -271,7 +350,7 @@
 
 </div>
 
-<!-- MODAL DETALHES DO CLIENTE -->
+<!-- MODAL CLIENTE -->
 <div id="clientModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden items-center justify-center p-4" onclick="closeClientModal(event)">
     <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
         <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-3xl">
@@ -280,9 +359,10 @@
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
         </div>
-        
         <div class="p-6">
-            <!-- Observações -->
+            <!-- Métricas resumidas no modal -->
+            <div id="modalMetrics" class="grid grid-cols-2 gap-3 mb-6"></div>
+
             <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-6">
                 <div class="flex items-center gap-2 mb-2">
                     <i data-lucide="message-square" class="w-4 h-4 text-orange-600"></i>
@@ -290,42 +370,27 @@
                 </div>
                 <p id="modalClientObs" class="text-sm text-slate-700 leading-relaxed"></p>
             </div>
-            
-            <!-- Status dos módulos -->
             <div class="space-y-2" id="modalClientModules"></div>
         </div>
     </div>
 </div>
 
 <script>
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
+/* ─────────────────────────────────────────────
+   CONFIGURAÇÃO
+───────────────────────────────────────────── */
+const SHEET_MAIN  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
+const SHEET_EVO   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=698759854&single=true&output=csv';
 
 let CLIENTS = [], MODULES = [], DATA = {};
-let isExpanded = false;
+let EVO_DATA = {};          // { "Nome Cliente": { pct: 38, delta: +5 } }
+let isExpanded   = false;
 let activeFilter = 'ALL';
 const INITIAL_ROWS = 5;
 
-const MOD_ICONS = {
-    secretaria: 'building-2', tesouraria: 'wallet', financeiro: 'coins', aplicativo: 'smartphone',
-    eventos: 'calendar', ebd: 'book-open', 'patrimônio': 'shield-check', patrimonio: 'shield-check',
-    acolhimento: 'heart', 'meu departamento': 'users', meudepto: 'users',
-    ebl: 'church', 'ebl / célula': 'church', célula: 'church', celula: 'church',
-};
-const iconFor = k => MOD_ICONS[k.toLowerCase()] || 'layout-grid';
-
-const MOD_DEFS = [
-    {id: 'secretaria',  label: 'Secretaria',       keys: ['Secretaria'],                          row: 1},
-    {id: 'tesouraria',  label: 'Tesouraria',       keys: ['Tesouraria'],                          row: 1},
-    {id: 'financeiro',  label: 'Financeiro',       keys: ['Financeiro'],                          row: 1},
-    {id: 'aplicativo',  label: 'Aplicativo',       keys: ['Aplicativo'],                          row: 1},
-    {id: 'eventos',     label: 'Eventos',          keys: ['Eventos'],                             row: 1},
-    {id: 'ebd',         label: 'EBD',              keys: ['EBD'],                                 row: 1},
-    {id: 'patrimonio',  label: 'Patrimônio',       keys: ['Patrimônio', 'Patrimonio'],            row: 2},
-    {id: 'acolhimento', label: 'Acolhimento',      keys: ['Acolhimento'],                         row: 2},
-    {id: 'meudepto',    label: 'Meu Departamento', keys: ['Meu Departamento', 'Departamento'],    row: 2},
-    {id: 'ebl',         label: 'EBL / Célula',     keys: ['EBL', 'Célula', 'Celula', 'EBL/Célula'], row: 2},
-];
-
+/* ─────────────────────────────────────────────
+   PARSING
+───────────────────────────────────────────── */
 function parseCSV(text) {
     return text.split('\n').map(row => {
         const cols = []; let cur = '', inQ = false;
@@ -340,40 +405,13 @@ function parseCSV(text) {
 }
 
 const saveNote = (id, v) => localStorage.setItem('note_' + id, v);
-const getNote = (id) => localStorage.getItem('note_' + id) || '';
+const getNote  = (id)    => localStorage.getItem('note_' + id) || '';
 
-async function loadSheetData() {
-    try {
-        const rows = parseCSV(await (await fetch(SHEET_URL)).text());
-        MODULES = rows[1].slice(1, 11).filter(m => m?.trim());
-        CLIENTS = [];
-        DATA = {};
-        
-        MODULES.forEach(m => DATA[m] = []);
-        
-        for (let i = 2; i < rows.length; i++) {
-            const row = rows[i];
-            if (!row[0]?.trim()) continue;
-            
-            const id = 'u' + (i - 2);
-            CLIENTS.push({id, label: row[0].trim()});
-            
-            // Coluna 11 (L) = observações
-            if (row[11]?.trim()) saveNote(id, row[11].trim());
-            
-            MODULES.forEach((m, mi) => DATA[m].push((row[mi + 1] || 'NI').trim()));
-        }
-        
-        renderKPIs();
-        renderTable();
-    } catch (e) {
-        console.error(e);
-        alert('Erro ao carregar planilha.');
-    }
-}
+const ps  = raw => (raw || '').split('|')[0].trim();
 
-const ps = raw => (raw || '').split('|')[0].trim();
-
+/* ─────────────────────────────────────────────
+   PESOS
+───────────────────────────────────────────── */
 function wt(s) {
     if (s === 'ID') return 100;
     if (s === 'US') return 80;
@@ -384,11 +422,91 @@ function wt(s) {
     return 0;
 }
 
+/* ─────────────────────────────────────────────
+   CARREGAR PLANILHA DE EVOLUÇÃO
+   Formato esperado: Coluna A = nome cliente,
+   Coluna B = % evolução (número ou "38%" ou "38"),
+   Coluna C (opcional) = % anterior ou delta
+───────────────────────────────────────────── */
+async function loadEvoData() {
+    try {
+        const rows = parseCSV(await (await fetch(SHEET_EVO)).text());
+        EVO_DATA = {};
+
+        // Detectar linha de cabeçalho — pula se não for número
+        const startRow = isNaN(parseFloat(rows[1]?.[1])) ? 1 : 0;
+
+        for (let i = startRow; i < rows.length; i++) {
+            const row  = rows[i];
+            const name = (row[0] || '').trim();
+            if (!name) continue;
+
+            // % atual (coluna B)
+            const rawPct  = (row[1] || '').replace('%','').trim();
+            const pct     = parseFloat(rawPct);
+            if (isNaN(pct)) continue;
+
+            // % anterior ou delta (coluna C) — opcional
+            const rawPrev = (row[2] || '').replace('%','').trim();
+            const prev    = parseFloat(rawPrev);
+            const delta   = (!isNaN(prev) && prev !== pct)
+                ? (rawPrev.startsWith('+') || rawPrev.startsWith('-')
+                    ? prev               // já é delta
+                    : Math.round(pct - prev))  // calcula delta
+                : null;
+
+            EVO_DATA[name.toLowerCase()] = { pct: Math.round(pct), delta };
+        }
+    } catch(e) {
+        console.warn('Não foi possível carregar a planilha de evolução:', e);
+    }
+}
+
+/* ─────────────────────────────────────────────
+   BUSCAR EVOLUÇÃO DO CLIENTE
+───────────────────────────────────────────── */
+function getEvo(clientLabel) {
+    const key = clientLabel.toLowerCase();
+    // Busca exata
+    if (EVO_DATA[key]) return EVO_DATA[key];
+    // Busca parcial
+    const hit = Object.keys(EVO_DATA).find(k =>
+        k.includes(key.substring(0, Math.min(8, key.length))) ||
+        key.includes(k.substring(0, Math.min(8, k.length)))
+    );
+    return hit ? EVO_DATA[hit] : null;
+}
+
+/* ─────────────────────────────────────────────
+   MÓDULOS
+───────────────────────────────────────────── */
+const MOD_ICONS = {
+    secretaria:'building-2', tesouraria:'wallet', financeiro:'coins',
+    aplicativo:'smartphone', eventos:'calendar', ebd:'book-open',
+    'patrimônio':'shield-check', patrimonio:'shield-check',
+    acolhimento:'heart', 'meu departamento':'users', meudepto:'users',
+    ebl:'church', 'ebl / célula':'church', célula:'church', celula:'church',
+};
+const iconFor = k => MOD_ICONS[k.toLowerCase()] || 'layout-grid';
+
+const MOD_DEFS = [
+    {id:'secretaria', label:'Secretaria',       keys:['Secretaria'],                         row:1},
+    {id:'tesouraria', label:'Tesouraria',        keys:['Tesouraria'],                         row:1},
+    {id:'financeiro', label:'Financeiro',        keys:['Financeiro'],                         row:1},
+    {id:'aplicativo', label:'Aplicativo',        keys:['Aplicativo'],                         row:1},
+    {id:'eventos',    label:'Eventos',           keys:['Eventos'],                            row:1},
+    {id:'ebd',        label:'EBD',               keys:['EBD'],                                row:1},
+    {id:'patrimonio', label:'Patrimônio',        keys:['Patrimônio','Patrimonio'],             row:2},
+    {id:'acolhimento',label:'Acolhimento',       keys:['Acolhimento'],                        row:2},
+    {id:'meudepto',   label:'Meu Departamento',  keys:['Meu Departamento','Departamento'],    row:2},
+    {id:'ebl',        label:'EBL / Célula',      keys:['EBL','Célula','Celula','EBL/Célula'], row:2},
+];
+
 function findMod(keys) {
     for (const k of keys) {
         if (DATA[k]) return DATA[k];
-        const hit = Object.keys(DATA).find(dk => 
-            dk.toLowerCase().includes(k.toLowerCase()) || 
+        const hit = Object.keys(DATA).find(dk =>
+            dk.toLowerCase().includes(k.toLowerCase()) ||
             k.toLowerCase().includes(dk.toLowerCase().substring(0, Math.max(4, dk.length - 2)))
         );
         if (hit) return DATA[hit];
@@ -396,9 +514,157 @@ function findMod(keys) {
     return null;
 }
 
+/* ─────────────────────────────────────────────
+   CARREGAR PLANILHA PRINCIPAL
+───────────────────────────────────────────── */
+async function loadSheetData() {
+    try {
+        const rows = parseCSV(await (await fetch(SHEET_MAIN)).text());
+        MODULES = rows[1].slice(1, 11).filter(m => m?.trim());
+        CLIENTS = [];
+        DATA    = {};
+
+        MODULES.forEach(m => DATA[m] = []);
+
+        for (let i = 2; i < rows.length; i++) {
+            const row = rows[i];
+            if (!row[0]?.trim()) continue;
+            const id = 'u' + (i - 2);
+            CLIENTS.push({id, label: row[0].trim()});
+            if (row[11]?.trim()) saveNote(id, row[11].trim());
+            MODULES.forEach((m, mi) => DATA[m].push((row[mi + 1] || 'NI').trim()));
+        }
+
+        renderKPIs();
+        renderTable();
+    } catch(e) {
+        console.error(e);
+        alert('Erro ao carregar planilha principal.');
+    }
+}
+
+/* ─────────────────────────────────────────────
+   INICIALIZAÇÃO (carrega as duas em paralelo)
+───────────────────────────────────────────── */
+async function init() {
+    lucide.createIcons();
+    await Promise.all([loadSheetData(), loadEvoData()]);
+    renderTable(); // re-renderiza com dados de evolução
+}
+
+/* ─────────────────────────────────────────────
+   PROGRESSO DO CLIENTE (saúde)
+───────────────────────────────────────────── */
+function cprog(idx) {
+    let tot = 0, w = 0;
+    MODULES.forEach(m => {
+        const s = ps(DATA[m][idx]);
+        if (!s || s === 'N/A') return;
+        tot++;
+        w += wt(s);
+    });
+    return tot ? Math.round(w / tot) : 0;
+}
+
+/* ─────────────────────────────────────────────
+   BADGE DE STATUS
+───────────────────────────────────────────── */
+function getStatusBadge(status) {
+    const colors = {
+        'ID':'bg-green-50 text-green-700 border-green-200',
+        'US':'bg-cyan-50 text-cyan-700 border-cyan-200',
+        'EI':'bg-amber-50 text-amber-700 border-amber-200',
+        'NI':'bg-purple-50 text-purple-700 border-purple-200',
+        'N/A':'bg-slate-50 text-slate-500 border-slate-200',
+    };
+    let cls = colors['N/A'];
+    if (status === 'ID')            cls = colors['ID'];
+    else if (status === 'US')       cls = colors['US'];
+    else if (status.startsWith('EI')) cls = colors['EI'];
+    else if (status === 'NI')       cls = colors['NI'];
+    return `<span class="inline-flex items-center justify-center px-3 py-1.5 rounded-xl text-xs font-bold border ${cls}">${status}</span>`;
+}
+
+/* ─────────────────────────────────────────────
+   PILL DE DELTA
+───────────────────────────────────────────── */
+function deltaPill(delta) {
+    if (delta === null || delta === undefined) return '';
+    if (delta > 0)  return `<span class="evo-pill up">▲ +${delta}%</span>`;
+    if (delta < 0)  return `<span class="evo-pill down">▼ ${delta}%</span>`;
+    return `<span class="evo-pill flat">→ 0%</span>`;
+}
+
+/* ─────────────────────────────────────────────
+   COLUNA CLIENTE & SAÚDE — célula expandida
+───────────────────────────────────────────── */
+function buildHealthCell(cl, actualIdx) {
+    const prog = cprog(actualIdx);
+    const evo  = getEvo(cl.label);
+    const evoPct = evo ? evo.pct : null;
+
+    /* cor da bolinha */
+    let dotColor = 'bg-purple-400';
+    if      (prog >= 75) dotColor = 'bg-green-500';
+    else if (prog >= 50) dotColor = 'bg-cyan-500';
+    else if (prog >= 25) dotColor = 'bg-amber-500';
+    else if (prog >  0)  dotColor = 'bg-red-400';
+
+    /* cor da barra de saúde */
+    let healthBarColor = '#8b5cf6';
+    if      (prog >= 75) healthBarColor = '#10b981';
+    else if (prog >= 50) healthBarColor = '#06b6d4';
+    else if (prog >= 25) healthBarColor = '#f59e0b';
+    else if (prog >  0)  healthBarColor = '#ef4444';
+
+    const evoBar = evoPct !== null ? `
+        <div class="bar-row">
+            <span class="bar-label" style="color:#6366f1;">Evolução</span>
+            <div class="bar-track">
+                <div class="bar-fill progress-bar-transition" style="width:${evoPct}%;background:#6366f1;"></div>
+            </div>
+            <span class="bar-pct" style="color:#6366f1;">${evoPct}%</span>
+        </div>` : '';
+
+    const evoDeltaHtml = evo?.delta !== null && evo?.delta !== undefined
+        ? deltaPill(evo.delta)
+        : '';
+
+    return `
+        <td class="sticky-col px-4 py-4 client-health-cell cursor-pointer" onclick="showClientModal('${cl.label.replace(/'/g, "\\'")}')">
+            <div class="flex items-start gap-3">
+                <!-- Indicador de cor -->
+                <div class="w-2 h-2 rounded-full ${dotColor} mt-2 flex-shrink-0"></div>
+
+                <!-- Nome + barras duplas -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between mb-2 gap-1 flex-wrap">
+                        <span class="font-bold text-slate-900 text-sm hover:text-orange-500 transition truncate max-w-[130px]">${cl.label}</span>
+                        ${evoDeltaHtml}
+                    </div>
+
+                    <div class="dual-bar-wrapper">
+                        <!-- Barra Saúde -->
+                        <div class="bar-row">
+                            <span class="bar-label" style="color:#f97316;">Saúde</span>
+                            <div class="bar-track">
+                                <div class="bar-fill progress-bar-transition" style="width:${prog}%;background:${healthBarColor};"></div>
+                            </div>
+                            <span class="bar-pct">${prog}%</span>
+                        </div>
+
+                        ${evoBar}
+                    </div>
+                </div>
+            </div>
+        </td>`;
+}
+
+/* ─────────────────────────────────────────────
+   RENDER KPIs
+───────────────────────────────────────────── */
 function buildCard(def, total, counts) {
     const icon = iconFor(def.id === 'meudepto' ? 'meu departamento' : def.id);
-    
     return `<div class="mod-card" id="card-${def.id}" onclick="toggleCard('${def.id}')">
         <div class="flex items-start justify-between mb-3">
             <div class="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
@@ -410,8 +676,6 @@ function buildCard(def, total, counts) {
             </div>
         </div>
         <div class="text-sm font-bold text-slate-600 mb-2">${def.label}</div>
-        
-        <!-- Detalhes expansíveis -->
         <div class="card-details">
             <div class="grid grid-cols-2 gap-2 mt-3">
                 <div class="bg-green-50 border border-green-200 rounded-xl p-2.5 text-center">
@@ -432,8 +696,6 @@ function buildCard(def, total, counts) {
                 </div>
             </div>
         </div>
-        
-        <!-- Chevron -->
         <div class="absolute bottom-3 right-3 text-slate-300">
             <i data-lucide="chevron-down" class="chevron-icon w-4 h-4"></i>
         </div>
@@ -445,296 +707,191 @@ function renderKPIs() {
     Object.values(DATA).forEach(col => col.forEach(raw => {
         const s = ps(raw);
         if (!s || s === 'N/A') return;
-        tc++;
-        tw += wt(s);
+        tc++; tw += wt(s);
     }));
-    
     const cov = tc ? Math.round(tw / tc) : 0;
     document.getElementById('statCoverage').textContent = cov + '%';
-    document.getElementById('barCoverage').style.width = cov + '%';
-    document.getElementById('statClientes').textContent = CLIENTS.length;
+    document.getElementById('barCoverage').style.width  = cov + '%';
+    document.getElementById('statClientes').textContent  = CLIENTS.length;
 
-    const r1 = document.getElementById('kpi-row-1'), r2 = document.getElementById('kpi-row-2');
-    r1.innerHTML = '';
-    r2.innerHTML = '';
+    const r1 = document.getElementById('kpi-row-1');
+    const r2 = document.getElementById('kpi-row-2');
+    r1.innerHTML = r2.innerHTML = '';
 
     MOD_DEFS.forEach(def => {
         const col = findMod(def.keys);
-        let total = 0, counts = {id: 0, ei: 0, us: 0, ni: 0};
-        
+        let total = 0, counts = {id:0, ei:0, us:0, ni:0};
         if (col) col.forEach(raw => {
             const s = ps(raw);
             if (!s || s === 'N/A') return;
             total++;
-            if (s === 'ID') counts.id++;
-            else if (s.startsWith('EI')) counts.ei++;
-            else if (s === 'US') counts.us++;
-            else if (s === 'NI') counts.ni++;
+            if      (s === 'ID')          counts.id++;
+            else if (s.startsWith('EI'))  counts.ei++;
+            else if (s === 'US')          counts.us++;
+            else if (s === 'NI')          counts.ni++;
         });
-        
         (def.row === 1 ? r1 : r2).insertAdjacentHTML('beforeend', buildCard(def, total, counts));
     });
-    
     lucide.createIcons();
 }
 
 let activeCard = null;
-
 function toggleCard(id) {
     const card = document.getElementById('card-' + id);
     if (!card) return;
-    
     if (activeCard === id) {
         card.classList.remove('active');
         activeCard = null;
     } else {
-        if (activeCard) {
-            const prev = document.getElementById('card-' + activeCard);
-            if (prev) prev.classList.remove('active');
-        }
+        if (activeCard) document.getElementById('card-' + activeCard)?.classList.remove('active');
         card.classList.add('active');
         activeCard = id;
         lucide.createIcons();
     }
 }
 
-function cprog(idx) {
-    let tot = 0, w = 0;
-    MODULES.forEach(m => {
-        const s = ps(DATA[m][idx]);
-        if (!s || s === 'N/A') return;
-        tot++;
-        w += wt(s);
-    });
-    return tot ? Math.round(w / tot) : 0;
-}
-
-function getStatusBadge(status) {
-    const colors = {
-        'ID': 'bg-green-50 text-green-700 border-green-200',
-        'US': 'bg-cyan-50 text-cyan-700 border-cyan-200',
-        'EI': 'bg-amber-50 text-amber-700 border-amber-200',
-        'NI': 'bg-purple-50 text-purple-700 border-purple-200',
-        'N/A': 'bg-slate-50 text-slate-500 border-slate-200'
-    };
-    
-    let colorClass = colors['N/A'];
-    if (status === 'ID') colorClass = colors['ID'];
-    else if (status === 'US') colorClass = colors['US'];
-    else if (status.startsWith('EI')) colorClass = colors['EI'];
-    else if (status === 'NI') colorClass = colors['NI'];
-    
-    return `<span class="inline-flex items-center justify-center px-3 py-1.5 rounded-xl text-xs font-bold border ${colorClass}">${status}</span>`;
-}
-
+/* ─────────────────────────────────────────────
+   RENDER TABLE
+───────────────────────────────────────────── */
 function renderTable() {
     const thead = document.getElementById('tableHeader');
     const tbody = document.getElementById('tableBody');
-    
-    // Header
-    let headerHtml = `<th class="sticky-col px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Cliente & Saúde</th>`;
+
+    // Cabeçalho
+    let hHtml = `<th class="sticky-col px-4 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+        <div class="flex flex-col gap-0.5">
+            <span>Cliente &amp; Saúde</span>
+            <span style="color:#6366f1;font-size:9px;letter-spacing:.06em;">+ Evolução</span>
+        </div>
+    </th>`;
     MODULES.forEach(m => {
-        headerHtml += `<th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">${m}</th>`;
+        hHtml += `<th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">${m}</th>`;
     });
-    thead.innerHTML = headerHtml;
-    
+    thead.innerHTML = hHtml;
+
     // Body
-    let bodyHtml = '';
-    const displayClients = isExpanded ? CLIENTS : CLIENTS.slice(0, INITIAL_ROWS);
-    
-    displayClients.forEach((cl, idx) => {
+    let bHtml = '';
+    const display = isExpanded ? CLIENTS : CLIENTS.slice(0, INITIAL_ROWS);
+
+    display.forEach(cl => {
         const actualIdx = CLIENTS.findIndex(c => c.id === cl.id);
-        const prog = cprog(actualIdx);
-        
-        // Cor da bolinha baseada no progresso
-        let dotColor = 'bg-purple-500';
-        if (prog >= 75) dotColor = 'bg-green-500';
-        else if (prog >= 50) dotColor = 'bg-cyan-500';
-        else if (prog >= 25) dotColor = 'bg-amber-500';
-        else if (prog > 0) dotColor = 'bg-red-500';
-        
-        bodyHtml += `<tr class="group hover:bg-slate-50/50 transition-all">
-            <td class="sticky-col px-6 py-5 cursor-pointer" onclick="showClientModal('${cl.label.replace(/'/g, "\\'")}')">
-                <div class="flex items-center gap-4">
-                    <div class="w-2 h-2 rounded-full ${dotColor} flex-shrink-0"></div>
-                    <div class="flex-1 min-w-0">
-                        <div class="font-bold text-slate-900 text-sm mb-1 hover:text-orange-500 transition">${cl.label}</div>
-                        <div class="flex items-center gap-2">
-                            <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full ${dotColor} rounded-full progress-bar-transition" style="width: ${prog}%;"></div>
-                            </div>
-                            <span class="text-xs font-bold text-slate-500 tabular-nums w-10 text-right">${prog}%</span>
-                        </div>
-                    </div>
-                </div>
-            </td>`;
-        
+        bHtml += `<tr class="group hover:bg-slate-50/50 transition-all">`;
+        bHtml += buildHealthCell(cl, actualIdx);
         MODULES.forEach(m => {
             const status = ps(DATA[m][actualIdx] || 'N/A');
-            bodyHtml += `<td class="px-4 py-5 text-center">${getStatusBadge(status)}</td>`;
+            bHtml += `<td class="px-4 py-5 text-center">${getStatusBadge(status)}</td>`;
         });
-        
-        bodyHtml += '</tr>';
+        bHtml += '</tr>';
     });
-    
-    tbody.innerHTML = bodyHtml;
-    
-    // Atualizar footer
-    document.getElementById('footerCount').textContent = 
-        `A mostrar ${displayClients.length} de ${CLIENTS.length} clientes`;
-    
+
+    tbody.innerHTML = bHtml;
+    document.getElementById('footerCount').textContent =
+        `A mostrar ${display.length} de ${CLIENTS.length} clientes`;
     lucide.createIcons();
 }
 
+/* ─────────────────────────────────────────────
+   FILTROS
+───────────────────────────────────────────── */
 function setFilter(filter) {
     activeFilter = filter;
-    
-    // Atualizar botões
-    ['All', 'ID', 'EI', 'US', 'NI'].forEach(f => {
+    ['All','ID','EI','US','NI'].forEach(f => {
         const btn = document.getElementById('filter' + f);
-        if (btn) {
-            btn.className = 'filter-btn' + (filter === f ? ' active' : '');
-        }
+        if (btn) btn.className = 'filter-btn' + (filter === f ? ' active' : '');
     });
-    
     applyFilters();
 }
 
 function applyFilters() {
-    const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
-    const rows = document.querySelectorAll('#tableBody tr');
-    let visibleCount = 0;
-    
-    rows.forEach(row => {
-        const clientName = row.querySelector('.sticky-col')?.textContent.toLowerCase() || '';
-        const matchesSearch = !searchTerm || clientName.includes(searchTerm);
-        
-        let matchesFilter = activeFilter === 'ALL';
-        
-        if (!matchesFilter) {
-            const badges = row.querySelectorAll('td:not(.sticky-col) span');
-            badges.forEach(badge => {
-                const text = badge.textContent.trim();
-                if (activeFilter === 'EI' && text.startsWith('EI')) {
-                    matchesFilter = true;
-                }
-                else if (text === activeFilter) {
-                    matchesFilter = true;
-                }
+    const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
+    let vis = 0;
+    document.querySelectorAll('#tableBody tr').forEach(row => {
+        const name = row.querySelector('.sticky-col')?.textContent.toLowerCase() || '';
+        const matchSearch = !term || name.includes(term);
+        let matchFilter = activeFilter === 'ALL';
+        if (!matchFilter) {
+            row.querySelectorAll('td:not(.sticky-col) span').forEach(badge => {
+                const t = badge.textContent.trim();
+                if (activeFilter === 'EI' && t.startsWith('EI')) matchFilter = true;
+                else if (t === activeFilter) matchFilter = true;
             });
         }
-        
-        const isVisible = matchesSearch && matchesFilter;
-        row.style.display = isVisible ? '' : 'none';
-        
-        if (isVisible) visibleCount++;
+        const show = matchSearch && matchFilter;
+        row.style.display = show ? '' : 'none';
+        if (show) vis++;
     });
-    
-    // Contar TOTAL de badges direto dos dados
+
     const counterDiv = document.getElementById('filterCount');
-    const counterNumber = document.getElementById('filterCountNumber');
-    
     if (activeFilter !== 'ALL') {
-        const count = countStatusInGrid(activeFilter);
-        counterNumber.textContent = count;
+        document.getElementById('filterCountNumber').textContent = countStatusInGrid(activeFilter);
         counterDiv.classList.remove('hidden');
     } else {
         counterDiv.classList.add('hidden');
     }
 }
 
-// Função para contar TODOS os badges de um status na grid inteira
 function countStatusInGrid(status) {
     let count = 0;
-    
-    CLIENTS.forEach((client, clientIdx) => {
-        MODULES.forEach(module => {
-            const cellValue = DATA[module]?.[clientIdx];
-            if (!cellValue) return;
-            
-            const cellStatus = ps(cellValue);
-            
-            if (status === 'EI' && cellStatus.startsWith('EI')) {
-                count++;
-            } else if (cellStatus === status) {
-                count++;
-            }
-        });
-    });
-    
+    CLIENTS.forEach((_, ci) => MODULES.forEach(m => {
+        const s = ps(DATA[m]?.[ci]);
+        if (status === 'EI' && s.startsWith('EI')) count++;
+        else if (s === status) count++;
+    }));
     return count;
 }
 
-// Função para calcular breakdown real da cobertura
-function calculateCoverageBreakdown() {
-    let totalCells = 0;
-    let counts = { ID: 0, EI: 0, US: 0, NI: 0 };
-    let weights = { ID: 0, EI: 0, US: 0, NI: 0 };
-    
-    CLIENTS.forEach((client, clientIdx) => {
-        MODULES.forEach(module => {
-            const cellValue = DATA[module]?.[clientIdx];
-            if (!cellValue) return;
-            
-            const status = ps(cellValue);
-            if (status === 'N/A' || !status) return;
-            
-            totalCells++;
-            
-            if (status === 'ID') {
-                counts.ID++;
-                weights.ID += 100;
-            } else if (status.startsWith('EI')) {
-                counts.EI++;
-                const match = status.match(/(\d+)%/);
-                const percent = match ? parseInt(match[1]) : 50;
-                weights.EI += percent;
-            } else if (status === 'US') {
-                counts.US++;
-                weights.US += 80;
-            } else if (status === 'NI') {
-                counts.NI++;
-            }
-        });
-    });
-    
-    return {
-        counts,
-        avgPercentages: {
-            ID: counts.ID > 0 ? Math.round(weights.ID / counts.ID) : 100,
-            EI: counts.EI > 0 ? Math.round(weights.EI / counts.EI) : 0,
-            US: counts.US > 0 ? Math.round(weights.US / counts.US) : 80,
-            NI: 0
-        },
-        total: totalCells
-    };
-}
-
-function showClientModal(clientLabel) {
-    const client = CLIENTS.find(c => c.label === clientLabel);
+/* ─────────────────────────────────────────────
+   MODAL DO CLIENTE
+───────────────────────────────────────────── */
+function showClientModal(label) {
+    const client = CLIENTS.find(c => c.label === label);
     if (!client) return;
-    
-    const clientIdx = CLIENTS.findIndex(c => c.label === clientLabel);
-    const obs = getNote(client.id) || 'Sem observações registradas.';
-    
-    document.getElementById('modalClientName').innerHTML = `
-        <i data-lucide="building-2" class="inline w-5 h-5 text-orange-500 mr-2"></i>${clientLabel}
-    `;
+    const idx  = CLIENTS.findIndex(c => c.label === label);
+    const prog = cprog(idx);
+    const evo  = getEvo(label);
+    const obs  = getNote(client.id) || 'Sem observações registradas.';
+
+    document.getElementById('modalClientName').innerHTML =
+        `<i data-lucide="building-2" class="inline w-5 h-5 text-orange-500 mr-2"></i>${label}`;
+
+    // Métricas resumidas
+    let metricsHtml = `
+        <div class="bg-orange-50 border border-orange-100 rounded-2xl p-4">
+            <p class="text-[9px] font-bold uppercase tracking-wider text-orange-400 mb-1">Saúde Atual</p>
+            <p class="text-3xl font-black text-orange-600">${prog}%</p>
+            <div class="h-2 bg-orange-100 rounded-full mt-2 overflow-hidden">
+                <div class="h-full bg-orange-500 rounded-full" style="width:${prog}%"></div>
+            </div>
+        </div>`;
+
+    if (evo) {
+        metricsHtml += `
+            <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4">
+                <p class="text-[9px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Evolução</p>
+                <div class="flex items-end gap-2">
+                    <p class="text-3xl font-black text-indigo-600">${evo.pct}%</p>
+                    ${evo.delta !== null ? deltaPill(evo.delta) : ''}
+                </div>
+                <div class="h-2 bg-indigo-100 rounded-full mt-2 overflow-hidden">
+                    <div class="h-full bg-indigo-500 rounded-full" style="width:${evo.pct}%"></div>
+                </div>
+            </div>`;
+    }
+    document.getElementById('modalMetrics').innerHTML = metricsHtml;
+
     document.getElementById('modalClientObs').textContent = obs;
-    
-    // Mostrar status dos módulos
-    let modulesHtml = '';
+
+    let modHtml = '';
     MODULES.forEach(m => {
-        const status = ps(DATA[m][clientIdx] || 'N/A');
-        modulesHtml += `
+        const status = ps(DATA[m][idx] || 'N/A');
+        modHtml += `
             <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition">
                 <span class="text-sm font-semibold text-slate-700">${m}</span>
                 ${getStatusBadge(status)}
-            </div>
-        `;
+            </div>`;
     });
-    document.getElementById('modalClientModules').innerHTML = modulesHtml;
-    
+    document.getElementById('modalClientModules').innerHTML = modHtml;
+
     document.getElementById('clientModal').classList.remove('hidden');
     document.getElementById('clientModal').classList.add('flex');
     lucide.createIcons();
@@ -748,41 +905,55 @@ function closeClientModal(event) {
     }
 }
 
+/* ─────────────────────────────────────────────
+   TOOLTIP COBERTURA
+───────────────────────────────────────────── */
+function calculateCoverageBreakdown() {
+    let totalCells = 0, counts = {ID:0,EI:0,US:0,NI:0}, weights = {ID:0,EI:0,US:0,NI:0};
+    CLIENTS.forEach((_, ci) => MODULES.forEach(m => {
+        const s = ps(DATA[m]?.[ci]);
+        if (!s || s === 'N/A') return;
+        totalCells++;
+        if      (s === 'ID')          { counts.ID++; weights.ID += 100; }
+        else if (s.startsWith('EI'))  { counts.EI++; const mt = s.match(/(\d+)%/); weights.EI += mt ? +mt[1] : 50; }
+        else if (s === 'US')          { counts.US++; weights.US += 80; }
+        else if (s === 'NI')          { counts.NI++; }
+    }));
+    return {
+        counts,
+        avgPercentages: {
+            ID: counts.ID > 0 ? Math.round(weights.ID / counts.ID) : 100,
+            EI: counts.EI > 0 ? Math.round(weights.EI / counts.EI) : 0,
+            US: counts.US > 0 ? Math.round(weights.US / counts.US) : 80,
+            NI: 0,
+        },
+        total: totalCells,
+    };
+}
+
 function toggleCoberturaInfo() {
     const info = document.getElementById('coberturaInfo');
     if (!info) return;
-    
     if (info.classList.contains('hidden')) {
-        // Calcular breakdown real
-        const breakdown = calculateCoverageBreakdown();
-        const breakdownDiv = document.getElementById('coberturaBreakdown');
-        
-        if (breakdownDiv) {
-            breakdownDiv.innerHTML = `
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pesos do cálculo:</p>
-                
-                <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                    <span class="text-xs font-semibold text-green-700">IMPLANTADO (ID)</span>
-                    <span class="text-sm font-black text-green-900">${breakdown.avgPercentages.ID}%</span>
-                </div>
-                
-                <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                    <span class="text-xs font-semibold text-amber-700">EM IMPLANTAÇÃO (EI)</span>
-                    <span class="text-sm font-black text-amber-900">${breakdown.avgPercentages.EI}%</span>
-                </div>
-                
-                <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                    <span class="text-xs font-semibold text-cyan-700">FOMENTAR USABILIDADE (US)</span>
-                    <span class="text-sm font-black text-cyan-900">${breakdown.avgPercentages.US}%</span>
-                </div>
-                
-                <div class="flex items-center justify-between py-2">
-                    <span class="text-xs font-semibold text-purple-700">NÃO IMPLANTADO (NI)</span>
-                    <span class="text-sm font-black text-purple-900">${breakdown.avgPercentages.NI}%</span>
-                </div>
-            `;
-        }
-        
+        const bd = calculateCoverageBreakdown();
+        document.getElementById('coberturaBreakdown').innerHTML = `
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pesos do cálculo:</p>
+            <div class="flex items-center justify-between py-2 border-b border-slate-100">
+                <span class="text-xs font-semibold text-green-700">IMPLANTADO (ID)</span>
+                <span class="text-sm font-black text-green-900">${bd.avgPercentages.ID}%</span>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-slate-100">
+                <span class="text-xs font-semibold text-amber-700">EM IMPLANTAÇÃO (EI)</span>
+                <span class="text-sm font-black text-amber-900">${bd.avgPercentages.EI}%</span>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-slate-100">
+                <span class="text-xs font-semibold text-cyan-700">FOMENTAR USABILIDADE (US)</span>
+                <span class="text-sm font-black text-cyan-900">${bd.avgPercentages.US}%</span>
+            </div>
+            <div class="flex items-center justify-between py-2">
+                <span class="text-xs font-semibold text-purple-700">NÃO IMPLANTADO (NI)</span>
+                <span class="text-sm font-black text-purple-900">0%</span>
+            </div>`;
         info.classList.remove('hidden');
         setTimeout(() => lucide.createIcons(), 10);
     } else {
@@ -790,33 +961,31 @@ function toggleCoberturaInfo() {
     }
 }
 
+/* ─────────────────────────────────────────────
+   EXPANDIR / RECOLHER
+───────────────────────────────────────────── */
 function toggleExpand() {
     isExpanded = !isExpanded;
-    document.getElementById('toggleText').textContent = isExpanded ? 'Ver menos' : 'Ver todos';
+    document.getElementById('toggleText').textContent    = isExpanded ? 'Ver menos' : 'Ver todos';
     document.getElementById('toggleIcon').style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
     renderTable();
 }
 
+/* ─────────────────────────────────────────────
+   BOOT
+───────────────────────────────────────────── */
 window.onload = () => {
-    lucide.createIcons();
-    loadSheetData();
-    
-    // Event listener para fechar tooltip ao clicar fora
-    document.addEventListener('click', function(event) {
+    init();
+    document.addEventListener('click', e => {
         const info = document.getElementById('coberturaInfo');
         if (!info) return;
-        
-        const isButton = event.target.closest('button[onclick="toggleCoberturaInfo()"]');
-        const isTooltip = event.target.closest('#coberturaInfo');
-        
-        if (!isButton && !isTooltip && !info.classList.contains('hidden')) {
-            info.classList.add('hidden');
-        }
+        const isBtn  = e.target.closest('button[onclick="toggleCoberturaInfo()"]');
+        const isTip  = e.target.closest('#coberturaInfo');
+        if (!isBtn && !isTip && !info.classList.contains('hidden')) info.classList.add('hidden');
     });
 };
 
-setInterval(loadSheetData, 300000);
+setInterval(() => Promise.all([loadSheetData(), loadEvoData()]).then(renderTable), 300000);
 </script>
-
 </body>
 </html>
