@@ -27,6 +27,9 @@
         .progress-bar-transition { transition:width 1s cubic-bezier(0.4,0,0.2,1), background-color 0.5s ease; }
         .filter-btn { padding:6px 14px; border-radius:10px; font-size:12px; font-weight:700; border:1.5px solid #e2e8f0; cursor:pointer; background:white; color:#64748b; transition:all .2s; }
         .filter-btn.active, .filter-btn:hover { background:#f97316; color:white; border-color:#f97316; }
+        .legend-pill { background:white; transition:all .2s cubic-bezier(.4,0,.2,1); }
+        .legend-pill.active { background:#fff7ed; border-color:#f97316 !important; box-shadow:0 0 0 2px rgba(249,115,22,.15); }
+        .legend-pill.active span { color:#c2410c !important; }
 
         /* ── SEÇÃO IMPLANTAÇÃO ── */
         .impl-status-badge {
@@ -124,27 +127,43 @@
 
     <!-- LEGENDA + FILTROS + BUSCA -->
     <div class="bg-white rounded-2xl px-6 py-4 border border-slate-100 shadow-sm">
-        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-4">
-                <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Legenda</span>
-                <div class="flex items-center gap-2"><div style="width:8px;height:8px;background:#10b981;border-radius:50%;"></div><span class="text-xs font-semibold text-slate-600">Implantado</span></div>
-                <div class="flex items-center gap-2"><div style="width:8px;height:8px;background:#f59e0b;border-radius:50%;"></div><span class="text-xs font-semibold text-slate-600">Em Implantação</span></div>
-                <div class="flex items-center gap-2"><div style="width:8px;height:8px;background:#06b6d4;border-radius:50%;"></div><span class="text-xs font-semibold text-slate-600">Fomentar Uso</span></div>
-                <div class="flex items-center gap-2"><div style="width:8px;height:8px;background:#8b5cf6;border-radius:50%;"></div><span class="text-xs font-semibold text-slate-600">Não Implantado</span></div>
-                <div class="flex items-center gap-2"><div style="width:8px;height:8px;background:#cbd5e1;border-radius:50%;"></div><span class="text-xs font-semibold text-slate-600">Não Possui</span></div>
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mr-1">Legenda</span>
+                <button id="legendAll" onclick="setFilter('ALL')" class="legend-pill active flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:border-orange-400 transition-all cursor-pointer group">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Todos</span>
+                    <span id="countAll" class="text-sm font-black text-slate-700">–</span>
+                </button>
+                <button id="legendID" onclick="setFilter('ID')" class="legend-pill flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:border-green-400 transition-all cursor-pointer group">
+                    <div style="width:8px;height:8px;background:#10b981;border-radius:50%;flex-shrink:0;"></div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Implantado</span>
+                    <span id="countID" class="text-sm font-black text-green-700">–</span>
+                </button>
+                <button id="legendEI" onclick="setFilter('EI')" class="legend-pill flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:border-amber-400 transition-all cursor-pointer group">
+                    <div style="width:8px;height:8px;background:#f59e0b;border-radius:50%;flex-shrink:0;"></div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Em Implantação</span>
+                    <span id="countEI" class="text-sm font-black text-amber-600">–</span>
+                </button>
+                <button id="legendUS" onclick="setFilter('US')" class="legend-pill flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:border-cyan-400 transition-all cursor-pointer group">
+                    <div style="width:8px;height:8px;background:#06b6d4;border-radius:50%;flex-shrink:0;"></div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Fomentar Uso</span>
+                    <span id="countUS" class="text-sm font-black text-cyan-600">–</span>
+                </button>
+                <button id="legendNI" onclick="setFilter('NI')" class="legend-pill flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:border-purple-400 transition-all cursor-pointer group">
+                    <div style="width:8px;height:8px;background:#8b5cf6;border-radius:50%;flex-shrink:0;"></div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Não Implantado</span>
+                    <span id="countNI" class="text-sm font-black text-purple-600">–</span>
+                </button>
+                <button id="legendNA" onclick="setFilter('N/A')" class="legend-pill flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:border-slate-400 transition-all cursor-pointer group">
+                    <div style="width:8px;height:8px;background:#cbd5e1;border-radius:50%;flex-shrink:0;"></div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Não Possui</span>
+                    <span id="countNA" class="text-sm font-black text-slate-500">–</span>
+                </button>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex items-center gap-3">
                 <div class="relative">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5"></i>
-                    <input type="text" id="searchInput" placeholder="Buscar cliente..." oninput="applyFilters()" class="pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20 w-44">
-                </div>
-                <button class="filter-btn active" id="filterAll" onclick="setFilter('ALL')">Todos</button>
-                <button class="filter-btn" id="filterID" onclick="setFilter('ID')">ID</button>
-                <button class="filter-btn" id="filterEI" onclick="setFilter('EI')">EI</button>
-                <button class="filter-btn" id="filterUS" onclick="setFilter('US')">US</button>
-                <button class="filter-btn" id="filterNI" onclick="setFilter('NI')">NI</button>
-                <div id="filterCount" class="px-3 py-2 bg-orange-50 border border-orange-200 rounded-xl text-xs font-bold text-orange-700 hidden">
-                    <span id="filterCountNumber">0</span> encontrado(s)
+                    <input type="text" id="searchInput" placeholder="Buscar cliente..." oninput="applyFilters()" class="pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20 w-48">
                 </div>
             </div>
         </div>
@@ -350,6 +369,7 @@ async function loadSheetData() {
         }
         renderKPIs();
         renderTable();
+        updateLegendCounts();
     } catch(e) {
         console.error(e);
         alert('Erro ao carregar planilha principal.');
@@ -615,9 +635,32 @@ function renderTable() {
     lucide.createIcons();
 }
 
+function updateLegendCounts() {
+    const counts = {ID:0, EI:0, US:0, NI:0, 'N/A':0};
+    let total = 0;
+    CLIENTS.forEach((_,ci) => MODULES.forEach(m => {
+        const s = ps(DATA[m]?.[ci]);
+        if (!s) return;
+        total++;
+        if (s === 'ID') counts.ID++;
+        else if (s.startsWith('EI')) counts.EI++;
+        else if (s === 'US') counts.US++;
+        else if (s === 'NI') counts.NI++;
+        else if (s === 'N/A') counts['N/A']++;
+    }));
+    document.getElementById('countAll').textContent = total;
+    document.getElementById('countID').textContent  = counts.ID;
+    document.getElementById('countEI').textContent  = counts.EI;
+    document.getElementById('countUS').textContent  = counts.US;
+    document.getElementById('countNI').textContent  = counts.NI;
+    document.getElementById('countNA').textContent  = counts['N/A'];
+}
+
 function setFilter(filter) {
     activeFilter = filter;
-    ['All','ID','EI','US','NI'].forEach(f => { const btn=document.getElementById('filter'+f); if(btn) btn.className='filter-btn'+(filter===f?' active':''); });
+    const pillMap = {ALL:'legendAll', ID:'legendID', EI:'legendEI', US:'legendUS', NI:'legendNI', 'N/A':'legendNA'};
+    Object.values(pillMap).forEach(id => { document.getElementById(id)?.classList.remove('active'); });
+    document.getElementById(pillMap[filter] || 'legendAll')?.classList.add('active');
     applyFilters();
 }
 
@@ -625,25 +668,27 @@ function applyFilters() {
     const term = (document.getElementById('searchInput')?.value||'').toLowerCase();
     document.querySelectorAll('#tableBody tr').forEach(row => {
         const name = row.querySelector('.sticky-col')?.textContent.toLowerCase()||'';
-        const matchSearch = !term||name.includes(term);
-        let matchFilter = activeFilter==='ALL';
+        const matchSearch = !term || name.includes(term);
+        let matchFilter = activeFilter === 'ALL';
         if (!matchFilter) {
             row.querySelectorAll('td:not(.sticky-col) span').forEach(badge => {
                 const t = badge.textContent.trim();
-                if (activeFilter==='EI'&&t.startsWith('EI')) matchFilter=true;
-                else if (t===activeFilter) matchFilter=true;
+                if (activeFilter === 'EI' && t.startsWith('EI')) matchFilter = true;
+                else if (activeFilter === 'N/A' && t === 'N/A') matchFilter = true;
+                else if (t === activeFilter) matchFilter = true;
             });
         }
-        row.style.display = (matchSearch&&matchFilter)?'':'none';
+        row.style.display = (matchSearch && matchFilter) ? '' : 'none';
     });
-    const counterDiv = document.getElementById('filterCount');
-    if (activeFilter!=='ALL') { document.getElementById('filterCountNumber').textContent=countStatusInGrid(activeFilter); counterDiv.classList.remove('hidden'); }
-    else counterDiv.classList.add('hidden');
 }
 
 function countStatusInGrid(status) {
-    let count=0;
-    CLIENTS.forEach((_,ci)=>MODULES.forEach(m=>{ const s=ps(DATA[m]?.[ci]); if(status==='EI'&&s.startsWith('EI'))count++; else if(s===status)count++; }));
+    let count = 0;
+    CLIENTS.forEach((_,ci) => MODULES.forEach(m => {
+        const s = ps(DATA[m]?.[ci]);
+        if (status === 'EI' && s.startsWith('EI')) count++;
+        else if (s === status) count++;
+    }));
     return count;
 }
 
