@@ -120,7 +120,7 @@
 
     <!-- KPI CARDS -->
     <div id="kpi-row-1" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"></div>
-    <div id="kpi-row-2" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+    <div id="kpi-row-2" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"></div>
 
     <!-- LEGENDA + FILTROS + BUSCA -->
     <div class="bg-white rounded-2xl px-6 py-4 border border-slate-100 shadow-sm">
@@ -301,6 +301,7 @@ const MOD_ICONS = {
     eventos:'calendar', ebd:'book-open', 'patrimônio':'shield-check', patrimonio:'shield-check',
     acolhimento:'heart', 'meu departamento':'users', meudepto:'users',
     ebl:'church', 'ebl / célula':'church', célula:'church', celula:'church',
+    missões:'globe', missoes:'globe',
 };
 const iconFor = k => MOD_ICONS[k.toLowerCase()] || 'layout-grid';
 
@@ -314,6 +315,7 @@ const MOD_DEFS = [
     {id:'patrimonio', label:'Patrimônio',        keys:['Patrimônio','Patrimonio'],             row:2},
     {id:'acolhimento',label:'Acolhimento',       keys:['Acolhimento'],                        row:2},
     {id:'meudepto',   label:'Meu Departamento',  keys:['Meu Departamento','Departamento'],    row:2},
+    {id:'missoes',    label:'Missões',            keys:['Missões','Missoes'],                  row:2},
     {id:'ebl',        label:'EBL / Célula',      keys:['EBL','Célula','Celula','EBL/Célula'], row:2},
 ];
 
@@ -335,7 +337,7 @@ function findMod(keys) {
 async function loadSheetData() {
     try {
         const rows = parseCSV(await (await fetch(SHEET_MAIN)).text());
-        MODULES = rows[1].slice(1, 11).filter(m => m?.trim());
+        MODULES = rows[1].slice(1, 12).filter(m => m?.trim());
         CLIENTS = []; DATA = {};
         MODULES.forEach(m => DATA[m] = []);
         for (let i = 2; i < rows.length; i++) {
@@ -343,7 +345,7 @@ async function loadSheetData() {
             if (!row[0]?.trim()) continue;
             const id = 'u' + (i - 2);
             CLIENTS.push({id, label: row[0].trim()});
-            if (row[11]?.trim()) saveNote(id, row[11].trim());
+            if (row[12]?.trim()) saveNote(id, row[12].trim());
             MODULES.forEach((m, mi) => DATA[m].push((row[mi+1]||'NI').trim()));
         }
         renderKPIs();
@@ -506,7 +508,7 @@ function toggleImplInfo() {
    KPI CARDS (grade principal)
 ══════════════════════════════════════ */
 function buildCard(def, total, counts) {
-    const icon = iconFor(def.id === 'meudepto' ? 'meu departamento' : def.id);
+    const icon = iconFor(def.id === 'meudepto' ? 'meu departamento' : def.id === 'missoes' ? 'missões' : def.id);
     return `<div class="mod-card" id="card-${def.id}" onclick="toggleCard('${def.id}')">
         <div class="flex items-start justify-between mb-3">
             <div class="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
